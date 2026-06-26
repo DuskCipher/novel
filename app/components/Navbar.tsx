@@ -158,7 +158,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer Sidebar Panel */}
       {menuOpen && (
-        <div className="md:hidden fixed inset-y-0 left-0 w-[85%] max-w-[320px] bg-[#111111] z-[101] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
+        <div className="md:hidden fixed inset-y-0 left-0 w-[85%] max-w-[320px] h-[100dvh] bg-zinc-950 z-[101] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
           
           {/* Sidebar Header */}
           <div className="flex items-center justify-between p-4 border-b border-zinc-800">
