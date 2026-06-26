@@ -11,6 +11,16 @@ export default function Navbar() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const getSearchHref = () => {
     if (pathname?.startsWith('/novel')) return '/novel';
     if (pathname?.startsWith('/comic')) return '/comic/advanced-search';
@@ -148,71 +158,73 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Drawer Sidebar Overlay */}
-      {menuOpen && (
+      {/* Mobile Drawer Sidebar Overlay - always in DOM, toggled via opacity/pointer-events */}
+      <div 
+        className={`md:hidden fixed inset-0 z-[100] transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      {/* Mobile Drawer Sidebar Panel - always in DOM, toggled via transform */}
+      <div 
+        className={`md:hidden fixed top-0 left-0 bottom-0 w-[85vw] max-w-[320px] z-[101] transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ height: '100dvh', backgroundColor: '#0a0a0a' }}
+      >
+        {/* Sidebar Header */}
         <div 
-          className="md:hidden fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm animate-in fade-in duration-300"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-
-      {/* Mobile Drawer Sidebar Panel */}
-      {menuOpen && (
-        <div className="md:hidden fixed inset-y-0 left-0 w-[85%] max-w-[320px] h-[100dvh] bg-zinc-950 z-[101] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
-          
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
-              <img src="/welcome-logo.png" alt="Valora" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
-              <span className="font-bold text-xl text-white"><span className="text-red-600">V</span>alorahua</span>
-            </Link>
-            <button 
-              onClick={() => setMenuOpen(false)}
-              className="text-zinc-400 hover:text-white p-2 transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          {/* Sidebar Content (Scrollable) */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            
-            {mode === 'donghua' && (
-              <div className="flex flex-col">
-                <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider bg-[#1A1A1A]">MENU DONGHUA</div>
-                <Link href="/donghua" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Home Donghua</Link>
-                <Link href="/donghua/jadwal" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Jadwal Rilis</Link>
-                <Link href="/donghua/ongoing" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Sedang Tayang</Link>
-                <Link href="/donghua/genre" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Daftar Genre</Link>
-                <Link href="/donghua/explore" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Eksplorasi</Link>
-              </div>
-            )}
-
-            {mode === 'home-id' && (
-              <div className="flex flex-col">
-                <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider bg-[#1A1A1A]">MENU ANIME</div>
-                <Link href="/anime" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Home Anime</Link>
-                <Link href="/anime/schedule" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Jadwal Rilis</Link>
-                <Link href="/anime/genre/movie" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Anime Movie</Link>
-                <Link href="/anime/genres" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Daftar Genre</Link>
-                <Link href="/anime/search" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Eksplorasi</Link>
-              </div>
-            )}
-
-            <div className="flex flex-col">
-              <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider bg-[#1A1A1A]">MENU UTAMA</div>
-              <Link href="/valora" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-red-500 hover:text-red-400 transition-colors">Valora Hub</Link>
-              <Link href="/" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Beranda (Home)</Link>
-              <Link href="/donghua" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Donghua</Link>
-              <Link href="/anime" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Anime</Link>
-              <Link href="/comic" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Webtoon & Komik</Link>
-              <Link href="/novel" onClick={() => setMenuOpen(false)} className="px-5 py-4 border-b border-zinc-800 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors">Novel</Link>
-              <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-amber-500 hover:text-amber-400 transition-colors">Leaderboard</Link>
-            </div>
-            
-          </div>
+          className="flex items-center justify-between p-4"
+          style={{ borderBottom: '1px solid #27272a' }}
+        >
+          <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
+            <img src="/welcome-logo.png" alt="Valora" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
+            <span className="font-bold text-xl text-white"><span className="text-red-600">V</span>alorahua</span>
+          </Link>
+          <button 
+            onClick={() => setMenuOpen(false)}
+            className="text-zinc-400 hover:text-white p-2 transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
-      )}
+
+        {/* Sidebar Content (Scrollable) */}
+        <div style={{ overflowY: 'auto', height: 'calc(100dvh - 65px)' }}>
+          
+          {mode === 'donghua' && (
+            <div className="flex flex-col">
+              <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider" style={{ backgroundColor: '#1a1a1a' }}>MENU DONGHUA</div>
+              <Link href="/donghua" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Home Donghua</Link>
+              <Link href="/donghua/jadwal" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Jadwal Rilis</Link>
+              <Link href="/donghua/ongoing" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Sedang Tayang</Link>
+              <Link href="/donghua/genre" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Daftar Genre</Link>
+              <Link href="/donghua/explore" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Eksplorasi</Link>
+            </div>
+          )}
+
+          {mode === 'home-id' && (
+            <div className="flex flex-col">
+              <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider" style={{ backgroundColor: '#1a1a1a' }}>MENU ANIME</div>
+              <Link href="/anime" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Home Anime</Link>
+              <Link href="/anime/schedule" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Jadwal Rilis</Link>
+              <Link href="/anime/genre/movie" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Anime Movie</Link>
+              <Link href="/anime/genres" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Daftar Genre</Link>
+              <Link href="/anime/search" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Eksplorasi</Link>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider" style={{ backgroundColor: '#1a1a1a' }}>MENU UTAMA</div>
+            <Link href="/valora" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-red-500 hover:text-red-400 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Valora Hub</Link>
+            <Link href="/" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Beranda (Home)</Link>
+            <Link href="/donghua" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Donghua</Link>
+            <Link href="/anime" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Anime</Link>
+            <Link href="/comic" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Webtoon & Komik</Link>
+            <Link href="/novel" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Novel</Link>
+            <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-amber-500 hover:text-amber-400 transition-colors">Leaderboard</Link>
+          </div>
+          
+        </div>
+      </div>
     </>
   );
 }

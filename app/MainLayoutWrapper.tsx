@@ -20,8 +20,8 @@ export default function MainLayoutWrapper({ children }: { children: React.ReactN
   return (
     <>
       <Navbar />
-      <main className="flex-1 w-full pt-24 sm:pt-28 pb-12 flex flex-col relative min-h-[85vh] max-w-[1600px] mx-auto px-4 md:px-8 overflow-x-hidden">
-        <div className="flex flex-col lg:flex-row w-full gap-8 lg:gap-10 mt-4 sm:mt-6">
+      <main className="flex-1 w-full pt-[72px] sm:pt-[84px] pb-12 flex flex-col relative min-h-[85vh] max-w-[1600px] mx-auto px-4 md:px-8 overflow-x-hidden">
+        <div className="flex flex-col lg:flex-row w-full gap-6 lg:gap-8">
           {children}
         </div>
       </main>
