@@ -25,8 +25,17 @@ export default function OnboardingScreen() {
     
     if (!loading) {
       if (!hasOnboarded && !user) {
-        setShow(true);
-        document.body.style.overflow = 'hidden';
+        // Wait for SplashScreen to finish (3s display + 0.5s fade)
+        const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
+        const delay = hasSeenSplash ? 0 : 3600;
+        const timer = setTimeout(() => {
+          setShow(true);
+          document.body.style.overflow = 'hidden';
+        }, delay);
+        return () => {
+          clearTimeout(timer);
+          document.body.style.overflow = '';
+        };
       } else {
         setShow(false);
         document.body.style.overflow = '';
@@ -81,7 +90,7 @@ export default function OnboardingScreen() {
   if (!isClient || !show) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center min-h-screen bg-[#0a0a0c] overflow-y-auto p-4 py-10 animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[9998] flex flex-col items-center justify-center min-h-screen bg-[#0a0a0c] overflow-y-auto p-4 py-10" style={{ animation: 'fadeIn 0.5s ease-out' }}>
 
       <div className="w-full max-w-[400px] px-6 py-8 relative z-10 flex flex-col items-center animate-in slide-in-from-bottom-10 duration-700">
         {/* Logo and Title */}
@@ -99,10 +108,10 @@ export default function OnboardingScreen() {
         </div>
 
         {/* Action Button */}
-        <div className="w-full mt-4">
+        <div className="w-full mt-4 flex justify-center">
           <button 
  onClick={handleSkip}
- className="w-full py-4 bg-[#ff6b00] hover:bg-[#ff8533] text-white font-bold rounded-xl transition-all )] flex items-center justify-center gap-2 text-lg"
+ className="px-10 py-2.5 bg-[#ff6b00] hover:bg-[#ff8533] text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 text-sm"
  >
             Watch Now
           </button>

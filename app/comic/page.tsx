@@ -113,7 +113,7 @@ export default function ComicHubPage() {
   };
 
   return (
-    <div className="flex-1 min-w-0 bg-[#0D0D11] min-h-screen pb-24">
+    <div className="flex-1 min-w-0 min-h-screen pb-24">
       <div className="px-4 sm:px-6 flex flex-col gap-8 pt-4">
         
         {/* 1. Slider Trending */}
