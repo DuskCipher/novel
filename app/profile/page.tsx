@@ -9,9 +9,11 @@ import {
   Image as ImageIcon, Loader2, Moon, Sun, Lock, Key, Shield, 
   Smartphone, Globe, Trash2, BookOpen, Heart, CheckCircle, 
   AlertCircle, Zap, Code2, ExternalLink, Github, PlayCircle, Book, FileText, Rocket,
-  Coffee, MessageCircle, Crown, Search, Bookmark, History, Activity, Camera, ArrowLeft
+  Coffee, MessageCircle, Crown, Search, Bookmark, History, Activity, Camera, ArrowLeft,
+  Sparkles, TrendingUp, Eye, Clock
 } from 'lucide-react';
 import Link from 'next/link';
+import Sidebar from '../components/Sidebar';
 
 // =====================
 // Toggle Switch 
@@ -20,7 +22,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
   return (
     <button
       onClick={onChange}
-      className={`relative w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none ${checked ? 'bg-red-600' : 'bg-zinc-300 dark:bg-zinc-600'}`}
+      className={`relative w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none ${checked ? 'bg-amber-500' : 'bg-zinc-600'}`}
     >
       <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${checked ? 'translate-x-6' : 'translate-x-0'}`} />
     </button>
@@ -32,8 +34,8 @@ export default function ProfilePage() {
   
   // UI States
   const [activeTab, setActiveTab] = useState<'ringkasan' | 'aktivitas' | 'riwayat' | 'bookmark' | 'pengaturan'>('ringkasan');
-  const [historyTab, setHistoryTab] = useState<'Anime' | 'Komik' | 'Novel' | 'Sankanime ID' | 'Donghua'>('Donghua');
-  const [bookmarkTab, setBookmarkTab] = useState<'Anime' | 'Comic' | 'Novel' | 'Sankanime ID' | 'Donghua'>('Donghua');
+  const [historyTab, setHistoryTab] = useState<'Anime' | 'Komik' | 'Novel' | 'Donghua'>('Donghua');
+  const [bookmarkTab, setBookmarkTab] = useState<'Anime' | 'Comic' | 'Novel' | 'Donghua'>('Donghua');
   const [isDark, setIsDark] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -150,18 +152,18 @@ export default function ProfilePage() {
   };
 
   if (authLoading) {
-    return <div className="flex-1 flex items-center justify-center pt-20"><Loader2 className="animate-spin text-red-600" size={32} /></div>;
+    return <div className="flex-1 flex items-center justify-center py-40"><Loader2 className="animate-spin text-amber-500" size={40} /></div>;
   }
 
   if (!user) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center pt-20">
-        <div className="w-24 h-24 bg-zinc-800 rounded-full flex items-center justify-center mb-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center py-40">
+        <div className="w-24 h-24 bg-zinc-900 rounded-full flex items-center justify-center mb-6 shadow-xl border border-zinc-800">
           <User size={40} className="text-zinc-500" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">Belum Login</h2>
-        <p className="text-zinc-400 mb-8 max-w-sm">Silakan login untuk mengakses profil, riwayat, dan bookmark Anda.</p>
-        <Link href="/login" className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all">
+        <p className="text-zinc-500 mb-8 max-w-sm">Silakan login untuk mengakses profil, riwayat, dan bookmark Anda.</p>
+        <Link href="/login" className="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-amber-900/20">
           Login Sekarang
         </Link>
       </div>
@@ -179,480 +181,450 @@ export default function ProfilePage() {
   const currentExp = user.user_metadata?.exp || 0;
   const expNeeded = level * 100;
   const expPercentage = Math.min(100, Math.round((currentExp / expNeeded) * 100));
-  const totalExp = ((level - 1) * 100) + currentExp; // Approximation for display
+  const totalExp = ((level - 1) * 100) + currentExp; 
   const bio = user.user_metadata?.bio || 'Belum ada bio.';
   
-  const rankNames = ['Newbie', 'Novice', 'Apprentice', 'Adept', 'Expert', 'Master', 'Grandmaster', 'Epic', 'Legend', 'Mythic'];
-  const currentRank = rankNames[Math.min(Math.floor(level / 10), rankNames.length - 1)];
-  const nextRank = rankNames[Math.min(Math.floor(level / 10) + 1, rankNames.length - 1)];
+  const rankNames = ['Rookie', 'Veteran', 'Elite', 'Legend', 'Mythic'];
+  const currentRank = rankNames[Math.min(Math.floor(level / 20), rankNames.length - 1)];
+  const nextRank = rankNames[Math.min(Math.floor(level / 20) + 1, rankNames.length - 1)];
 
   return (
-    <div className="flex-1 min-w-0 pb-20 flex flex-col items-center relative">
-      
-      {/* Preview Mode Banner */}
-      {previewMode && (
-        <div className="w-full bg-red-600 text-white px-4 py-3 flex justify-between items-center z-50 sticky top-0">
-          <div className="flex items-center gap-2">
-            <User size={18} />
-            <span className="font-bold text-sm">Mode Preview Profil Publik</span>
-          </div>
-          <button onClick={() => setPreviewMode(false)} className="bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
-            <ArrowLeft size={14} /> Kembali ke Edit
-          </button>
-        </div>
-      )}
-
-      {/* Banner & Header Section */}
-      <div className="w-full max-w-3xl relative">
-        {/* Banner */}
-        <div className="w-full h-32 sm:h-48 bg-[#15151A] relative overflow-hidden flex items-center justify-center">
-          {bannerUrl ? (
-            <img src={bannerUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-80" />
-          ) : (
-            <h1 className="text-5xl sm:text-7xl font-black text-zinc-800/30 uppercase tracking-widest whitespace-nowrap z-0">VALORANIME</h1>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#101014] to-transparent z-10"></div>
-          
-          <input type="file" ref={bannerInputRef} onChange={handleBannerChange} accept="image/*" className="hidden" />
-          
-          {!previewMode && (
-            <button 
-              onClick={() => bannerInputRef.current?.click()}
-              disabled={isUploadingBanner}
-              className="absolute top-4 right-4 z-20 bg-black/50 hover:bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-1.5 transition-colors border border-white/10 disabled:opacity-50"
-            >
-              {isUploadingBanner ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
-              {isUploadingBanner ? 'Mengupload...' : 'Ganti Banner'}
-            </button>
-          )}
-        </div>
-
-        {/* Profile Card Overlay */}
-        <div className="w-full px-4 flex flex-col items-center -mt-16 sm:-mt-20 relative z-20">
-          
-          <div className="relative group cursor-pointer" onClick={() => !previewMode && openEditModal()}>
-            <div className={`w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-[#101014] bg-zinc-800 overflow-hidden relative ${isSpecial ? 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : ''}`}>
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-              {!previewMode && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="text-white" size={28} />
-                </div>
-              )}
-            </div>
-            {!previewMode && (
-              <div className="absolute bottom-1 right-1 w-8 h-8 bg-red-600 rounded-full border-2 border-[#101014] flex items-center justify-center text-white">
-                <Camera size={14} />
-              </div>
-            )}
-          </div>
-
-          <div className="mt-4 flex items-center gap-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-white">{displayName}</h2>
-            {isSpecial && <CheckCircle size={22} className="text-blue-500 fill-blue-500/20"  />}
-          </div>
-
-          {!previewMode && (
-            <div className="flex gap-3 mt-5">
-              <button onClick={() => { setActiveTab('ringkasan'); setPreviewMode(true); }} className="px-5 py-2.5 bg-zinc-800/80 hover:bg-zinc-700 text-white text-sm font-bold rounded-lg transition-colors border border-zinc-700">
-                <User size={16} className="inline mr-2 -mt-0.5" /> Preview Profile
-              </button>
-              <button onClick={openEditModal} className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors">
-                <Settings size={16} className="inline mr-2 -mt-0.5" /> Edit Profil
-              </button>
-            </div>
-          )}
-          {previewMode && (
-            <div className="mt-4 flex gap-2">
-               <span className="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-full border border-zinc-700">Level {level}</span>
-               <span className="px-3 py-1 bg-red-600/10 text-red-500 text-xs font-bold rounded-full border border-red-500/20">{currentRank}</span>
-            </div>
-          )}
-
-        </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className="w-full max-w-3xl mt-8 border-b border-zinc-800 px-2 sm:px-0">
-        <div className="flex overflow-x-auto no-scrollbar">
-          {[
-            { id: 'ringkasan', label: 'Ringkasan', icon: Activity },
-            { id: 'aktivitas', label: 'Aktivitas', icon: History },
-            { id: 'riwayat', label: 'Riwayat', icon: History, hideInPreview: true },
-            { id: 'bookmark', label: 'Bookmark', icon: Bookmark, hideInPreview: true },
-            { id: 'pengaturan', label: 'Pengaturan', icon: Settings, hideInPreview: true },
-          ].filter(tab => !(previewMode && tab.hideInPreview)).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-5 py-4 text-sm font-bold whitespace-nowrap transition-colors relative ${
-                activeTab === tab.id ? 'text-red-600' : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600"></div>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Contents */}
-      <div className="w-full max-w-3xl p-4 sm:p-6 pb-12">
+    <>
+      <div className="flex-1 min-w-0 pb-20 font-sans">
         
-        {/* TAB: RINGKASAN */}
-        {activeTab === 'ringkasan' && (
-          <div className="flex flex-col gap-5">
-            {/* Level Card */}
-            <div className="bg-[#15151A] border border-zinc-800 rounded-2xl p-5 sm:p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Crown className="text-red-600" size={20} />
-                <h3 className="text-lg font-bold text-white">Level Saya</h3>
-              </div>
-              
-              <div className="flex items-center gap-5 sm:gap-6">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-red-600 to-rose-500 p-[3px] shrink-0">
-                  <div className="w-full h-full bg-[#15151A] rounded-full flex items-center justify-center">
-                    <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-red-600 to-rose-500">{level}</span>
-                  </div>
-                </div>
-                
-                <div className="flex-1">
-                  <h4 className="text-xl font-bold text-white mb-1">{currentRank}</h4>
-                  <p className="text-xs text-zinc-500 mb-4">Next Rank: <span className="font-bold text-zinc-300">{nextRank}</span></p>
-                  
-                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden mb-2">
-                    <div className="h-full bg-red-600 rounded-full transition-all" style={{ width: `${expPercentage}%` }}></div>
-                  </div>
-                  <div className="flex justify-between items-center text-[11px] text-zinc-500 font-medium">
-                    <span>{currentExp} XP to level {level + 1}</span>
-                    <span>{expPercentage}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-zinc-800/60 flex justify-between items-center uppercase tracking-wider text-xs font-bold">
-                <span className="text-zinc-500">Total Experience</span>
-                <span className="text-red-600">{totalExp} XP</span>
-              </div>
+        {/* Preview Mode Banner */}
+        {previewMode && (
+          <div className="w-full bg-gradient-to-r from-amber-600 to-orange-500 text-white px-6 py-3 flex justify-between items-center z-50 sticky top-0 shadow-lg">
+            <div className="flex items-center gap-2">
+              <Eye size={18} />
+              <span className="font-bold text-sm">Mode Preview Profil Publik</span>
             </div>
-
-            {/* Bio Card */}
-            <div className="bg-[#15151A] border border-zinc-800 rounded-2xl p-5 sm:p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <MessageCircle className="text-zinc-500" size={18} />
-                <h3 className="text-base font-bold text-white">Bio</h3>
-              </div>
-              <p className="text-sm text-zinc-400 whitespace-pre-wrap leading-relaxed">{bio}</p>
-            </div>
-
-            {/* Quick Links */}
-            {!previewMode && (
-              <div className="flex flex-col gap-3">
-                <button onClick={() => setActiveTab('riwayat')} className="bg-[#15151A] hover:bg-[#1a1a20] transition-colors border border-zinc-800 rounded-lg p-4 flex items-center justify-between group">
-                  <div className="flex items-center gap-3 text-sm font-bold text-white">
-                    <History className="text-zinc-500 group-hover:text-red-600 transition-colors" size={20} />
-                    Terakhir Ditonton
-                  </div>
-                  <span className="text-xs font-bold text-zinc-500 group-hover:text-zinc-300">Lihat Semua</span>
-                </button>
-
-                <button onClick={() => setActiveTab('bookmark')} className="bg-[#15151A] hover:bg-[#1a1a20] transition-colors border border-zinc-800 rounded-lg p-4 flex items-center justify-between group">
-                  <div className="flex items-center gap-3 text-sm font-bold text-white">
-                    <Bookmark className="text-zinc-500 group-hover:text-red-600 transition-colors" size={20} />
-                    Bookmark
-                  </div>
-                  <ChevronRight className="text-zinc-600" size={16} />
-                </button>
-
-                <div className="bg-[#15151A] border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-zinc-500 font-medium mb-1">Status Akun</span>
-                    <span className="text-sm font-bold text-emerald-500">Terverifikasi</span>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <CheckCircle className="text-emerald-500" size={18} />
-                  </div>
-                </div>
-              </div>
-            )}
+            <button onClick={() => setPreviewMode(false)} className="bg-black/20 hover:bg-black/40 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+              <ArrowLeft size={14} /> Kembali Edit
+            </button>
           </div>
         )}
 
-        {/* TAB: AKTIVITAS */}
-        {activeTab === 'aktivitas' && (
-          <div className="flex flex-col gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <History className="text-red-600" size={20} />
-                <h3 className="text-lg font-bold text-white">Aktivitas Terakhir</h3>
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                {loadingData ? (
-                  <div className="text-center py-10 text-zinc-500 font-medium text-sm animate-pulse">Memuat...</div>
-                ) : activities.length === 0 ? (
-                  <div className="bg-[#15151A] border border-zinc-800 rounded-xl p-8 text-center text-zinc-500 text-sm">Belum ada aktivitas.</div>
-                ) : (
-                  activities.map((act) => (
-                    <div key={act.id} className="bg-[#15151A] border border-zinc-800 rounded-xl p-4 flex gap-4">
-                      <div className="w-10 h-10 rounded-full bg-[#1A1A22] flex items-center justify-center shrink-0">
-                        {act.activity_type.includes('LIKE') ? <Heart className="text-red-500" size={18} /> : 
-                         act.activity_type.includes('BALAS') ? <MessageCircle className="text-blue-500" size={18} /> :
-                         <MessageCircle className="text-red-600" size={18} />}
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">{act.activity_type}</p>
-                        <h4 className="text-sm font-bold text-white mb-1 leading-tight">{act.target_title}</h4>
-                        {act.content && <p className="text-xs text-zinc-400">{act.content}</p>}
-                        <span className="text-[10px] text-zinc-600 mt-2 block">{new Date(act.created_at).toLocaleDateString('id-ID')}</span>
-                      </div>
-                    </div>
-                  ))
+        <div className="w-full">
+          {/* Banner Section */}
+          <div className="w-full h-48 sm:h-64 lg:h-80 bg-zinc-900 relative flex items-center justify-center group overflow-hidden">
+            {bannerUrl ? (
+              <img src={bannerUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-900"></div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent z-10"></div>
+            
+            <input type="file" ref={bannerInputRef} onChange={handleBannerChange} accept="image/*" className="hidden" />
+            
+            {!previewMode && (
+              <button 
+                onClick={() => bannerInputRef.current?.click()}
+                disabled={isUploadingBanner}
+                className="absolute top-6 right-6 z-20 bg-black/40 hover:bg-black/70 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-2 transition-colors border border-white/10 disabled:opacity-50 shadow-xl"
+              >
+                {isUploadingBanner ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                {isUploadingBanner ? 'Mengupload...' : 'Ganti Banner'}
+              </button>
+            )}
+          </div>
+
+          {/* Profile Header (Overlaps Banner) */}
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 sm:-mt-28 relative z-20 flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6">
+            
+            {/* Avatar */}
+            <div className="relative group cursor-pointer shrink-0" onClick={() => !previewMode && openEditModal()}>
+              <div className={`w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-[#0a0a0a] bg-zinc-900 overflow-hidden relative shadow-2xl ${isSpecial ? 'ring-2 ring-amber-500 ring-offset-4 ring-offset-[#0a0a0a]' : ''}`}>
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {!previewMode && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="text-white" size={28} />
+                  </div>
                 )}
               </div>
+              {!previewMode && (
+                <div className="absolute bottom-2 right-2 w-10 h-10 bg-amber-500 rounded-full border-4 border-[#0a0a0a] flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110">
+                  <Camera size={16} />
+                </div>
+              )}
             </div>
 
-            <div className="bg-[#15151A] border border-zinc-800 rounded-2xl p-5 sm:p-6 mt-4">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <Crown className="text-red-600" size={20} />
-                  <h3 className="text-lg font-bold text-white">XP Breakdown</h3>
-                </div>
-                <select className="bg-[#1A1A22] border border-zinc-800 text-white text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
-                  <option>Semua</option>
-                  <option>Bulan Ini</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-center bg-[#1A1A22] rounded-xl p-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-red-600/10 flex items-center justify-center"><MessageCircle size={16} className="text-red-600"/></div>
-                    <div>
-                      <p className="text-sm font-bold text-white">Comments & Replies</p>
-                      <p className="text-[10px] text-zinc-500">2 × 25 XP</p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-red-600">50 XP</span>
-                </div>
-
-                <div className="flex justify-between items-center bg-[#1A1A22] rounded-xl p-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center"><PlayCircle size={16} className="text-emerald-500"/></div>
-                    <div>
-                      <p className="text-sm font-bold text-white">Episodes Watched</p>
-                      <p className="text-[10px] text-zinc-500">1 × 10 XP</p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-emerald-500">10 XP</span>
-                </div>
-
-                <div className="flex justify-between items-center bg-[#1A1A22] rounded-xl p-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center"><Heart size={16} className="text-red-500"/></div>
-                    <div>
-                      <p className="text-sm font-bold text-white">Likes Given</p>
-                      <p className="text-[10px] text-zinc-500">1 × 5 XP</p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-red-500">5 XP</span>
+            {/* User Info */}
+            <div className="flex-1 text-center sm:text-left mb-2 sm:mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center justify-center sm:justify-start gap-2">
+                  {displayName}
+                  {isSpecial && <CheckCircle size={24} className="text-blue-500 fill-blue-500/20 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+                </h1>
+                
+                {/* Badges */}
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <span className="px-3 py-1 bg-zinc-800 text-zinc-300 text-[10px] font-bold rounded-md border border-zinc-700 shadow-sm flex items-center gap-1">
+                    <Sparkles size={12} className="text-amber-500" /> Lv. {level}
+                  </span>
+                  <span className="px-3 py-1 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-500 text-[10px] font-bold rounded-md border border-amber-500/30 shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                    {currentRank}
+                  </span>
                 </div>
               </div>
+              <p className="text-sm text-zinc-400 font-medium max-w-2xl line-clamp-2">{bio}</p>
             </div>
+
+            {/* Actions */}
+            {!previewMode && (
+              <div className="flex gap-3 sm:mb-6 w-full sm:w-auto mt-4 sm:mt-0">
+                <button onClick={() => { setActiveTab('ringkasan'); setPreviewMode(true); }} className="flex-1 sm:flex-none px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-bold rounded-xl transition-colors border border-zinc-800 shadow-lg flex items-center justify-center gap-2">
+                  <User size={16} /> Preview
+                </button>
+                <button onClick={openEditModal} className="flex-1 sm:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition-colors shadow-lg shadow-amber-900/20 flex items-center justify-center gap-2">
+                  <Edit3 size={16} /> Edit Profil
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* TAB: RIWAYAT & BOOKMARK */}
-        {(activeTab === 'riwayat' || activeTab === 'bookmark') && !previewMode && (
-          <div className="flex flex-col gap-5">
+        {/* Main Content Area */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+          <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Sub Tabs */}
-            <div className="flex flex-wrap gap-2">
-              {['Anime', 'Komik', 'Novel', 'Sankanime ID', 'Donghua'].map(cat => (
-                <button 
-                  key={cat}
-                  onClick={() => activeTab === 'riwayat' ? setHistoryTab(cat as any) : setBookmarkTab(cat as any)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${
-                    (activeTab === 'riwayat' ? historyTab : bookmarkTab) === cat 
-                      ? 'bg-red-600/20 text-red-500 border border-red-500/30' 
-                      : 'bg-[#15151A] text-zinc-400 border border-zinc-800 hover:text-white'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 mt-2">
-              {activeTab === 'riwayat' ? <History className="text-red-600" size={20} /> : <Bookmark className="text-red-600" size={20} />}
-              <h3 className="text-lg font-bold text-white">{activeTab === 'riwayat' ? 'Riwayat' : 'Bookmark'} {activeTab === 'riwayat' ? historyTab : bookmarkTab}</h3>
-            </div>
-
-            <div className="flex gap-2">
-              <div className="flex-1 bg-[#15151A] border border-zinc-800 rounded-xl flex items-center px-4">
-                <Search size={16} className="text-zinc-500" />
-                <input type="text" placeholder={`Cari ${activeTab}...`} className="w-full bg-transparent border-none text-sm text-white px-3 py-3 outline-none placeholder:text-zinc-600" />
+            {/* LEFT SIDEBAR (TABS) */}
+            <div className="w-full lg:w-[280px] shrink-0">
+              <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-2 sticky top-24 shadow-xl">
+                {[
+                  { id: 'ringkasan', label: 'Ringkasan', icon: Activity },
+                  { id: 'aktivitas', label: 'Aktivitas', icon: History },
+                  { id: 'riwayat', label: 'Riwayat Tontonan', icon: PlayCircle, hideInPreview: true },
+                  { id: 'bookmark', label: 'Daftar Bookmark', icon: Bookmark, hideInPreview: true },
+                  { id: 'pengaturan', label: 'Pengaturan Akun', icon: Settings, hideInPreview: true },
+                ].filter(tab => !(previewMode && tab.hideInPreview)).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all ${
+                      activeTab === tab.id 
+                        ? 'bg-amber-500/10 text-amber-500' 
+                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                    }`}
+                  >
+                    <tab.icon size={18} className={activeTab === tab.id ? 'text-amber-500' : 'text-zinc-500'} />
+                    {tab.label}
+                    {activeTab === tab.id && <ChevronRight size={16} className="ml-auto" />}
+                  </button>
+                ))}
               </div>
-              {activeTab === 'riwayat' ? (
-                <button className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 px-4 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
-                  <Trash2 size={14} /> Hapus Semua
-                </button>
-              ) : (
-                <button className="bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white border border-blue-500/20 px-4 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
-                  Import
-                </button>
-              )}
             </div>
 
-            {/* List Content */}
-            <div className="mt-4">
-              {loadingData ? (
-                <div className="text-center py-10 text-zinc-500 text-sm animate-pulse">Memuat data...</div>
-              ) : (activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).length === 0 ? (
-                <div className="text-center py-12 text-zinc-500 text-sm">Belum ada {activeTab} di {activeTab === 'riwayat' ? historyTab : bookmarkTab}.</div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {(activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).map((item, idx) => (
-                    <Link href={item.item_url || item.href || '#'} key={idx} className="relative group block rounded-xl overflow-hidden bg-[#15151A] border border-zinc-800">
-                      <div className="aspect-[3/4] relative">
-                        {(item.poster || item.image || item.image_url || item.thumbnail) ? (
-                          <>
-                            <img 
-                              src={item.poster || item.image || item.image_url || item.thumbnail} 
-                              alt={item.title} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                if (e.currentTarget.nextElementSibling) {
-                                  e.currentTarget.nextElementSibling.classList.remove('hidden');
-                                }
-                              }}
-                            />
-                            <div className="hidden w-full h-full flex items-center justify-center text-zinc-600 bg-[#1A1A22] text-xs font-bold uppercase tracking-wider absolute inset-0">Not Found</div>
-                          </>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-600 bg-[#1A1A22] text-xs font-bold uppercase tracking-wider">Not Found</div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#101014] via-[#101014]/40 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 p-3 w-full">
-                          <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">{item.title}</h4>
-                          {activeTab === 'riwayat' && item.last_episode && (
-                            <p className="text-[10px] text-zinc-400 mt-1 font-bold">Episode {item.last_episode}</p>
-                          )}
+            {/* RIGHT CONTENT */}
+            <div className="flex-1 min-w-0">
+              
+              {/* TAB: RINGKASAN */}
+              {activeTab === 'ringkasan' && (
+                <div className="flex flex-col gap-6">
+                  
+                  {/* Level & Rank Widget */}
+                  <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                    {/* Decorative Background */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                    
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 relative z-10">
+                      
+                      {/* Level Ring */}
+                      <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                          <circle cx="56" cy="56" r="52" className="stroke-zinc-800" strokeWidth="8" fill="none" />
+                          <circle cx="56" cy="56" r="52" className="stroke-amber-500 transition-all duration-1000 ease-out" strokeWidth="8" fill="none" strokeDasharray="326.7" strokeDashoffset={326.7 - (326.7 * expPercentage) / 100} strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute inset-2 bg-zinc-950 rounded-full flex flex-col items-center justify-center shadow-inner">
+                          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-0.5">Level</span>
+                          <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none">{level}</span>
                         </div>
-                        <button className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 text-white">
-                          <X size={12} />
-                        </button>
                       </div>
-                    </Link>
-                  ))}
+
+                      {/* Rank Info */}
+                      <div className="flex-1 w-full text-center sm:text-left pt-2">
+                        <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                          <Crown className="text-amber-500" size={20} />
+                          <h3 className="text-2xl font-black text-white">{currentRank}</h3>
+                        </div>
+                        <p className="text-sm text-zinc-400 font-medium mb-4">
+                          Kumpulkan <span className="text-amber-500 font-bold">{expNeeded - currentExp} XP</span> lagi untuk mencapai rank {nextRank}.
+                        </p>
+                        
+                        <div className="bg-zinc-950 rounded-xl p-4 flex justify-between items-center border border-zinc-800/80">
+                          <div>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Total Experience</p>
+                            <p className="text-lg font-black text-white flex items-center gap-1.5">
+                              <Sparkles size={16} className="text-amber-500" />
+                              {totalExp.toLocaleString()} <span className="text-xs text-amber-500/80">XP</span>
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Progress</p>
+                            <p className="text-lg font-black text-white">{expPercentage}%</p>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Bio & Details */}
+                  <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <Info className="text-amber-500" size={20} /> Tentang
+                    </h3>
+                    <div className="bg-zinc-950 border border-zinc-800/50 rounded-xl p-5">
+                      <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">{bio}</p>
+                    </div>
+                  </div>
+
                 </div>
               )}
-            </div>
-          </div>
-        )}
 
-        {/* TAB: PENGATURAN */}
-        {activeTab === 'pengaturan' && !previewMode && (
-          <div className="flex flex-col gap-4">
-            <div className="bg-[#15151A] border border-zinc-800 rounded-2xl overflow-hidden">
-              <div className="p-4 border-b border-zinc-800">
-                <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Aplikasi</h3>
-              </div>
-              <div className="p-5 flex justify-between items-center border-b border-zinc-800">
-                <div>
-                  <h4 className="text-sm font-bold text-white">Mode Gelap</h4>
-                  <p className="text-xs text-zinc-500 mt-0.5">Tema gelap yang nyaman di mata</p>
-                </div>
-                <ToggleSwitch checked={isDark} onChange={() => { const newTheme = !isDark; setIsDark(newTheme); if(newTheme){document.documentElement.classList.add("dark"); localStorage.setItem("theme","dark")}else{document.documentElement.classList.remove("dark"); localStorage.setItem("theme","light")} }} />
-              </div>
-            </div>
-
-            <div className="bg-[#15151A] border border-zinc-800 rounded-2xl overflow-hidden">
-              <div className="p-4 border-b border-zinc-800">
-                <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Keamanan</h3>
-              </div>
-              <button onClick={async () => { const newPass = prompt("Masukkan password baru:"); if(newPass && newPass.length >= 6){ const {error} = await supabase.auth.updateUser({password: newPass}); if(error) alert(error.message); else alert("Password berhasil diubah!"); } else if(newPass) alert("Password harus minimal 6 karakter") }} className="w-full p-5 flex justify-between items-center border-b border-zinc-800 hover:bg-[#1a1a20] transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center"><Key size={16} className="text-zinc-400"/></div>
-                  <div className="text-left">
-                    <h4 className="text-sm font-bold text-white">Ubah Password</h4>
-                    <p className="text-xs text-zinc-500 mt-0.5">Perbarui kata sandi Anda</p>
+              {/* TAB: AKTIVITAS */}
+              {activeTab === 'aktivitas' && (
+                <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6 sm:p-8 shadow-xl">
+                  <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                    <Activity className="text-amber-500" size={20} /> Aktivitas Terakhir
+                  </h3>
+                  
+                  <div className="flex flex-col gap-4">
+                    {loadingData ? (
+                      <div className="flex flex-col items-center justify-center py-12 gap-3">
+                        <Loader2 size={32} className="text-amber-500 animate-spin" />
+                        <p className="text-zinc-500 font-medium text-sm">Memuat aktivitas...</p>
+                      </div>
+                    ) : activities.length === 0 ? (
+                      <div className="text-center py-16 bg-zinc-950 rounded-xl border border-zinc-800/50">
+                        <History size={48} className="text-zinc-800 mx-auto mb-3" />
+                        <p className="text-zinc-500 font-medium">Belum ada aktivitas yang tercatat.</p>
+                      </div>
+                    ) : (
+                      <div className="relative pl-6 sm:pl-8 border-l border-zinc-800 ml-4 sm:ml-6 space-y-8">
+                        {activities.map((act) => (
+                          <div key={act.id} className="relative">
+                            <div className="absolute -left-[40px] sm:-left-[48px] w-10 h-10 rounded-full bg-zinc-900 border-4 border-[#0a0a0a] flex items-center justify-center shadow-md">
+                              {act.activity_type.includes('LIKE') ? <Heart className="text-rose-500" size={16} /> : 
+                               act.activity_type.includes('BALAS') ? <MessageCircle className="text-blue-500" size={16} /> :
+                               <Activity className="text-amber-500" size={16} />}
+                            </div>
+                            <div className="bg-zinc-950 border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700 transition-colors">
+                              <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1.5">{act.activity_type}</p>
+                              <h4 className="text-sm font-bold text-white mb-2 leading-snug">{act.target_title}</h4>
+                              {act.content && <p className="text-sm text-zinc-400 bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">{act.content}</p>}
+                              <span className="text-[10px] font-bold text-zinc-600 mt-3 block flex items-center gap-1.5">
+                                <Clock size={12} /> {new Date(act.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <ChevronRight size={18} className="text-zinc-600" />
-              </button>
-            </div>
+              )}
 
-            <button onClick={handleLogout} className="mt-4 w-full p-4 bg-red-500/10 border border-red-500/20 hover:bg-red-500 text-red-500 hover:text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors">
-              <LogOut size={18} /> Keluar dari Akun
-            </button>
+              {/* TAB: RIWAYAT & BOOKMARK */}
+              {(activeTab === 'riwayat' || activeTab === 'bookmark') && !previewMode && (
+                <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6 sm:p-8 shadow-xl">
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      {activeTab === 'riwayat' ? <History className="text-amber-500" size={20} /> : <Bookmark className="text-amber-500" size={20} />}
+                      {activeTab === 'riwayat' ? 'Riwayat Tontonan' : 'Daftar Bookmark'}
+                    </h3>
+                    
+                    {/* Search box for this tab */}
+                    <div className="relative w-full sm:w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+                      <input 
+                        type="text" 
+                        placeholder={`Cari di ${activeTab}...`} 
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-amber-500/50"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Sub Category Pills */}
+                  <div className="flex overflow-x-auto custom-scrollbar gap-2 mb-6 pb-2">
+                    {['Donghua', 'Anime', 'Komik', 'Novel'].map(cat => {
+                      const isActive = (activeTab === 'riwayat' ? historyTab : bookmarkTab) === cat;
+                      return (
+                        <button 
+                          key={cat}
+                          onClick={() => activeTab === 'riwayat' ? setHistoryTab(cat as any) : setBookmarkTab(cat as any)}
+                          className={`shrink-0 px-5 py-2 rounded-xl text-xs font-bold transition-all border ${
+                            isActive 
+                              ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' 
+                              : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-600 hover:text-white'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Grid Content */}
+                  {loadingData ? (
+                    <div className="flex flex-col items-center justify-center py-12 gap-3">
+                      <Loader2 size={32} className="text-amber-500 animate-spin" />
+                    </div>
+                  ) : (activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).length === 0 ? (
+                    <div className="text-center py-16 bg-zinc-950 rounded-xl border border-zinc-800/50">
+                      {activeTab === 'riwayat' ? <History size={48} className="text-zinc-800 mx-auto mb-3" /> : <Bookmark size={48} className="text-zinc-800 mx-auto mb-3" />}
+                      <p className="text-zinc-500 font-medium">Belum ada {activeTab} untuk kategori {activeTab === 'riwayat' ? historyTab : bookmarkTab}.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                      {(activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).map((item, idx) => (
+                        <Link href={item.item_url || item.href || '#'} key={idx} className="group relative block rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800/80 shadow-md">
+                          <div className="aspect-[3/4] relative overflow-hidden">
+                            {(item.poster || item.image || item.image_url || item.thumbnail) ? (
+                              <img 
+                                src={item.poster || item.image || item.image_url || item.thumbnail} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/avatar.jpeg';
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-900">No Image</div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent opacity-90"></div>
+                            
+                            <div className="absolute bottom-0 left-0 p-3 w-full z-10">
+                              <h4 className="text-[11px] sm:text-xs font-bold text-white line-clamp-2 leading-tight group-hover:text-amber-400 transition-colors">{item.title}</h4>
+                              {activeTab === 'riwayat' && item.last_episode && (
+                                <p className="text-[10px] text-zinc-400 mt-1.5 font-bold flex items-center gap-1">
+                                  <PlayCircle size={10} className="text-amber-500" /> Ep {item.last_episode}
+                                </p>
+                              )}
+                            </div>
+                            
+                            <button className="absolute top-2 right-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:scale-110 text-white z-20 backdrop-blur-sm">
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB: PENGATURAN */}
+              {activeTab === 'pengaturan' && !previewMode && (
+                <div className="flex flex-col gap-6">
+                  
+                  <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="p-5 sm:p-6 border-b border-zinc-800/80 bg-zinc-900/50">
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Settings className="text-amber-500" size={18} /> Preferensi Aplikasi
+                      </h3>
+                    </div>
+                    <div className="p-5 sm:p-6 flex justify-between items-center bg-zinc-950/30">
+                      <div>
+                        <h4 className="text-sm font-bold text-white mb-1">Mode Gelap</h4>
+                        <p className="text-xs text-zinc-500">Gunakan tema gelap untuk kenyamanan mata.</p>
+                      </div>
+                      <ToggleSwitch checked={isDark} onChange={() => { const newTheme = !isDark; setIsDark(newTheme); if(newTheme){document.documentElement.classList.add("dark"); localStorage.setItem("theme","dark")}else{document.documentElement.classList.remove("dark"); localStorage.setItem("theme","light")} }} />
+                    </div>
+                  </div>
+
+                  <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="p-5 sm:p-6 border-b border-zinc-800/80 bg-zinc-900/50">
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Shield className="text-amber-500" size={18} /> Keamanan Akun
+                      </h3>
+                    </div>
+                    <button onClick={async () => { const newPass = prompt("Masukkan password baru:"); if(newPass && newPass.length >= 6){ const {error} = await supabase.auth.updateUser({password: newPass}); if(error) alert(error.message); else alert("Password berhasil diubah!"); } else if(newPass) alert("Password harus minimal 6 karakter") }} className="w-full p-5 sm:p-6 flex justify-between items-center bg-zinc-950/30 hover:bg-zinc-800/50 transition-colors group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors"><Key size={18} className="text-zinc-400 group-hover:text-white"/></div>
+                        <div className="text-left">
+                          <h4 className="text-sm font-bold text-white mb-1">Ubah Kata Sandi</h4>
+                          <p className="text-xs text-zinc-500">Perbarui kata sandi Anda secara berkala.</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={20} className="text-zinc-600 group-hover:text-amber-500 transition-colors" />
+                    </button>
+                  </div>
+
+                  <div className="bg-zinc-900 border border-zinc-800/60 rounded-2xl shadow-xl overflow-hidden mt-4">
+                    <button onClick={handleLogout} className="w-full p-5 sm:p-6 flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors group">
+                      <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" /> 
+                      <span className="font-bold text-sm">Keluar dari Akun</span>
+                    </button>
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+
+        {/* Edit Profile Modal */}
+        {showEditModal && !previewMode && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+            <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
+              <div className="p-5 border-b border-zinc-800/80 flex justify-between items-center bg-zinc-950">
+                <h3 className="text-lg font-bold text-white">Edit Profil</h3>
+                <button onClick={() => setShowEditModal(false)} className="text-zinc-500 hover:text-white bg-zinc-800/50 hover:bg-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><X size={18} /></button>
+              </div>
+              
+              <form onSubmit={handleUpdateProfile} className="p-6 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-zinc-800 bg-zinc-950 relative group shadow-lg">
+                    <img src={avatarPreview || '/avatar.jpeg'} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" onClick={() => fileInputRef.current?.click()}>
+                      <Camera className="text-white" size={24} />
+                    </div>
+                  </div>
+                  <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
+                  <button type="button" onClick={() => fileInputRef.current?.click()} className="text-xs font-bold text-amber-500 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-4 py-1.5 rounded-full transition-colors">
+                    Ubah Foto
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Nama Tampilan</label>
+                  <input 
+                    type="text" 
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                    placeholder="Nama keren kamu..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Bio Singkat</label>
+                  <textarea 
+                    value={editBio}
+                    onChange={(e) => setEditBio(e.target.value)}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-none h-28"
+                    placeholder="Ceritakan tentang dirimu..."
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isUpdating}
+                  className="w-full py-4 mt-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl disabled:opacity-50 transition-all shadow-lg shadow-amber-900/20"
+                >
+                  {isUpdating ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </button>
+              </form>
+            </div>
           </div>
         )}
 
       </div>
-
-      {/* Edit Profile Modal */}
-      {showEditModal && !previewMode && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#15151A] border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b border-zinc-800 flex justify-between items-center bg-[#1A1A22]">
-              <h3 className="text-lg font-bold text-white">Edit Profil</h3>
-              <button onClick={() => setShowEditModal(false)} className="text-zinc-500 hover:text-white"><X size={20} /></button>
-            </div>
-            
-            <form onSubmit={handleUpdateProfile} className="p-6 flex flex-col gap-6 overflow-y-auto no-scrollbar">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-zinc-700 bg-zinc-800 relative group">
-                  <img src={avatarPreview || '/avatar.jpeg'} alt="Preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" onClick={() => fileInputRef.current?.click()}>
-                    <Camera className="text-white" size={24} />
-                  </div>
-                </div>
-                <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="text-sm font-bold text-red-600 hover:text-red-500">Ganti Foto Profil</button>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase">Nama Tampilan</label>
-                <input 
-                  type="text" 
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-[#0D0D11] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-600/50"
-                  placeholder="Nama keren kamu..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase">Bio</label>
-                <textarea 
-                  value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  className="w-full bg-[#0D0D11] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-600/50 resize-none h-24"
-                  placeholder="Ceritakan tentang dirimu..."
-                />
-              </div>
-
-              <button 
-                type="submit" 
-                disabled={isUpdating}
-                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors"
-              >
-                {isUpdating ? 'Menyimpan...' : 'Simpan Perubahan'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <style dangerouslySetInnerHTML={{__html: `
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
-    </div>
+    </>
   );
 }

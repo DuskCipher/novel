@@ -2,39 +2,49 @@
 
 import Link from 'next/link';
 import WidgetTitle from './WidgetTitle';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 
 function SidebarContent() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const source = searchParams?.get('source');
 
-  // Jika di halaman pencarian dan sourcenya BUKAN donghua, sembunyikan sidebar
-  if (source && source !== 'donghua') {
+  // Jika di halaman pencarian dan sourcenya BUKAN donghua/anime, sembunyikan sidebar
+  if (source && source !== 'donghua' && source !== 'anime') {
     return null;
   }
 
-  const seasonList = ["Winter 2024", "Fall 2023", "Summer 2023", "Spring 2023"];
-  const azList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
-
-  const menuLinks = [
+  const isAnime = pathname?.startsWith('/anime');
+  const searchPrefix = isAnime ? '/anime/search?q=' : '/search?q=';
+  const menuTitle = isAnime ? "Menu Anime" : "Menu Donghua";
+  
+  const menuLinks = isAnime ? [
+    { label: "Sedang Berjalan (Ongoing)", href: "/anime/ongoing" },
+    { label: "Sudah Tamat (Completed)", href: "/anime/completed" },
+    { label: "Jadwal Rilis", href: "/anime/schedule" },
+    { label: "Daftar Semua Genre", href: "/anime/genres" }
+  ] : [
     { label: "Sedang Berjalan (Ongoing)", href: "/ongoing" },
     { label: "Sudah Tamat (Completed)", href: "/completed" },
     { label: "Jadwal Rilis", href: "/donghua/jadwal" },
     { label: "Daftar Semua Genre", href: "/genres" }
   ];
 
+  const seasonList = ["Winter 2024", "Fall 2023", "Summer 2023", "Spring 2023"];
+  const azList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
   return (
-    <aside className="hidden lg:flex w-80 flex-col gap-6 shrink-0">
+    <aside className="hidden lg:flex w-[320px] flex-col gap-6 shrink-0 pl-6 border-l border-zinc-800/50">
       <div>
-        <WidgetTitle title="Menu Donghua" />
+        <WidgetTitle title={menuTitle} />
         <div className="flex flex-col gap-2 mt-4 mb-2">
           {menuLinks.map((link) => (
             <Link 
- key={link.href} 
- href={link.href}
- className="flex items-center px-4 py-2.5 rounded-lg bg-zinc-100 hover:bg-amber-100 text-zinc-700 hover:text-amber-700 dark:bg-zinc-900 dark:hover:bg-amber-900/30 dark:text-zinc-300 dark:hover:text-amber-500 transition-colors font-medium text-sm"
- >
+              key={link.href} 
+              href={link.href}
+              className="flex items-center px-4 py-2.5 rounded-lg bg-zinc-100 hover:bg-amber-100 text-zinc-700 hover:text-amber-700 dark:bg-zinc-900/50 dark:hover:bg-amber-900/30 dark:text-zinc-300 dark:hover:text-amber-500 border border-transparent dark:hover:border-amber-500/30 transition-colors font-medium text-sm"
+            >
               {link.label}
             </Link>
           ))}
@@ -45,7 +55,7 @@ function SidebarContent() {
         <WidgetTitle title="Seasons" />
         <div className="flex flex-wrap gap-2 mb-6 mt-4 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
           {seasonList.map((season) => (
-            <Link key={season} href={`/search?q=${season}`} className="text-xs font-medium px-2.5 py-1.5 rounded bg-zinc-200 text-zinc-800 hover:bg-amber-600 hover:text-white dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-amber-600 transition-colors">
+            <Link key={season} href={`${searchPrefix}${season}`} className="text-xs font-medium px-2.5 py-1.5 rounded bg-zinc-200 text-zinc-800 hover:bg-amber-600 hover:text-white dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-amber-600 dark:hover:text-white transition-colors border border-transparent dark:border-zinc-800 dark:hover:border-amber-500">
               {season}
             </Link>
           ))}
@@ -56,7 +66,7 @@ function SidebarContent() {
         <WidgetTitle title="A-Z List" />
         <div className="flex flex-wrap gap-2 mt-4 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
           {azList.map((letter) => (
-            <Link key={letter} href={`/search?q=${letter}`} className="w-8 h-8 flex items-center justify-center text-sm font-bold rounded bg-zinc-200 text-zinc-800 hover:bg-sky-600 hover:text-white dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-sky-600 transition-colors">
+            <Link key={letter} href={`${searchPrefix}${letter}`} className="w-8 h-8 flex items-center justify-center text-sm font-bold rounded bg-zinc-200 text-zinc-800 hover:bg-sky-600 hover:text-white dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-sky-600 dark:hover:text-white transition-colors border border-transparent dark:border-zinc-800 dark:hover:border-sky-500">
               {letter}
             </Link>
           ))}
