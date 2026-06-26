@@ -104,10 +104,10 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <Link 
               href={searchHref === '/novel' ? '/novel?focus=true' : searchHref} 
-              className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-amber-100 hover:text-amber-600 dark:hover:bg-amber-900/30 transition-colors" 
+              className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-amber-100 hover:text-amber-600 dark:hover:bg-amber-900/30 transition-colors shrink-0" 
               title="Cari"
               onClick={(e) => {
                 if (pathname === '/novel' && searchHref === '/novel') {
@@ -127,7 +127,7 @@ export default function Navbar() {
             {!loading && (
               <Link 
                 href={user ? "/profile" : "/login"} 
-                className="w-10 h-10 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 hover:border-amber-500 transition-colors flex items-center justify-center bg-zinc-200 dark:bg-zinc-800"
+                className="w-10 h-10 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 hover:border-amber-500 transition-colors flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 shrink-0"
                 title={user ? "Profil" : "Login"}
               >
                 {user ? (
@@ -139,10 +139,10 @@ export default function Navbar() {
             )}
 
             <button 
-  onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-amber-100 hover:text-amber-600 dark:hover:bg-amber-900/30 transition-colors shrink-0"
             >
-              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
