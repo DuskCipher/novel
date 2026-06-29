@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Play, Flame, Clock, Compass, BookOpen, Tv, ArrowRight, ChevronRight, History, Heart, Zap, Trophy, Users, Star, Gift, Coffee, Sparkles, TrendingUp, Crown } from 'lucide-react';
 import AnimeList from './components/AnimeList';
+import MissionsWidget from './components/MissionsWidget';
 import { getAnimeOngoing } from '@/lib/anime-api';
 
 export default function HomePage() {
@@ -431,6 +432,9 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
+
+              {/* MISI HARIAN (WIDGET) */}
+              <MissionsWidget />
 
             </div>
           </aside>

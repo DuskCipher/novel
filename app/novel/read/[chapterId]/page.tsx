@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, Maximize, Download, Home, List, X } from 'lucide-react';
 import Link from 'next/link';
-import MissionTracker from '../../../../components/MissionTracker';
+import MissionTracker from '../../../components/MissionTracker';
 
 export default function NovelReadPage() {
   const params = useParams();
