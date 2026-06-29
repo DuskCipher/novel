@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import MissionTracker from '../../../components/MissionTracker';
 
 export default function ComicReadPage() {
   const params = useParams();
@@ -175,6 +176,7 @@ export default function ComicReadPage() {
 
   return (
     <div className="min-h-screen bg-black pb-24 font-sans selection:bg-blue-500/30">
+      <MissionTracker actionType="read_chapter" />
       
       {/* Top Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#181920] border-b border-zinc-800 p-3 sm:px-4 flex justify-between items-center shadow-md">

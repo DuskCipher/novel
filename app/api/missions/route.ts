@@ -96,34 +96,36 @@ export async function POST(req: Request) {
 
     // Jika misi baru saja selesai, berikan EXP
     if (isCompleted) {
-      // Ambil data profile
       const { data: profile } = await supabaseAdmin
         .from('profiles')
         .select('*')
         .eq('id', user_id)
-        .single();
+        .maybeSingle();
         
-      if (profile) {
-        let currentExp = profile.exp || 0;
-        let currentLevel = profile.level || 1;
-        
-        currentExp += mission.exp_reward;
-        
-        let expNeeded = currentLevel * 100;
-        if (currentExp >= expNeeded) {
-          currentLevel += 1;
-          currentExp -= expNeeded;
-        }
-
-        // Update profile
-        await supabaseAdmin
-          .from('profiles')
-          .update({ level: currentLevel, exp: currentExp })
-          .eq('id', user_id);
-          
-        // Note: idealnya juga update auth.users metadata, 
-        // tapi di sini fokus ke profiles karena sudah disync di AuthProvider
+      let currentExp = profile?.exp || 0;
+      let currentLevel = profile?.level || 1;
+      
+      currentExp += mission.exp_reward;
+      
+      let expNeeded = currentLevel * 100;
+      if (currentExp >= expNeeded) {
+        currentLevel += 1;
+        currentExp -= expNeeded;
       }
+
+      // Update profile
+      await supabaseAdmin
+        .from('profiles')
+        .upsert({ 
+          id: user_id,
+          level: currentLevel, 
+          exp: currentExp,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+        
+      await supabaseAdmin.auth.admin.updateUserById(user_id, {
+        user_metadata: { exp: currentExp, level: currentLevel }
+      });
     }
 
     return NextResponse.json({ 

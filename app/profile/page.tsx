@@ -10,7 +10,7 @@ import {
   Trash2, Heart, CheckCircle, PlayCircle,
   MessageCircle, Crown, Search, Bookmark, History, Activity, Camera, ArrowLeft,
   Sparkles, Eye, Clock, Star, Users, Medal, Trophy, Palette, Pin, MonitorPlay,
-  Flame, Swords, Droplet, Award, Lock, Plus
+  Flame, Swords, Droplet, Award, Lock, Plus, AlertTriangle, Send
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -77,6 +77,13 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
+  // Report Error Modal
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportUrl, setReportUrl] = useState('');
+  const [reportReason, setReportReason] = useState('');
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
@@ -211,6 +218,37 @@ export default function ProfilePage() {
   const removeFromShowcase = async (id: string) => {
     await supabase.from('user_showcase').delete().eq('id', id);
     await fetchData();
+  };
+
+  const handleReportError = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reportReason.trim() || !reportUrl.trim()) return;
+    setIsSubmittingReport(true);
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          item_url: reportUrl,
+          item_type: 'general',
+          reason: reportReason
+        })
+      });
+      if (res.ok) {
+        setReportSuccess(true);
+        setTimeout(() => {
+          setShowReportModal(false);
+          setReportSuccess(false);
+          setReportReason('');
+          setReportUrl('');
+        }, 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSubmittingReport(false);
+    }
   };
 
   // Theme colors (SOLID, no gradients)
@@ -713,6 +751,19 @@ export default function ProfilePage() {
                     <ChevronRight size={14} className="text-zinc-600" />
                   </button>
 
+                  {/* Lapor Error */}
+                  <button onClick={() => setShowReportModal(true)}
+                    className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4 flex justify-between items-center hover:bg-zinc-800/30 transition-colors group text-left w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center"><AlertTriangle size={12} className="text-rose-500" /></div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Lapor Error / Bug</h4>
+                        <p className="text-[10px] text-zinc-500">Laporkan masalah pada situs atau episode.</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={14} className="text-zinc-600" />
+                  </button>
+
                   {/* Logout */}
                   <button onClick={handleLogout} className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center justify-center gap-1.5 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors">
                     <LogOut size={13} /> <span className="font-bold text-sm">Keluar dari Akun</span>
@@ -806,6 +857,72 @@ export default function ProfilePage() {
                     })
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Report Error Modal */}
+        {showReportModal && !previewMode && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-[#1C1D2A] border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95">
+              <div className="bg-rose-600/10 p-5 flex justify-between items-center border-b border-rose-500/20">
+                <h3 className="text-white font-bold flex items-center gap-2 text-lg">
+                  <AlertTriangle size={20} className="text-rose-500" />
+                  Lapor Error
+                </h3>
+                <button onClick={() => setShowReportModal(false)} className="text-zinc-400 hover:text-white transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="p-5">
+                {reportSuccess ? (
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Send size={32} />
+                    </div>
+                    <h4 className="text-white font-bold text-lg mb-1">Laporan Terkirim!</h4>
+                    <p className="text-zinc-400 text-sm">Terima kasih atas bantuan Anda. Admin akan segera memeriksanya.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReportError} className="flex flex-col gap-4">
+                    <p className="text-sm text-zinc-300">
+                      Ada link mati, gambar rusak, atau error lainnya? Beritahu admin agar segera diperbaiki!
+                    </p>
+                    
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-500 mb-2 uppercase">URL / Link Halaman yang Error</label>
+                      <input 
+                        type="url"
+                        value={reportUrl}
+                        onChange={(e) => setReportUrl(e.target.value)}
+                        placeholder="Contoh: https://domain.com/anime/watch/..."
+                        className="w-full bg-[#0a0a0c] border border-zinc-700 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-rose-500 transition-colors"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-500 mb-2 uppercase">Detail Error</label>
+                      <textarea 
+                        value={reportReason}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        placeholder="Misal: Video episode 3 tidak bisa diputar..."
+                        className="w-full bg-[#0a0a0c] border border-zinc-700 text-white text-sm rounded-xl p-3 min-h-[120px] focus:outline-none focus:border-rose-500 transition-colors"
+                        required
+                      />
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      disabled={isSubmittingReport || !reportReason.trim() || !reportUrl.trim()}
+                      className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+                    >
+                      {isSubmittingReport ? 'Mengirim...' : 'Kirim Laporan'}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>

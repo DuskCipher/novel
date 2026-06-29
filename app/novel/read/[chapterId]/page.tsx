@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, Maximize, Download, Home, List, X } from 'lucide-react';
 import Link from 'next/link';
+import MissionTracker from '../../../../components/MissionTracker';
 
 export default function NovelReadPage() {
   const params = useParams();
@@ -163,7 +164,7 @@ export default function NovelReadPage() {
 
   return (
     <div className={`min-h-screen pb-24 transition-colors duration-300 ${theme.bg} ${theme.text} ${fontFamily === 'serif' ? 'font-serif' : 'font-sans'} selection:bg-pink-500/30`}>
-
+      <MissionTracker actionType="read_chapter" />
       {/* Top Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#181920] border-b border-zinc-800 p-3 sm:px-4 flex justify-between items-center shadow-md font-sans">
         <div className="flex items-center gap-3 flex-1 min-w-0">

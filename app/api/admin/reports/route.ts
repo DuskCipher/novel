@@ -8,16 +8,23 @@ export async function GET() {
   try {
     const { data: reports, error } = await supabaseAdmin
       .from('reports')
-      .select('*, profiles(display_name, avatar_url)')
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    const mapped = reports.map(r => ({
-      ...r,
-      user_name: r.profiles?.display_name || 'Tanpa Nama',
-      user_avatar: r.profiles?.avatar_url || '/avatar.jpeg'
-    }));
+    // Manual join to profiles to avoid foreign key issues
+    const { data: profiles } = await supabaseAdmin.from('profiles').select('id, display_name, avatar_url');
+    const profileMap = new Map((profiles || []).map(p => [p.id, p]));
+
+    const mapped = reports.map(r => {
+      const profile = profileMap.get(r.user_id);
+      return {
+        ...r,
+        user_name: profile?.display_name || 'Tanpa Nama',
+        user_avatar: profile?.avatar_url || '/avatar.jpeg'
+      };
+    });
 
     return NextResponse.json(mapped);
   } catch (error: any) {

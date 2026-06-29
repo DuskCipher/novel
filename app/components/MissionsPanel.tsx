@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Target, CheckCircle, X, ChevronRight, Gift } from 'lucide-react';
 import { useAuth } from './AuthProvider';
+import { useRouter } from 'next/navigation';
 
 export default function MissionsPanel({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { user } = useAuth();
+  const router = useRouter();
   const [missions, setMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<string | null>(null);
@@ -41,6 +43,11 @@ export default function MissionsPanel({ isOpen, onClose }: { isOpen: boolean, on
       const data = await res.json();
       if (data.success) {
         fetchMissions(); // Refresh progress
+        import('@/lib/supabase').then(async ({ supabase }) => {
+          if (data.exp_rewarded) {
+             supabase.auth.refreshSession();
+          }
+        });
       } else {
         alert(data.error || 'Gagal klaim misi');
       }
@@ -114,11 +121,26 @@ export default function MissionsPanel({ isOpen, onClose }: { isOpen: boolean, on
 
                     {!m.is_completed && (
                       <button 
-                        onClick={() => claimMission(m.id)}
+                        onClick={() => {
+                          if (m.action_type === 'login_daily') {
+                            claimMission(m.id);
+                          } else if (m.action_type === 'read_chapter') {
+                            onClose();
+                            router.push('/comic');
+                          } else if (m.action_type === 'watch_episode') {
+                            onClose();
+                            router.push('/anime');
+                          } else if (m.action_type === 'comment') {
+                            onClose();
+                            router.push('/anime'); // Or wherever they can comment
+                          } else {
+                            claimMission(m.id);
+                          }
+                        }}
                         disabled={claiming === m.id}
                         className="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                       >
-                        Lakukan Misi <ChevronRight size={14} />
+                        {m.action_type === 'login_daily' ? 'Klaim Login' : 'Lakukan Misi'} <ChevronRight size={14} />
                       </button>
                     )}
                   </div>

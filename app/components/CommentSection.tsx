@@ -90,10 +90,17 @@ export default function CommentSection({ itemUrl }: { itemUrl: string }) {
           supabase.auth.refreshSession();
         });
 
-        if (result.levelUp || result.newLevel >= 30) {
+          if (result.levelUp || result.newLevel >= 30) {
           setShowLevelEffect(true);
           setTimeout(() => setShowLevelEffect(false), 3000);
         }
+
+        // Trigger Gamification Mission for 'comment'
+        fetch('/api/missions/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action_type: 'comment' })
+        }).catch(console.error);
       }
     } catch (e) {
       console.error('Failed to post comment', e);

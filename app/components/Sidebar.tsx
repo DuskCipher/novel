@@ -10,14 +10,11 @@ function SidebarContent() {
   const pathname = usePathname();
   const source = searchParams?.get('source');
 
-  // Jika di halaman pencarian dan sourcenya BUKAN donghua/anime, sembunyikan sidebar
-  if (source && source !== 'donghua' && source !== 'anime') {
-    return null;
-  }
-
-  const isAnime = pathname?.startsWith('/anime');
-  const isComic = pathname?.startsWith('/comic');
-  const isNovel = pathname?.startsWith('/novel');
+  // Jika di halaman pencarian, tentukan konteks dari source
+  const isSearchPage = pathname?.startsWith('/search');
+  const isAnime = pathname?.startsWith('/anime') || (isSearchPage && source === 'anime');
+  const isComic = pathname?.startsWith('/comic') || (isSearchPage && source === 'webtoons');
+  const isNovel = pathname?.startsWith('/novel') || (isSearchPage && source === 'novels');
   
   let searchPrefix = '/search?q=';
   let menuTitle = "Menu Donghua";

@@ -9,6 +9,7 @@ import { getAnimeEpisode, getAnimeOngoing } from '@/lib/anime-api';
 import CommentSection from '../../../components/CommentSection';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import MissionTracker from '../../../components/MissionTracker';
 
 export default function AnimeWatchPage() {
   const params = useParams();
@@ -169,6 +170,7 @@ export default function AnimeWatchPage() {
 
   return (
     <div className="min-h-screen pb-24 font-sans text-white">
+      <MissionTracker actionType="watch_episode" />
       {/* VIDEO PLAYER */}
       <div className="w-full aspect-video bg-black sticky sm:relative top-[53px] sm:top-0 z-40">
         {extractedVideoUrl ? (
