@@ -5,7 +5,7 @@ import { ArrowLeft, Search as SearchIcon, Compass, Flame, Sparkles, Star, Heart 
 import { useRouter, useSearchParams } from 'next/navigation';
 import AnimeCard3 from '../components/AnimeCard3';
 import { searchAnime, getAnimeOngoing } from '@/lib/anime-api';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 function AnimeSearchContent() {
   const router = useRouter();

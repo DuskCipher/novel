@@ -5,7 +5,7 @@ import { ArrowLeft, Film, Layers, MonitorPlay, Zap, Tv, ChevronLeft, ChevronRigh
 import { useParams, useRouter } from 'next/navigation';
 import AnimeCard3 from '../../components/AnimeCard3';
 import { getAnimeByGenre } from '@/lib/anime-api';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 
 export default function AnimeGenreDetailPage() {
   const params = useParams();
