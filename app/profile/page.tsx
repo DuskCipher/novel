@@ -259,11 +259,14 @@ export default function ProfilePage() {
   const nextRank = rankNames[Math.min(Math.floor(level / 20) + 1, rankNames.length - 1)];
 
   // Stats from real data
-  const episodesWatched = history.reduce((sum, h) => sum + (h.last_episode || 0), 0);
+  const episodesWatched = history.reduce((sum, h) => {
+    const ep = parseInt(h.last_episode, 10);
+    return sum + (isNaN(ep) ? 1 : ep);
+  }, 0);
   const watchTimeMins = episodesWatched * 24;
   const watchDays = Math.floor(watchTimeMins / 1440);
   const watchHours = Math.floor((watchTimeMins % 1440) / 60);
-  const watchTimeStr = watchDays > 0 ? `${watchDays}h ${watchHours}j` : `${watchHours}j ${watchTimeMins % 60}m`;
+  const watchTimeStr = watchDays > 0 ? `${watchDays}h ${watchHours}m` : `${watchHours}h ${watchTimeMins % 60}m`;
 
   return (
     <>
@@ -274,9 +277,9 @@ export default function ProfilePage() {
           <div className={`w-full ${theme.bg} text-white px-4 py-2 flex justify-between items-center z-50 sticky top-0`}>
             <div className="flex items-center gap-1.5">
               <Eye size={14} />
-              <span className="font-bold text-[11px]">Preview Profil Publik</span>
+              <span className="font-bold text-sm">Preview Profil Publik</span>
             </div>
-            <button onClick={() => setPreviewMode(false)} className="bg-black/20 hover:bg-black/40 px-3 py-1 rounded text-[10px] font-bold transition-colors flex items-center gap-1">
+            <button onClick={() => setPreviewMode(false)} className="bg-black/20 hover:bg-black/40 px-3 py-1 rounded text-xs font-bold transition-colors flex items-center gap-1">
               <ArrowLeft size={12} /> Kembali
             </button>
           </div>
@@ -297,7 +300,7 @@ export default function ProfilePage() {
             <input type="file" ref={bannerInputRef} onChange={handleBannerChange} accept="image/*" className="hidden" />
             {!previewMode && (
               <button onClick={() => bannerInputRef.current?.click()} disabled={isUploadingBanner}
-                className="absolute top-3 right-3 z-20 bg-black/40 hover:bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-bold text-white flex items-center gap-1.5 transition-colors border border-white/10 disabled:opacity-50">
+                className="absolute top-3 right-3 z-20 bg-black/40 hover:bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-1.5 transition-colors border border-white/10 disabled:opacity-50">
                 {isUploadingBanner ? <Loader2 size={12} className="animate-spin" /> : <ImageIcon size={12} />}
                 {isUploadingBanner ? 'Upload...' : 'Ganti Banner'}
               </button>
@@ -329,31 +332,31 @@ export default function ProfilePage() {
                   {isSpecial && <CheckCircle size={16} className="text-blue-500 fill-blue-500/20" />}
                 </h1>
                 <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                  <span className="px-2 py-0.5 bg-zinc-800 text-zinc-300 text-[9px] font-bold rounded flex items-center gap-1">
+                  <span className="px-2 py-0.5 bg-zinc-800 text-zinc-300 text-[10px] font-bold rounded flex items-center gap-1">
                     <Sparkles size={9} className={theme.text} /> Lv.{level}
                   </span>
-                  <span className={`px-2 py-0.5 ${theme.bg}/15 ${theme.text} text-[9px] font-bold rounded border ${theme.border}/20 uppercase tracking-wider`}>
+                  <span className={`px-2 py-0.5 ${theme.bg}/15 ${theme.text} text-[10px] font-bold rounded border ${theme.border}/20 uppercase tracking-wider`}>
                     {currentRank}
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] text-zinc-400 max-w-xl line-clamp-2 mb-2">{bio}</p>
+              <p className="text-sm text-zinc-400 max-w-xl line-clamp-2 mb-2">{bio}</p>
               
-              <div className="flex items-center justify-center sm:justify-start gap-4 text-[11px]">
+              <div className="flex items-center justify-center sm:justify-start gap-4 text-sm">
                 <span className="text-zinc-400"><span className="font-bold text-white">{followersCount}</span> Followers</span>
                 <span className="text-zinc-400"><span className="font-bold text-white">{followingCount}</span> Following</span>
                 {previewMode && (
-                  <button className={`ml-2 px-3 py-1 ${theme.bg} text-white text-[10px] font-bold rounded-full`}>Ikuti</button>
+                  <button className={`ml-2 px-3 py-1 ${theme.bg} text-white text-xs font-bold rounded-full`}>Ikuti</button>
                 )}
               </div>
             </div>
 
             {!previewMode && (
               <div className="flex gap-2 sm:mb-4 w-full sm:w-auto">
-                <button onClick={() => { setActiveTab('ringkasan'); setPreviewMode(true); }} className="flex-1 sm:flex-none px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-[10px] font-bold rounded-lg transition-colors border border-zinc-800 flex items-center justify-center gap-1.5">
+                <button onClick={() => { setActiveTab('ringkasan'); setPreviewMode(true); }} className="flex-1 sm:flex-none px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-lg transition-colors border border-zinc-800 flex items-center justify-center gap-1.5">
                   <User size={12} /> Preview
                 </button>
-                <button onClick={openEditModal} className={`flex-1 sm:flex-none px-4 py-1.5 ${theme.bg} hover:opacity-90 text-white text-[10px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5`}>
+                <button onClick={openEditModal} className={`flex-1 sm:flex-none px-4 py-1.5 ${theme.bg} hover:opacity-90 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5`}>
                   <Edit3 size={12} /> Edit Profil
                 </button>
               </div>
@@ -377,7 +380,7 @@ export default function ProfilePage() {
                   { id: 'pengaturan', label: 'Pengaturan', icon: Settings, hideInPreview: true },
                 ].filter(tab => !(previewMode && tab.hideInPreview)).map((tab) => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
-                    className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-[11px] font-bold transition-all ${
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold transition-all ${
                       activeTab === tab.id ? `${theme.bg}/10 ${theme.text}` : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
                     }`}>
                     <tab.icon size={14} className={activeTab === tab.id ? theme.text : 'text-zinc-500'} />
@@ -405,7 +408,7 @@ export default function ProfilePage() {
                       <div key={i} className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-3 text-center">
                         <s.icon className="text-zinc-600 mx-auto mb-1" size={16} />
                         <p className={`text-sm font-black ${theme.text}`}>{s.value}</p>
-                        <p className="text-[9px] text-zinc-500 font-bold uppercase">{s.label}</p>
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase">{s.label}</p>
                       </div>
                     ))}
                   </div>
@@ -427,10 +430,10 @@ export default function ProfilePage() {
                           <Crown className={theme.text} size={14} />
                           <span className="text-sm font-black text-white">{currentRank}</span>
                         </div>
-                        <p className="text-[10px] text-zinc-400 mb-2">
+                        <p className="text-xs text-zinc-400 mb-2">
                           <span className={`${theme.text} font-bold`}>{expNeeded - currentExp} XP</span> menuju rank {nextRank}
                         </p>
-                        <div className="flex gap-4 text-[10px]">
+                        <div className="flex gap-4 text-xs">
                           <span className="text-zinc-500">Total: <span className="text-white font-bold">{totalExp.toLocaleString()} XP</span></span>
                           <span className="text-zinc-500">Progress: <span className="text-white font-bold">{expPercentage}%</span></span>
                         </div>
@@ -440,11 +443,11 @@ export default function ProfilePage() {
 
                   {/* Badges */}
                   <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
-                    <h3 className="text-[11px] font-bold text-white mb-3 flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
                       <Medal className={theme.text} size={14} /> Pencapaian
                     </h3>
                     {badges.length === 0 ? (
-                      <p className="text-[10px] text-zinc-500 text-center py-4">Belum ada pencapaian.</p>
+                      <p className="text-xs text-zinc-500 text-center py-4">Belum ada pencapaian.</p>
                     ) : (
                       <div className="grid grid-cols-2 gap-2">
                         {badges.map((badge) => {
@@ -455,8 +458,8 @@ export default function ProfilePage() {
                                 <IconComp size={13} className={theme.text} />
                               </div>
                               <div className="min-w-0">
-                                <p className="text-[10px] font-bold text-white truncate">{badge.badge_name}</p>
-                                <p className="text-[9px] text-zinc-500 truncate">{badge.badge_desc}</p>
+                                <p className="text-xs font-bold text-white truncate">{badge.badge_name}</p>
+                                <p className="text-[10px] text-zinc-500 truncate">{badge.badge_desc}</p>
                               </div>
                             </div>
                           );
@@ -468,16 +471,16 @@ export default function ProfilePage() {
                   {/* Mini Leaderboard */}
                   <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                         <Trophy className={theme.text} size={14} /> Posisi Peringkat
                       </h3>
-                      <Link href="/leaderboard" className={`text-[10px] font-bold ${theme.text}`}>Lihat Semua</Link>
+                      <Link href="/leaderboard" className={`text-xs font-bold ${theme.text}`}>Lihat Semua</Link>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg ${theme.bg}/15 flex items-center justify-center text-xs font-black ${theme.text}`}>#?</div>
                       <div>
-                        <p className="text-[10px] font-bold text-white">Terus tingkatkan levelmu!</p>
-                        <p className="text-[9px] text-zinc-500">Bersaing dengan player lainnya.</p>
+                        <p className="text-xs font-bold text-white">Terus tingkatkan levelmu!</p>
+                        <p className="text-[10px] text-zinc-500">Bersaing dengan player lainnya.</p>
                       </div>
                     </div>
                   </div>
@@ -489,11 +492,11 @@ export default function ProfilePage() {
               {activeTab === 'showcase' && (
                 <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                       <Pin className={theme.text} size={14} /> Top Favorit ({showcase.length}/10)
                     </h3>
                     {!previewMode && showcase.length < 10 && (
-                      <button onClick={() => setShowAddShowcase(true)} className={`px-3 py-1 ${theme.bg} text-white text-[10px] font-bold rounded-lg flex items-center gap-1`}>
+                      <button onClick={() => setShowAddShowcase(true)} className={`px-3 py-1 ${theme.bg} text-white text-xs font-bold rounded-lg flex items-center gap-1`}>
                         <Plus size={10} /> Tambah
                       </button>
                     )}
@@ -502,7 +505,7 @@ export default function ProfilePage() {
                   {showcase.length === 0 ? (
                     <div className="text-center py-8">
                       <Star size={28} className="text-zinc-800 mx-auto mb-2" />
-                      <p className="text-[10px] text-zinc-500">Belum ada favorit. Tambahkan sekarang!</p>
+                      <p className="text-xs text-zinc-500">Belum ada favorit. Tambahkan sekarang!</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
@@ -521,7 +524,7 @@ export default function ProfilePage() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                             <div className="absolute bottom-0 left-0 w-full p-1.5 z-10">
                               <span className={`text-[7px] font-bold uppercase px-1 py-px rounded ${theme.bg}/20 ${theme.text} border ${theme.border}/20 inline-block mb-0.5`}>{item.item_type}</span>
-                              <h4 className="text-[9px] font-bold text-white line-clamp-2 leading-tight">{item.item_title}</h4>
+                              <h4 className="text-[10px] font-bold text-white line-clamp-2 leading-tight">{item.item_title}</h4>
                             </div>
                             {!previewMode && (
                               <button onClick={() => removeFromShowcase(item.id)} className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 text-white z-20">
@@ -539,7 +542,7 @@ export default function ProfilePage() {
               {/* AKTIVITAS */}
               {activeTab === 'aktivitas' && (
                 <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
-                  <h3 className="text-[11px] font-bold text-white mb-4 flex items-center gap-1.5">
+                  <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-1.5">
                     <Activity className={theme.text} size={14} /> Aktivitas Terakhir
                   </h3>
                   {loadingData ? (
@@ -547,7 +550,7 @@ export default function ProfilePage() {
                   ) : activities.length === 0 ? (
                     <div className="text-center py-8">
                       <History size={28} className="text-zinc-800 mx-auto mb-2" />
-                      <p className="text-[10px] text-zinc-500">Belum ada aktivitas.</p>
+                      <p className="text-xs text-zinc-500">Belum ada aktivitas.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -559,9 +562,9 @@ export default function ProfilePage() {
                              <Activity className={theme.text} size={10} />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className={`text-[9px] font-bold ${theme.text} uppercase tracking-wider mb-0.5`}>{act.activity_type}</p>
-                            <h4 className="text-[10px] font-bold text-white truncate">{act.target_title}</h4>
-                            {act.content && <p className="text-[9px] text-zinc-500 mt-0.5 line-clamp-1">{act.content}</p>}
+                            <p className={`text-[10px] font-bold ${theme.text} uppercase tracking-wider mb-0.5`}>{act.activity_type}</p>
+                            <h4 className="text-xs font-bold text-white truncate">{act.target_title}</h4>
+                            {act.content && <p className="text-[10px] text-zinc-500 mt-0.5 line-clamp-1">{act.content}</p>}
                             <span className="text-[8px] text-zinc-600 flex items-center gap-1 mt-0.5">
                               <Clock size={8} /> {new Date(act.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
@@ -570,7 +573,7 @@ export default function ProfilePage() {
                       ))}
                       {visibleActivities < activities.length && (
                         <button onClick={() => setVisibleActivities(p => p + 10)}
-                          className="w-full py-2 text-[10px] font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-center gap-1">
+                          className="w-full py-2 text-xs font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-center gap-1">
                           Muat Lebih Banyak <ChevronRight size={10} className="rotate-90" />
                         </button>
                       )}
@@ -583,13 +586,13 @@ export default function ProfilePage() {
               {(activeTab === 'riwayat' || activeTab === 'bookmark') && !previewMode && (
                 <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <h3 className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                       {activeTab === 'riwayat' ? <MonitorPlay className={theme.text} size={14} /> : <Bookmark className={theme.text} size={14} />}
                       {activeTab === 'riwayat' ? 'Riwayat' : 'Watchlist'}
                     </h3>
                     <div className="relative w-full sm:w-48">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-500" size={12} />
-                      <input type="text" placeholder="Cari..." className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-1.5 pl-7 pr-3 text-[10px] text-white focus:outline-none" />
+                      <input type="text" placeholder="Cari..." className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-1.5 pl-7 pr-3 text-xs text-white focus:outline-none" />
                     </div>
                   </div>
 
@@ -599,7 +602,7 @@ export default function ProfilePage() {
                       return (
                         <button key={cat}
                           onClick={() => activeTab === 'riwayat' ? setHistoryTab(cat as any) : setBookmarkTab(cat as any)}
-                          className={`shrink-0 px-3 py-1 rounded-full text-[10px] font-bold transition-all ${
+                          className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-all ${
                             isActive ? `${theme.bg} text-white` : 'text-zinc-500 hover:text-white'
                           }`}>{cat}</button>
                       );
@@ -610,7 +613,7 @@ export default function ProfilePage() {
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {['Semua', 'Watching', 'Completed', 'On Hold', 'Plan to Watch'].map(filter => (
                         <button key={filter} onClick={() => setWatchlistFilter(filter as any)}
-                          className={`px-2.5 py-1 rounded-full text-[9px] font-bold transition-all ${
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                             watchlistFilter === filter ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'
                           }`}>{filter}</button>
                       ))}
@@ -621,7 +624,7 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-center py-8"><Loader2 size={20} className={`${theme.text} animate-spin`} /></div>
                   ) : (activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-[10px] text-zinc-500">Belum ada data.</p>
+                      <p className="text-xs text-zinc-500">Belum ada data.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
@@ -633,11 +636,11 @@ export default function ProfilePage() {
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/avatar.jpeg'; }} />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-900 text-[9px]">No Image</div>
+                              <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-900 text-[10px]">No Image</div>
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                             <div className="absolute bottom-0 left-0 p-1.5 w-full z-10">
-                              <h4 className="text-[9px] font-bold text-white line-clamp-2 leading-tight">{item.title}</h4>
+                              <h4 className="text-[10px] font-bold text-white line-clamp-2 leading-tight">{item.title}</h4>
                               {activeTab === 'riwayat' && item.last_episode && (
                                 <p className="text-[8px] text-zinc-400 mt-0.5 flex items-center gap-0.5">
                                   <PlayCircle size={7} className={theme.text} /> Ep {item.last_episode}
@@ -661,13 +664,13 @@ export default function ProfilePage() {
                   
                   {/* Theme VIP */}
                   <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4">
-                    <h3 className="text-[11px] font-bold text-white mb-1 flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-1.5">
                       <Palette className={theme.text} size={14} /> Tema Profil
                       {!canUseTheme && <span className="text-[8px] text-zinc-500 ml-1 flex items-center gap-0.5"><Lock size={8} /> Level 20+</span>}
                     </h3>
                     {canUseTheme ? (
                       <>
-                        <p className="text-[9px] text-zinc-500 mb-3">Pilih warna aksen profilmu.</p>
+                        <p className="text-[10px] text-zinc-500 mb-3">Pilih warna aksen profilmu.</p>
                         <div className="flex gap-3">
                           {[
                             { id: 'amber', color: 'bg-amber-500' },
@@ -684,15 +687,15 @@ export default function ProfilePage() {
                         </div>
                       </>
                     ) : (
-                      <p className="text-[9px] text-zinc-500">Capai <span className={`${theme.text} font-bold`}>Level 20 (Veteran)</span> untuk membuka fitur ini.</p>
+                      <p className="text-[10px] text-zinc-500">Capai <span className={`${theme.text} font-bold`}>Level 20 (Veteran)</span> untuk membuka fitur ini.</p>
                     )}
                   </div>
 
                   {/* App Preferences */}
                   <div className="bg-zinc-900/50 border border-zinc-800/40 rounded-xl p-4 flex justify-between items-center">
                     <div>
-                      <h4 className="text-[11px] font-bold text-white mb-0.5">Mode Gelap</h4>
-                      <p className="text-[9px] text-zinc-500">Tema gelap untuk kenyamanan mata.</p>
+                      <h4 className="text-sm font-bold text-white mb-0.5">Mode Gelap</h4>
+                      <p className="text-[10px] text-zinc-500">Tema gelap untuk kenyamanan mata.</p>
                     </div>
                     <ToggleSwitch checked={isDark} onChange={() => { const n = !isDark; setIsDark(n); if(n){document.documentElement.classList.add("dark"); localStorage.setItem("theme","dark")}else{document.documentElement.classList.remove("dark"); localStorage.setItem("theme","light")} }} />
                   </div>
@@ -703,8 +706,8 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-3">
                       <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center"><Key size={12} className="text-zinc-400" /></div>
                       <div>
-                        <h4 className="text-[11px] font-bold text-white">Ubah Kata Sandi</h4>
-                        <p className="text-[9px] text-zinc-500">Perbarui kata sandi secara berkala.</p>
+                        <h4 className="text-sm font-bold text-white">Ubah Kata Sandi</h4>
+                        <p className="text-[10px] text-zinc-500">Perbarui kata sandi secara berkala.</p>
                       </div>
                     </div>
                     <ChevronRight size={14} className="text-zinc-600" />
@@ -712,7 +715,7 @@ export default function ProfilePage() {
 
                   {/* Logout */}
                   <button onClick={handleLogout} className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center justify-center gap-1.5 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors">
-                    <LogOut size={13} /> <span className="font-bold text-[11px]">Keluar dari Akun</span>
+                    <LogOut size={13} /> <span className="font-bold text-sm">Keluar dari Akun</span>
                   </button>
                 </div>
               )}
@@ -738,15 +741,15 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-                  <button type="button" onClick={() => fileInputRef.current?.click()} className={`text-[10px] font-bold ${theme.text} px-3 py-1 rounded-full ${theme.bg}/10`}>Ubah Foto</button>
+                  <button type="button" onClick={() => fileInputRef.current?.click()} className={`text-xs font-bold ${theme.text} px-3 py-1 rounded-full ${theme.bg}/10`}>Ubah Foto</button>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 mb-1 uppercase">Nama Tampilan</label>
+                  <label className="block text-xs font-bold text-zinc-400 mb-1 uppercase">Nama Tampilan</label>
                   <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none" placeholder="Nama..." required />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 mb-1 uppercase">Bio Singkat</label>
+                  <label className="block text-xs font-bold text-zinc-400 mb-1 uppercase">Bio Singkat</label>
                   <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)}
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none resize-none h-20" placeholder="Ceritakan tentang dirimu..." />
                 </div>
@@ -777,7 +780,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2 max-h-[50vh] overflow-y-auto">
                   {showcaseSearchResults.length === 0 ? (
-                    <p className="text-[10px] text-zinc-500 text-center py-6">Ketik untuk mencari dari riwayat & bookmarkmu.</p>
+                    <p className="text-xs text-zinc-500 text-center py-6">Ketik untuk mencari dari riwayat & bookmarkmu.</p>
                   ) : (
                     showcaseSearchResults.map((item, idx) => {
                       const alreadyAdded = showcase.some(s => s.item_title === item.title);
@@ -789,13 +792,13 @@ export default function ProfilePage() {
                             ) : <div className="w-full h-full flex items-center justify-center text-zinc-600"><Star size={12} /></div>}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-white truncate">{item.title}</p>
+                            <p className="text-xs font-bold text-white truncate">{item.title}</p>
                             <p className="text-[8px] text-zinc-500 uppercase">{item.category || 'Donghua'}</p>
                           </div>
                           <button 
                             onClick={() => !alreadyAdded && addToShowcase(item)} 
                             disabled={addingShowcase || alreadyAdded}
-                            className={`px-2 py-1 rounded text-[9px] font-bold ${alreadyAdded ? 'bg-zinc-800 text-zinc-500' : `${theme.bg} text-white`} disabled:opacity-50`}>
+                            className={`px-2 py-1 rounded text-[10px] font-bold ${alreadyAdded ? 'bg-zinc-800 text-zinc-500' : `${theme.bg} text-white`} disabled:opacity-50`}>
                             {alreadyAdded ? 'Sudah Ada' : addingShowcase ? '...' : 'Tambah'}
                           </button>
                         </div>

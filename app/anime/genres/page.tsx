@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Layers, Search } from 'lucide-react';
 import { getAnimeGenres } from '@/lib/anime-api';
 import AnimeCard3 from '../components/AnimeCard3';
+import Sidebar from '../components/Sidebar';
 
 export default function AnimeGenresPage() {
   const [genres, setGenres] = useState<any[]>([]);
@@ -39,7 +40,8 @@ export default function AnimeGenresPage() {
   });
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <>
+      <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
@@ -106,5 +108,7 @@ export default function AnimeGenresPage() {
         )}
       </div>
     </div>
+    <Sidebar />
+    </>
   );
 }

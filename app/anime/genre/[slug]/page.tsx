@@ -5,6 +5,7 @@ import { ArrowLeft, Film, Layers, MonitorPlay, Zap, Tv, ChevronLeft, ChevronRigh
 import { useParams, useRouter } from 'next/navigation';
 import AnimeCard3 from '../../components/AnimeCard3';
 import { getAnimeByGenre } from '@/lib/anime-api';
+import Sidebar from '../../components/Sidebar';
 
 export default function AnimeGenreDetailPage() {
   const params = useParams();
@@ -53,7 +54,8 @@ export default function AnimeGenreDetailPage() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <>
+      <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
       
       {/* Header */}
       {isFormatPage ? (
@@ -137,5 +139,7 @@ export default function AnimeGenreDetailPage() {
         )}
       </div>
     </div>
+    <Sidebar />
+    </>
   );
 }

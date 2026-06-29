@@ -55,10 +55,10 @@ export default function AnimeHomePage() {
     return () => clearInterval(interval);
   }, [ongoingData]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: any) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/anime/search?q=${encodeURIComponent(searchQuery)}`);
+      window.location.href = `/anime/search?q=${encodeURIComponent(searchQuery)}`;
     }
   };
 
@@ -144,7 +144,7 @@ export default function AnimeHomePage() {
                 style={{ backgroundColor: 'rgba(24,24,27,0.8)' }}
               />
             </div>
-            <button type="submit" className="px-5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm transition-colors shrink-0">
+            <button type="submit" onClick={handleSearch} className="px-5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm transition-colors shrink-0">
               Cari
             </button>
           </form>

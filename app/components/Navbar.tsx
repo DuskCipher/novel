@@ -25,6 +25,7 @@ export default function Navbar() {
     if (pathname?.startsWith('/novel')) return '/novel';
     if (pathname?.startsWith('/comic')) return '/comic/advanced-search';
     if (pathname?.startsWith('/donghua')) return '/donghua/search';
+    if (pathname?.startsWith('/anime')) return '/anime/search';
     if (pathname?.startsWith('/home-id')) return '/search?source=webtoons';
     if (pathname?.startsWith('/search')) return pathname; // tetap di halaman search yg sama
     return '/search';

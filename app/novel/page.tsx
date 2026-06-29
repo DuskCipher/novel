@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Search, X, BookOpen, Flame, Clock, Bookmark, List, Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Sidebar from '../components/Sidebar';
 
 export default function NovelHubPage() {
   const [data, setData] = useState<any>({ trending: [], latest: [], genres: [], adminNovels: [] });
@@ -149,6 +150,7 @@ export default function NovelHubPage() {
   const heroItem = heroItems[trendingIndex] || heroItems[0];
 
   return (
+    <>
     <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-[#0a0a0c] overflow-y-auto pb-20 md:pb-6 relative z-0">
 
       {/* Header */}
@@ -331,5 +333,7 @@ export default function NovelHubPage() {
         )}
       </div>
     </div>
+    <Sidebar />
+    </>
   );
 }

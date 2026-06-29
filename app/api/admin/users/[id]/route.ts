@@ -18,10 +18,20 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // 1. Update tabel profiles (hanya level dan exp)
     if (level !== undefined || exp !== undefined) {
-      const { error: profileError } = await supabaseAdmin
+      const { data: existingProfile } = await supabaseAdmin
         .from('profiles')
-        .update(updateData)
-        .eq('id', id);
+        .select('id')
+        .eq('id', id)
+        .single();
+
+      let profileError = null;
+      if (existingProfile) {
+        const { error } = await supabaseAdmin.from('profiles').update(updateData).eq('id', id);
+        profileError = error;
+      } else {
+        const { error } = await supabaseAdmin.from('profiles').insert({ id, ...updateData });
+        profileError = error;
+      }
 
       if (profileError) {
         console.error('[PUT admin/users profileError]', profileError);

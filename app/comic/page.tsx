@@ -6,6 +6,7 @@ import { Search, X, BookOpen, Flame, Clock, Bookmark, List, Star } from 'lucide-
 import Link from 'next/link';
 import AnimeList from '../components/AnimeList'; // Reusing AnimeList since they share similar structure
 import WidgetTitle from '../components/WidgetTitle';
+import Sidebar from '../components/Sidebar';
 
 export default function ComicHubPage() {
   const [data, setData] = useState<any>({ trending: [], popular: [], latest: [], berwarna: [], webtoons: [] });
@@ -113,6 +114,7 @@ export default function ComicHubPage() {
   };
 
   return (
+    <>
     <div className="flex-1 min-w-0 min-h-screen pb-24">
       <div className="px-4 sm:px-6 flex flex-col gap-8 pt-4">
         
@@ -422,5 +424,7 @@ export default function ComicHubPage() {
         )}
       </div>
     </div>
+    <Sidebar />
+    </>
   );
 }

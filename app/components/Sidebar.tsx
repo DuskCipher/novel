@@ -16,20 +16,43 @@ function SidebarContent() {
   }
 
   const isAnime = pathname?.startsWith('/anime');
-  const searchPrefix = isAnime ? '/anime/search?q=' : '/search?q=';
-  const menuTitle = isAnime ? "Menu Anime" : "Menu Donghua";
+  const isComic = pathname?.startsWith('/comic');
+  const isNovel = pathname?.startsWith('/novel');
   
-  const menuLinks = isAnime ? [
-    { label: "Sedang Berjalan (Ongoing)", href: "/anime/ongoing" },
-    { label: "Sudah Tamat (Completed)", href: "/anime/completed" },
-    { label: "Jadwal Rilis", href: "/anime/schedule" },
-    { label: "Daftar Semua Genre", href: "/anime/genres" }
-  ] : [
+  let searchPrefix = '/search?q=';
+  let menuTitle = "Menu Donghua";
+  let menuLinks = [
     { label: "Sedang Berjalan (Ongoing)", href: "/ongoing" },
     { label: "Sudah Tamat (Completed)", href: "/completed" },
     { label: "Jadwal Rilis", href: "/donghua/jadwal" },
     { label: "Daftar Semua Genre", href: "/genres" }
   ];
+
+  if (isAnime) {
+    searchPrefix = '/anime/search?q=';
+    menuTitle = "Menu Anime";
+    menuLinks = [
+      { label: "Sedang Berjalan (Ongoing)", href: "/anime/ongoing" },
+      { label: "Sudah Tamat (Completed)", href: "/anime/completed" },
+      { label: "Jadwal Rilis", href: "/anime/schedule" },
+      { label: "Daftar Semua Genre", href: "/anime/genres" }
+    ];
+  } else if (isComic) {
+    searchPrefix = '/comic/search?q=';
+    menuTitle = "Menu Komik";
+    menuLinks = [
+      { label: "Sedang Berjalan (Ongoing)", href: "/comic/list?status=ongoing" },
+      { label: "Sudah Tamat (Completed)", href: "/comic/list?status=completed" },
+      { label: "Daftar Semua Genre", href: "/comic/advanced-search" }
+    ];
+  } else if (isNovel) {
+    searchPrefix = '/novel/search?q=';
+    menuTitle = "Menu Novel";
+    menuLinks = [
+      { label: "Semua Genre", href: "/novel/genres" },
+      { label: "Daftar A-Z", href: "/novel/daftar-novel" }
+    ];
+  }
 
   const seasonList = ["Winter 2024", "Fall 2023", "Summer 2023", "Spring 2023"];
   const azList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
