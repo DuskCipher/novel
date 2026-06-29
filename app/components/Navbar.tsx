@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Menu, X, User, ChevronDown } from "lucide-react";
+import { Search, Menu, X, User, ChevronDown, Target } from "lucide-react";
 import { useAuth } from "./AuthProvider";
+import MissionsPanel from "./MissionsPanel";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [missionsOpen, setMissionsOpen] = useState(false);
   const { user, loading } = useAuth();
   const pathname = usePathname();
 
@@ -134,6 +136,17 @@ export default function Navbar() {
               <Search size={18} />
             </Link>
 
+            {/* Missions / Trophy */}
+            {!loading && user && (
+              <button 
+                onClick={() => setMissionsOpen(true)}
+                className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-purple-100 hover:text-purple-600 dark:hover:bg-purple-900/30 transition-colors shrink-0 border-2 border-transparent hover:border-purple-500/30"
+                title="Misi Harian"
+              >
+                <Target size={18} />
+              </button>
+            )}
+
             {/* Avatar / Login */}
             {!loading && (
               <Link 
@@ -226,6 +239,9 @@ export default function Navbar() {
           
         </div>
       </div>
+
+      {/* Missions Panel Modal */}
+      <MissionsPanel isOpen={missionsOpen} onClose={() => setMissionsOpen(false)} />
     </>
   );
 }

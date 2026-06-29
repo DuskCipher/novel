@@ -2,6 +2,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // Total novels
@@ -12,6 +15,11 @@ export async function GET() {
     // Total comments
     const { count: totalComments } = await supabaseAdmin
       .from('comments')
+      .select('*', { count: 'exact', head: true });
+
+    // Total reports
+    const { count: totalReports } = await supabaseAdmin
+      .from('reports')
       .select('*', { count: 'exact', head: true });
 
     // Ambil semua user dari Supabase Auth (bukan profiles)
@@ -50,6 +58,7 @@ export async function GET() {
     return NextResponse.json({
       totalNovels: totalNovels || 0,
       totalComments: totalComments || 0,
+      totalReports: totalReports || 0,
       totalUsers,
       recentUsers,
       topUsers

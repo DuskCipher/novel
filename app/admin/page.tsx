@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Book, Users, MessageSquare, TrendingUp, Crown, Star, ArrowUpRight } from 'lucide-react';
+import { Book, Users, MessageSquare, TrendingUp, Crown, Star, ArrowUpRight, AlertCircle } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [novels, setNovels] = useState<any[]>([]);
@@ -41,6 +41,7 @@ export default function AdminDashboard() {
     { label: 'Total Novel', value: stats?.totalNovels ?? '—', icon: Book, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
     { label: 'Total User', value: stats?.totalUsers ?? '—', icon: Users, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
     { label: 'Total Komentar', value: stats?.totalComments ?? '—', icon: MessageSquare, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    { label: 'Laporan Error', value: stats?.totalReports ?? '—', icon: AlertCircle, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20' },
   ];
 
   return (
@@ -48,7 +49,7 @@ export default function AdminDashboard() {
       <h1 className="text-2xl font-bold text-white mb-8">Dashboard Admin</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
         {statCards.map((s, i) => (
           <div key={i} className={`bg-zinc-900 rounded-2xl border ${s.border} p-5 flex items-center gap-4 shadow-lg`}>
             <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>

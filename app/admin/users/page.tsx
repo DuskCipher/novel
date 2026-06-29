@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Edit2, X, Save, Users, Star, Crown, Sparkles, Shield, ChevronUp, ChevronDown, Trash2, MessageSquare, Eye } from 'lucide-react';
+import { Search, Edit2, X, Save, Users, Star, Crown, Sparkles, Shield, ChevronUp, ChevronDown, Trash2, MessageSquare, Eye, Ban, ShieldAlert } from 'lucide-react';
 
 function getUserTier(level: number) {
   if (level >= 100) return { name: 'Mythic', icon: Crown, color: 'from-rose-500 via-purple-500 to-indigo-500', text: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/30' };
@@ -19,6 +19,8 @@ export default function AdminUsersPage() {
   const [editLevel, setEditLevel] = useState('');
   const [editExp, setEditExp] = useState('');
   const [editRole, setEditRole] = useState('');
+  const [banningUser, setBanningUser] = useState<any | null>(null);
+  const [banReason, setBanReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [sortBy, setSortBy] = useState<'level' | 'exp' | 'name'>('level');
   const [sortAsc, setSortAsc] = useState(false);
@@ -77,6 +79,29 @@ export default function AdminUsersPage() {
       }
     } catch (e) {
       console.error('Failed to update user', e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveBan = async () => {
+    if (!banningUser) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/users/${banningUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          is_banned: !banningUser.is_banned,
+          ban_reason: !banningUser.is_banned ? banReason : ''
+        })
+      });
+      if (res.ok) {
+        setBanningUser(null);
+        fetchUsers();
+      }
+    } catch (e) {
+      console.error('Failed to update ban status', e);
     } finally {
       setSaving(false);
     }
@@ -242,6 +267,11 @@ export default function AdminUsersPage() {
                         )}
                       </div>
                       <span className="text-[10px] font-mono text-zinc-600 block mt-0.5">{user.id?.slice(0, 12)}...</span>
+                      {user.is_banned && (
+                        <span className="inline-flex mt-1 items-center gap-1 bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] px-1.5 py-0.5 rounded font-bold">
+                          <Ban size={10} /> BANNED
+                        </span>
+                      )}
                     </td>
                     <td className="p-4 text-center">
                       <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg bg-gradient-to-r ${tier.color} text-white`}>
@@ -278,6 +308,13 @@ export default function AdminUsersPage() {
                           title="Edit User"
                         >
                           <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => { setBanningUser(user); setBanReason(user.ban_reason || ''); }}
+                          className={`text-xs font-bold p-1.5 rounded-lg transition-colors border ${user.is_banned ? 'text-zinc-400 hover:text-zinc-300 bg-zinc-500/10 hover:bg-zinc-500/20 border-zinc-500/10' : 'text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/10'}`}
+                          title={user.is_banned ? "Unban User" : "Ban User"}
+                        >
+                          {user.is_banned ? <Shield size={14} /> : <Ban size={14} />}
                         </button>
                         <button
  onClick={() => handleDeleteUser(user)}
@@ -355,6 +392,57 @@ export default function AdminUsersPage() {
                 <Save size={16} /> {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
               <button onClick={() => setEditingUser(null)} className="flex-1 bg-zinc-800 text-white py-3 rounded-lg font-bold hover:bg-zinc-700 transition-colors">Batal</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ban Modal */}
+      {banningUser && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setBanningUser(null)}>
+          <div className="bg-zinc-900 border border-red-900/50 rounded-2xl shadow-2xl w-full max-w-md p-6 flex flex-col gap-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <ShieldAlert size={18} className={banningUser.is_banned ? "text-zinc-400" : "text-red-500"} /> 
+                {banningUser.is_banned ? 'Bebaskan User (Unban)' : 'Ban User (Sanksi)'}
+              </h3>
+              <button onClick={() => setBanningUser(null)} className="text-zinc-500 hover:text-white transition-colors"><X size={22} /></button>
+            </div>
+
+            <div className="flex items-center gap-4 bg-zinc-800/50 rounded-xl p-4 border border-zinc-800">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 shrink-0">
+                <img src={banningUser.avatar_url || '/avatar.jpeg'} alt={banningUser.display_name} className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <p className="font-bold text-white capitalize">{banningUser.display_name || 'Tanpa Nama'}</p>
+                <p className="text-zinc-500 text-xs font-mono">{banningUser.id}</p>
+              </div>
+            </div>
+
+            {!banningUser.is_banned && (
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 mb-2">Alasan Ban / Sanksi (Opsional)</label>
+                <textarea 
+                  value={banReason} 
+                  onChange={(e) => setBanReason(e.target.value)} 
+                  placeholder="Misal: Komentar toksik, Spamming..."
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 min-h-[100px] resize-none text-sm" 
+                />
+              </div>
+            )}
+            
+            {banningUser.is_banned && (
+              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-sm">
+                <span className="text-zinc-500 block mb-1">Alasan Ban Sebelumnya:</span>
+                <span className="text-zinc-300 italic">"{banningUser.ban_reason || 'Tidak ada alasan'}"</span>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <button onClick={handleSaveBan} disabled={saving} className={`flex-1 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${banningUser.is_banned ? 'bg-zinc-600 hover:bg-zinc-500' : 'bg-red-600 hover:bg-red-700'}`}>
+                <Save size={16} /> {saving ? 'Memproses...' : (banningUser.is_banned ? 'Unban User' : 'Ban User')}
+              </button>
+              <button onClick={() => setBanningUser(null)} className="flex-1 bg-zinc-800 text-white py-3 rounded-lg font-bold hover:bg-zinc-700 transition-colors">Batal</button>
             </div>
           </div>
         </div>

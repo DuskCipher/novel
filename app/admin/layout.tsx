@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Book, LogOut, Menu, X, Home, Users, MessageSquare, LayoutDashboard } from 'lucide-react';
+import { Book, LogOut, Menu, X, Home, Users, MessageSquare, LayoutDashboard, AlertCircle, Settings, Target } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -97,6 +97,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <MessageSquare size={20} />
             Kelola Komentar
+          </Link>
+          <Link 
+            href="/admin/reports" 
+            onClick={() => setMenuOpen(false)}
+            className={`p-3 rounded-xl flex items-center gap-3 transition-colors ${pathname === '/admin/reports' ? 'bg-blue-600/10 text-blue-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+          >
+            <AlertCircle size={20} />
+            Laporan Error
+          </Link>
+          <Link 
+            href="/admin/missions" 
+            onClick={() => setMenuOpen(false)}
+            className={`p-3 rounded-xl flex items-center gap-3 transition-colors ${pathname === '/admin/missions' ? 'bg-blue-600/10 text-blue-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+          >
+            <Target size={20} />
+            Misi & Gamifikasi
+          </Link>
+          <Link 
+            href="/admin/settings" 
+            onClick={() => setMenuOpen(false)}
+            className={`p-3 rounded-xl flex items-center gap-3 transition-colors ${pathname === '/admin/settings' ? 'bg-blue-600/10 text-blue-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+          >
+            <Settings size={20} />
+            Pengaturan
           </Link>
 
           <div className="mt-auto flex flex-col gap-2">

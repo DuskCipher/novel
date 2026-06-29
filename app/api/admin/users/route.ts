@@ -2,6 +2,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // Ambil daftar seluruh user langsung dari Supabase Auth
@@ -26,6 +29,8 @@ export async function GET() {
         avatar_url: p?.avatar_url || u.user_metadata?.avatar_url,
         level: p?.level || u.user_metadata?.level || 1,
         exp: p?.exp || u.user_metadata?.exp || 0,
+        is_banned: p?.is_banned || false,
+        ban_reason: p?.ban_reason || '',
         role: u.user_metadata?.role || 'User',
         created_at: u.created_at,
         updated_at: p?.updated_at || u.updated_at

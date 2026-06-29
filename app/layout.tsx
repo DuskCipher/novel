@@ -42,6 +42,7 @@ import PreferenceApplier from './components/PreferenceApplier';
 import OneSignalInit from './components/OneSignalInit';
 
 import GlobalChatWrapper from './components/GlobalChatWrapper';
+import ReportButtonWrapper from './components/ReportButtonWrapper';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </MainLayoutWrapper>
 
+        <ReportButtonWrapper />
         <GlobalChatWrapper />
         </AuthProvider>
       </body>

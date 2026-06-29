@@ -6,18 +6,20 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const { id } = await params;
     const body = await req.json();
-    const { level, exp, role } = body;
+    const { level, exp, role, is_banned, ban_reason } = body;
 
-    if (level === undefined && exp === undefined && role === undefined) {
+    if (level === undefined && exp === undefined && role === undefined && is_banned === undefined && ban_reason === undefined) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
     }
 
     const updateData: any = { updated_at: new Date().toISOString() };
     if (level !== undefined) updateData.level = Number(level);
     if (exp !== undefined) updateData.exp = Number(exp);
+    if (is_banned !== undefined) updateData.is_banned = Boolean(is_banned);
+    if (ban_reason !== undefined) updateData.ban_reason = ban_reason;
 
-    // 1. Update tabel profiles (hanya level dan exp)
-    if (level !== undefined || exp !== undefined) {
+    // 1. Update tabel profiles (level, exp, is_banned, ban_reason)
+    if (level !== undefined || exp !== undefined || is_banned !== undefined || ban_reason !== undefined) {
       const { data: existingProfile } = await supabaseAdmin
         .from('profiles')
         .select('id')
