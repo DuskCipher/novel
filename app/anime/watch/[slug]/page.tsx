@@ -10,6 +10,7 @@ import CommentSection from '../../../components/CommentSection';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '@/lib/supabase';
 import MissionTracker from '../../../components/MissionTracker';
+import Sidebar from '../../../components/Sidebar';
 
 export default function AnimeWatchPage() {
   const params = useParams();
@@ -70,13 +71,20 @@ export default function AnimeWatchPage() {
     if (epData && epData.title) {
       try {
         const histStr = localStorage.getItem('valora_anime_history') || '[]';
-        let hist = JSON.parse(histStr);
-        hist = hist.filter((h: any) => h.animeId !== (epData.anime_id || epData.title.split(' Episode ')[0]));
+        const parsedAnimeId = epData.anime_id || epData.title.split(' Episode ')[0];
+        hist = hist.filter((h: any) => h.animeId !== parsedAnimeId && h.title !== parsedAnimeId);
+        
+        // Coba ambil nomor episode dari judul jika ada, kalau tidak dari slug
+        const epsMatchTitle = epData.title.match(/Episode\s*(\d+)/i);
+        const epsMatchSlug = slug.match(/\d+/);
+        const epsNum = epsMatchTitle ? epsMatchTitle[1] : (epsMatchSlug ? epsMatchSlug[0] : '1');
+
         hist.unshift({
-          title: epData.title.split(' Episode ')[0],
+          title: parsedAnimeId,
+          animeId: parsedAnimeId,
           episodeId: slug,
-          lastEpisode: slug.match(/\d+/)?.[0] || '1',
-          poster: '',
+          lastEpisode: epsNum,
+          poster: epData.thumb || epData.poster || epData.image || '',
         });
         localStorage.setItem('valora_anime_history', JSON.stringify(hist.slice(0, 20)));
 
@@ -84,10 +92,11 @@ export default function AnimeWatchPage() {
           // Supabase History Sync
           supabase.from('user_history').upsert({
             user_id: user.id,
-            item_url: epData.anime_id || epData.title.split(' Episode ')[0],
-            title: epData.title.split(' Episode ')[0],
+            item_url: parsedAnimeId,
+            title: parsedAnimeId,
             category: 'Anime',
-            last_episode: slug.match(/\d+/)?.[0] || '1',
+            poster: epData.thumb || epData.poster || epData.image || '',
+            last_episode: epsNum,
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id,item_url' }).then();
 
@@ -169,10 +178,12 @@ export default function AnimeWatchPage() {
   const nextUrl = epData.nextEpisode?.episodeId ? `/anime/watch/${epData.nextEpisode.episodeId}` : (epData.next_episode_url || '#');
 
   return (
-    <div className="min-h-screen pb-24 font-sans text-white">
-      <MissionTracker actionType="watch_episode" />
-      {/* VIDEO PLAYER */}
-      <div className="w-full aspect-video bg-black sticky sm:relative top-[53px] sm:top-0 z-40">
+    <>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#09090b] font-sans text-white">
+      <div className="flex-1 w-full lg:w-[calc(100%-320px)] xl:w-[calc(100%-360px)] min-h-screen pb-24 relative">
+        <MissionTracker actionType="watch_episode" />
+        {/* VIDEO PLAYER */}
+        <div className="w-full aspect-video bg-black sticky sm:relative top-[53px] sm:top-0 z-40">
         {extractedVideoUrl ? (
           <video 
             src={extractedVideoUrl} 
@@ -383,6 +394,9 @@ export default function AnimeWatchPage() {
         )}
 
       </div>
+      </div>
     </div>
+    <Sidebar />
+    </>
   );
 }

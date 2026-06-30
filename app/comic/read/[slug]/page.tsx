@@ -137,6 +137,7 @@ export default function ComicReadPage() {
                 item_url: `/comic/detail/${comicSlug}`,
                 title: detailJson.title,
                 category: 'Comic',
+                poster: detailJson.poster || detailJson.image || '',
                 last_episode: slug.split('-').pop() || '1',
                 updated_at: new Date().toISOString()
               } as any, { onConflict: 'user_id,item_url' } as any).then();

@@ -298,7 +298,7 @@ export default function ComicHubPage() {
           {data.berwarna.length > 0 && (
             <section className="mt-6 mb-2">
               <WidgetTitle title="Komik Full Warna" icon={<Flame size={20} className="text-orange-500" />} />
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4 mt-4 px-4 sm:px-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 mt-4 max-w-[1200px] mx-auto">
                 {data.berwarna.slice(0, 10).map((c: any, i: number) => (
                   <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col group">
                     <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-xl">
@@ -320,12 +320,10 @@ export default function ComicHubPage() {
           {/* Webtoon Populer Section */}
           {data.webtoons && data.webtoons.length > 0 && (
             <section className="mt-6 mb-2">
-              <div className="px-4 sm:px-6">
-                <WidgetTitle title="Webtoon Populer" href="/explore?source=webtoons" />
-              </div>
-              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-4 sm:px-6 mt-4">
-                {data.webtoons.map((item: any, i: number) => (
-                  <Link href={`/detail?url=${encodeURIComponent(item.url)}&source=webtoons`} key={i} className="flex-none w-[150px] sm:w-[180px] bg-[#1C1D2A] rounded-xl flex flex-col relative group">
+              <WidgetTitle title="Webtoon Populer" href="/explore?source=webtoons" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 mt-4 max-w-[1200px] mx-auto">
+                {data.webtoons.slice(0, 10).map((item: any, i: number) => (
+                  <Link href={`/detail?url=${encodeURIComponent(item.url)}&source=webtoons`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
                     <div className="relative w-full aspect-[3/4]">
                       <div className="w-full h-full rounded-t-xl overflow-hidden">
                         <img src={`/api/image-proxy?url=${encodeURIComponent(item.thumbnail)}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} />
@@ -349,7 +347,7 @@ export default function ComicHubPage() {
           )}
             {/* 5. Rekomendasi Populer */}
             {data.popular.length > 0 && (
-              <section className="mt-2">
+              <section className="mt-4">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold text-white flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-yellow-400 rounded-full"></div>
@@ -357,12 +355,12 @@ export default function ComicHubPage() {
                   </h2>
                   <Link href="/comic/list?sort=populer" className="text-xs text-yellow-500 font-medium hover:text-yellow-400 transition-colors">Lihat Semua →</Link>
                 </div>
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 pr-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 max-w-[1200px] mx-auto">
                   {data.popular.slice(0, 10).map((c: any, i: number) => (
-                    <Link href={`/comic/detail/${c.slug}`} key={i} className="flex-none w-[150px] sm:w-[180px] bg-[#1C1D2A] rounded-xl flex flex-col relative">
+                    <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
                       <div className="relative w-full aspect-[3/4]">
                         <div className="w-full h-full rounded-t-xl overflow-hidden">
-                          <img src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image)}`} alt={c.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'} } />
+                          <img src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image)}`} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'} } />
                         </div>
                         <div className={`absolute top-2 left-2 ${c.type?.toLowerCase() === 'manhua' ? 'bg-emerald-500' : c.type?.toLowerCase() === 'manga' ? 'bg-blue-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>
                           {c.type || 'Manhwa'}
@@ -372,7 +370,7 @@ export default function ComicHubPage() {
                         </div>
                       </div>
                       <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                        <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
+                        <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
                         <div className="flex justify-between items-center text-[10px] text-zinc-400">
                           <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {c.rating || '9.0'}</span>
                           <span className="flex items-center gap-1"><Clock size={10} /> {c.description?.replace('Update ', '') || '4h ago'}</span>
@@ -394,7 +392,7 @@ export default function ComicHubPage() {
                   </h2>
                   <Link href="/comic/pustaka" className="text-xs text-blue-400 font-medium hover:text-blue-300 transition-colors">Lihat Semua →</Link>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 max-w-[1200px] mx-auto">
                   {data.latest.map((c: any, i: number) => (
                     <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
                       <div className="relative w-full aspect-[3/4]">

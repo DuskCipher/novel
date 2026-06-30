@@ -92,41 +92,72 @@ export default function AnimeHomePage() {
       ) : (
         <div className="flex flex-col gap-10">
           
-          {/* HERO BANNER - same style as donghua */}
+          {/* HERO BANNER - Premium Redesign */}
           {heroItem && (
-            <div className="w-full h-48 sm:h-64 lg:h-80 relative rounded-2xl overflow-hidden bg-zinc-900 group">
+            <div className="relative w-full aspect-[4/5] sm:aspect-[21/9] lg:h-[420px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0a0a0f] group shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              {/* Blurred Background Glow for depth */}
+              <div className="absolute inset-0 opacity-50 scale-125 saturate-200 blur-[40px] pointer-events-none">
+                <img 
+                  src={`/api/image-proxy?url=${encodeURIComponent(heroItem.poster)}`} 
+                  alt="" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Main Image */}
               <img 
                 src={`/api/image-proxy?url=${encodeURIComponent(heroItem.poster)}`} 
                 alt={heroItem.title} 
-                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-60 transition-all duration-1000 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
-              
-              <div className="absolute bottom-0 left-0 p-5 sm:p-6 lg:p-8 w-full">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Trending</span>
-                  <span className="bg-zinc-700 text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Series</span>
-                </div>
-                <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white mb-3 line-clamp-2">{heroItem.title}</h2>
-                <div className="flex items-center gap-2">
-                  <Link href={heroItem.href} className="inline-block bg-white text-black hover:bg-amber-500 hover:text-white px-5 py-2 rounded-lg font-bold transition-colors text-sm">
-                    <span className="flex items-center gap-1.5"><Play size={14} className="fill-current" /> Tonton Sekarang</span>
-                  </Link>
-                  <Link href={heroItem.href} className="inline-block border border-zinc-600 text-white hover:border-white px-4 py-2 rounded-lg font-bold transition-colors text-sm">
-                    Detail
-                  </Link>
-                </div>
+
+              {/* Cinematic Gradients */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/40 to-transparent sm:bg-gradient-to-r sm:from-[#0D0D11] sm:via-[#0D0D11]/80 sm:to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-transparent to-transparent opacity-90 sm:hidden"></div>
+
+              {/* Content Box */}
+              <div className="absolute bottom-0 left-0 p-5 sm:p-8 lg:p-12 w-full sm:w-3/4 lg:w-2/3 flex flex-col justify-end h-full z-10">
                 
-                {/* Carousel Indicators */}
-                <div className="absolute bottom-5 right-5 sm:bottom-6 sm:right-6 flex gap-1.5">
-                  {ongoingList.slice(0, 5).map((_: any, idx: number) => (
-                    <button 
-                      key={idx}
-                      onClick={() => setHeroIndex(idx)}
-                      className={`h-1.5 rounded-full transition-all ${idx === heroIndex ? 'w-5 bg-amber-500' : 'w-1.5 bg-white/30 hover:bg-white/50'}`}
-                    ></button>
-                  ))}
+                {/* Badges */}
+                <div className="flex items-center gap-2 mb-3 sm:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <span className="flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-orange-500 text-white text-[10px] sm:text-xs font-black px-3 py-1 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.4)] uppercase tracking-wide border border-rose-400/20">
+                    <Flame size={12} className="animate-pulse" /> Sedang Hangat
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-md border border-white/10 text-zinc-200 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    {heroItem.status}
+                  </span>
                 </div>
+
+                {/* Title */}
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-6 leading-[1.1] drop-shadow-2xl line-clamp-2 sm:line-clamp-3 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                  {heroItem.title}
+                </h2>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-black hover:bg-amber-400 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(251,191,36,0.4)] text-sm sm:text-base hover:scale-105 active:scale-95">
+                    <Play size={18} className="fill-current" />
+                    <span>Tonton Sekarang</span>
+                  </Link>
+                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold transition-all duration-300 text-sm sm:text-base hover:scale-105 active:scale-95">
+                    <span>Detail Info</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Carousel Indicators */}
+              <div className="absolute bottom-5 sm:bottom-8 right-5 sm:right-8 flex gap-2 z-20">
+                {ongoingList.slice(0, 5).map((_: any, idx: number) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setHeroIndex(idx)}
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ease-out ${
+                      idx === heroIndex 
+                        ? 'w-8 sm:w-10 bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.6)]' 
+                        : 'w-2 sm:w-2.5 bg-white/30 hover:bg-white/50'
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           )}

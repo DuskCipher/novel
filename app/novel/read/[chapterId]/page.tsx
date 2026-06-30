@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, Maximize, Download, Home, List, X } from 'lucide-react';
 import Link from 'next/link';
 import MissionTracker from '../../../components/MissionTracker';
+import { useAuth } from '../../../components/AuthProvider';
+import { supabase } from '@/lib/supabase';
 
 export default function NovelReadPage() {
   const params = useParams();
@@ -13,6 +15,7 @@ export default function NovelReadPage() {
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   // Settings State
   const [showSettings, setShowSettings] = useState(false);
@@ -126,6 +129,38 @@ export default function NovelReadPage() {
         .catch(() => setLoading(false));
     }
   }, [chapterId]);
+
+  // History & EXP Sync
+  useEffect(() => {
+    if (data && data.novel && user) {
+      const novelUrl = data.novel.slug.startsWith('sakura-') 
+        ? `/novel/detail/${data.novel.slug.replace('sakura-', '')}` 
+        : `/novel/detail/${data.novel.slug}`;
+
+      // Save History
+      supabase.from('user_history').upsert({
+        user_id: user.id,
+        item_url: novelUrl,
+        title: data.novel.title,
+        category: 'Novel',
+        poster: data.novel.poster || '', // Might be empty, but that's ok
+        last_episode: chapterId.replace('sakura-', '').split('-').pop() || '1',
+        updated_at: new Date().toISOString()
+      } as any, { onConflict: 'user_id,item_url' } as any).then();
+
+      // Add EXP
+      if (!sessionStorage.getItem(`exp_read_novel_${chapterId}`)) {
+        fetch('/api/add-exp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, action: 'read', amount: 5 })
+        }).then(() => {
+          sessionStorage.setItem(`exp_read_novel_${chapterId}`, 'true');
+          supabase.auth.refreshSession();
+        }).catch(console.error);
+      }
+    }
+  }, [data, user, chapterId]);
 
   const handleFontSize = (val: number) => { setFontSize(val); localStorage.setItem('novel-font-size', val.toString()); };
   const handleTheme = (theme: 'white' | 'sepia' | 'dark' | 'black') => { setReaderTheme(theme); localStorage.setItem('novel-reader-theme', theme); };

@@ -71,16 +71,7 @@ function SidebarContent() {
         </div>
       </div>
 
-      <div>
-        <WidgetTitle title="Seasons" />
-        <div className="flex flex-wrap gap-2 mb-6 mt-4 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
-          {seasonList.map((season) => (
-            <Link key={season} href={`${searchPrefix}${season}`} className="text-xs font-medium px-2.5 py-1.5 rounded bg-zinc-200 text-zinc-800 hover:bg-amber-600 hover:text-white dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-amber-600 dark:hover:text-white transition-colors border border-transparent dark:border-zinc-800 dark:hover:border-amber-500">
-              {season}
-            </Link>
-          ))}
-        </div>
-      </div>
+
 
       <div>
         <WidgetTitle title="A-Z List" />

@@ -144,7 +144,8 @@ function DetailContent() {
         let categoryName = 'Donghua';
         if (source === 'anime') categoryName = 'Anime';
         else if (source === 'novel') categoryName = 'Novel';
-        else if (source === 'comic' || source === 'komik' || source === 'webtoons') categoryName = 'Komik';
+        else if (source === 'comic' || source === 'komik') categoryName = 'Komik';
+        else if (source === 'webtoons') categoryName = 'webtoon';
         
         await supabase.from('user_bookmarks').upsert({
           user_id: user.id,

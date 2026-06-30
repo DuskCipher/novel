@@ -442,29 +442,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════
-          4. FOOTER
-         ═══════════════════════════════════════════════════ */}
-      {!loading && (
-        <div className="px-4 sm:px-6 lg:px-8 mt-12">
-          <footer className="border-t border-zinc-800/50 pt-8 pb-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Valora" className="w-8 h-8 rounded-lg" />
-                <div>
-                  <h4 className="text-white font-bold text-sm">Valora</h4>
-                  <p className="text-zinc-500 text-xs">Streaming Donghua, Anime & Baca Komik Terlengkap</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <Link href="/profile" className="text-zinc-400 hover:text-white text-xs transition-colors">Profil</Link>
-                <Link href="/valora" className="text-zinc-400 hover:text-white text-xs transition-colors">Valora Home</Link>
-                <span className="text-zinc-600 text-xs">© 2025 Valora</span>
-              </div>
-            </div>
-          </footer>
-        </div>
-      )}
+
     </div>
   );
 }

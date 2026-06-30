@@ -64,11 +64,22 @@ export default function ProfilePage() {
   // Helper to format proper URL for history and bookmarks
   const formatItemHref = (item: any) => {
     const url = item.item_url || item.href || item.novelUrl || '#';
-    // If it's already a full path or external link, return as is
-    if (url.startsWith('/') || url.startsWith('http')) return url;
+    const cat = (item.category || item.source || 'donghua').toLowerCase();
+    
+    // If it's an external URL (http), it's either a webtoon or donghua
+    if (url.startsWith('http')) {
+      // Old webtoons were saved as 'komik' before the fix. 
+      // Since regular comics don't use external URLs, any HTTP link under 'komik' is a webtoon
+      if (cat === 'webtoon' || cat === 'komik' || cat === 'comic') {
+        return `/detail?url=${encodeURIComponent(url)}&source=webtoons`;
+      }
+      return `/detail?url=${encodeURIComponent(url)}&source=donghua`;
+    }
+    
+    // If it's already a full internal path, return as is
+    if (url.startsWith('/')) return url;
     
     // Otherwise, it's likely a slug. Format based on category
-    const cat = (item.category || item.source || 'donghua').toLowerCase();
     if (cat === 'donghua') return `/detail?url=${url}&source=donghua`;
     if (cat === 'anime') return `/anime/detail/${url}`;
     if (cat === 'komik' || cat === 'comic') return `/comic/detail/${url}`;
@@ -240,6 +251,20 @@ export default function ProfilePage() {
   const removeFromShowcase = async (id: string) => {
     await supabase.from('user_showcase').delete().eq('id', id);
     await fetchData();
+  };
+
+  const removeItem = async (e: React.MouseEvent, item_url: string, isHistory: boolean) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    
+    if (isHistory) {
+      setHistory(prev => prev.filter(i => i.item_url !== item_url));
+      await supabase.from('user_history').delete().match({ user_id: user.id, item_url });
+    } else {
+      setBookmarks(prev => prev.filter(i => i.item_url !== item_url));
+      await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url });
+    }
   };
 
   const handleReportError = async (e: React.FormEvent) => {
@@ -669,16 +694,7 @@ export default function ProfilePage() {
                     })}
                   </div>
 
-                  {activeTab === 'bookmark' && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {['Semua', 'Watching', 'Completed', 'On Hold', 'Plan to Watch'].map(filter => (
-                        <button key={filter} onClick={() => setWatchlistFilter(filter as any)}
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
-                            watchlistFilter === filter ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'
-                          }`}>{filter}</button>
-                      ))}
-                    </div>
-                  )}
+
 
                   {loadingData ? (
                     <div className="flex items-center justify-center py-8"><Loader2 size={20} className={`${theme.text} animate-spin`} /></div>
@@ -719,7 +735,10 @@ export default function ProfilePage() {
                                 </p>
                               )}
                             </div>
-                            <button className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 text-white z-20">
+                            <button 
+                              onClick={(e) => removeItem(e, item.item_url, activeTab === 'riwayat')}
+                              className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 text-white z-20"
+                            >
                               <Trash2 size={8} />
                             </button>
                           </div>

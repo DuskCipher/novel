@@ -72,15 +72,29 @@ export default function ComicBookmarksPage() {
         ) : bookmarks.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             {bookmarks.map((c: any, i: number) => {
-              const url = c.item_url || c.novelUrl || c.url;
+              const rawUrl = c.item_url || c.novelUrl || c.url;
+              const cat = (c.category || '').toLowerCase();
+              
+              // Webtoon URLs are external (http...) and need wrapping
+              // Comic URLs are slugs and go to /comic/detail/slug
+              const isWebtoon = cat === 'webtoon' || (rawUrl && rawUrl.startsWith('http'));
+              const href = isWebtoon 
+                ? `/detail?url=${encodeURIComponent(rawUrl)}&source=webtoons`
+                : `/comic/detail/${rawUrl}`;
+              
+              // For images: poster field already has the image URL
+              const imgSrc = c.poster || c.thumbnail || c.image;
+              
               return (
-                <Link href={url} key={i} className="flex flex-col relative group gap-2">
+                <Link href={href} key={i} className="flex flex-col relative group gap-2">
                   <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                    <img src={`/api/image-proxy?url=${encodeURIComponent(c.poster || c.thumbnail || c.image)}`} alt={c.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    {imgSrc ? (
+                      <img src={`/api/image-proxy?url=${encodeURIComponent(imgSrc)}`} alt={c.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    ) : null}
                     <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
 
                     <button 
-                      onClick={(e) => removeBookmark(url, e)}
+                      onClick={(e) => removeBookmark(rawUrl, e)}
                       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-red-500 backdrop-blur-md rounded-full text-white z-20 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                     >
                       <Trash2 size={16} />
@@ -88,7 +102,7 @@ export default function ComicBookmarksPage() {
 
                     {/* Top Left: Type */}
                     <div className="absolute top-2 left-2 z-10">
-                      <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">{c.type || 'Komik'}</span>
+                      <span className={`text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm drop-shadow-md ${isWebtoon ? 'bg-green-600' : 'bg-blue-600'}`}>{isWebtoon ? 'Webtoon' : (c.type || 'Komik')}</span>
                     </div>
 
                     {/* Top Right: Chapter */}
