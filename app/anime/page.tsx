@@ -134,12 +134,12 @@ export default function AnimeHomePage() {
                 </h2>
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-black hover:bg-amber-400 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(251,191,36,0.4)] text-sm sm:text-base hover:scale-105 active:scale-95">
-                    <Play size={18} className="fill-current" />
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-white text-black hover:bg-amber-400 px-4 sm:px-8 py-2 sm:py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(251,191,36,0.4)] text-[11px] sm:text-base hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <Play size={14} className="fill-current sm:w-[18px] sm:h-[18px]" />
                     <span>Tonton Sekarang</span>
                   </Link>
-                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold transition-all duration-300 text-sm sm:text-base hover:scale-105 active:scale-95">
+                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-4 sm:px-8 py-2 sm:py-3.5 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-base hover:scale-105 active:scale-95 whitespace-nowrap">
                     <span>Detail Info</span>
                   </Link>
                 </div>

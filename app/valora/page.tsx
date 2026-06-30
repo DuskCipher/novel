@@ -15,6 +15,33 @@ export default function ValoraHome() {
   const [infoMessage, setInfoMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [valoraComments, setValoraComments] = useState<any[]>([]);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      setInfoMessage('Aplikasi PWA sudah terinstall atau browser Anda tidak mendukung fitur ini.');
+    }
+  };
 
   useEffect(() => {
     // Cek apakah popup sudah pernah muncul hari ini
@@ -35,6 +62,14 @@ export default function ValoraHome() {
           const topLevel = data.filter(c => !c.parent_id);
           setValoraComments(topLevel.slice(0, 10)); // Ambil 10 terbaru
         }
+      })
+      .catch(console.error);
+
+    // Fetch total user count
+    fetch('/api/user-count')
+      .then(res => res.json())
+      .then(data => {
+        if (data.count) setTotalUsers(data.count);
       })
       .catch(console.error);
   }, []);
@@ -149,7 +184,7 @@ export default function ValoraHome() {
 
         {/* 3 Buttons Grid */}
         <div className="w-full grid grid-cols-3 gap-2 mb-4">
-          <button onClick={() => setInfoMessage('Fitur aplikasi PWA (ValoraV2) belum tersedia saat ini.')} className="bg-[#8A2BE2] hover:bg-purple-500 text-white font-bold text-[10px] md:text-xs py-2 rounded-lg flex items-center justify-center gap-1 ">
+          <button onClick={handleInstallClick} className="bg-[#8A2BE2] hover:bg-purple-500 text-white font-bold text-[10px] md:text-xs py-2 rounded-lg flex items-center justify-center gap-1 ">
             <Star size={14} /> ValoraV2
           </button>
           <button onClick={() => setInfoMessage('Fitur Downloader belum tersedia untuk saat ini.')} className="bg-[#E53935] hover:bg-red-500 text-white font-bold text-[10px] md:text-xs py-2 rounded-lg flex items-center justify-center gap-1 ">
@@ -188,7 +223,7 @@ export default function ValoraHome() {
             </p>
             
             <div className="w-full bg-[#1A1A27] rounded-lg p-3 font-bold text-center mb-3 text-zinc-300 text-xs">
-              Total User: <span className="text-white text-sm ml-2">600.890</span>
+              Total User: <span className="text-white text-sm ml-2">{totalUsers > 0 ? totalUsers.toLocaleString('id-ID') : '...'}</span>
             </div>
             <button className="w-full bg-[#1DA1F2] hover:bg-blue-400 text-white font-bold py-3 text-sm rounded-lg transition-all  ">
               Hall of Fame Donatur
@@ -242,33 +277,39 @@ export default function ValoraHome() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-3 gap-2">
-            <div className="col-span-3 md:col-span-1 md:col-start-2 bg-gradient-to-b from-[#2A2B3D] to-[#1A1A27] border-2 border-yellow-500 rounded-lg p-4 flex flex-col items-center relative )] mb-2 md:mb-0">
-              <Crown className="absolute -top-3 -right-2 text-yellow-400  rotate-12" size={24} fill="currentColor" />
-              <img src="/avatar.jpeg" alt="Avatar" className="w-14 h-14 rounded-full border-2 border-yellow-500 mb-2 object-cover" onError={(e) => { e.currentTarget.src = ''; e.currentTarget.className = 'w-14 h-14 rounded-full bg-zinc-700 mb-2'; }} />
-              <h3 className="font-bold text-sm mb-0.5">rismacell14</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {/* #1 Top Donatur */}
+            <div className="bg-gradient-to-b from-[#2A2B3D] to-[#1A1A27] border border-yellow-500/50 rounded-xl p-4 flex flex-col items-center relative">
+              <Crown className="absolute -top-2.5 right-2 text-yellow-400 rotate-12" size={20} fill="currentColor" />
+              <img src="/avatar.jpeg" alt="Avatar" className="w-12 h-12 rounded-full border-2 border-yellow-500 mb-2 object-cover" onError={(e) => { e.currentTarget.src = ''; e.currentTarget.className = 'w-12 h-12 rounded-full bg-zinc-700 mb-2'; }} />
+              <h3 className="font-bold text-xs mb-0.5 text-center line-clamp-1">rismacell14</h3>
               <p className="text-blue-400 text-[9px] mb-1">09 Sep 2025</p>
-              <p className="text-pink-400 font-black text-xs mb-1">Rp 202.000</p>
-              <span className="text-[9px] text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-full flex items-center gap-1"><Star size={8} fill="currentColor"/> Top Donation</span>
+              <p className="text-pink-400 font-black text-xs mb-1.5">Rp 202.000</p>
+              <span className="text-[8px] text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-full flex items-center gap-1"><Star size={7} fill="currentColor"/> Top Donation</span>
             </div>
-            
-            <div className="col-span-1 bg-[#2A2B3D] rounded-lg p-3 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-zinc-700 mb-2"></div>
-              <h3 className="font-bold text-[11px] mb-0.5 text-center line-clamp-1">TeGaRpm</h3>
-              <p className="text-blue-400 text-[8px] mb-1">29 Ags</p>
-              <p className="text-pink-400 font-bold text-[10px]">Rp 200rb</p>
+
+            {/* #2 */}
+            <div className="bg-[#2A2B3D] rounded-xl p-4 flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-zinc-700 mb-2"></div>
+              <h3 className="font-bold text-xs mb-0.5 text-center line-clamp-1">TeGaRpm</h3>
+              <p className="text-blue-400 text-[9px] mb-1">29 Ags</p>
+              <p className="text-pink-400 font-bold text-xs">Rp 200rb</p>
             </div>
-            <div className="col-span-1 bg-[#2A2B3D] rounded-lg p-3 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-zinc-700 mb-2"></div>
-              <h3 className="font-bold text-[11px] mb-0.5 text-center line-clamp-1">Someone</h3>
-              <p className="text-blue-400 text-[8px] mb-1">06 Feb</p>
-              <p className="text-pink-400 font-bold text-[10px]">Rp 150rb</p>
+
+            {/* #3 */}
+            <div className="bg-[#2A2B3D] rounded-xl p-4 flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-zinc-700 mb-2"></div>
+              <h3 className="font-bold text-xs mb-0.5 text-center line-clamp-1">Someone</h3>
+              <p className="text-blue-400 text-[9px] mb-1">06 Feb</p>
+              <p className="text-pink-400 font-bold text-xs">Rp 150rb</p>
             </div>
-             <div className="col-span-1 bg-[#2A2B3D] rounded-lg p-3 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-zinc-700 mb-2"></div>
-              <h3 className="font-bold text-[11px] mb-0.5 text-center line-clamp-1">Hamba Allah</h3>
-              <p className="text-blue-400 text-[8px] mb-1">11 Jan</p>
-              <p className="text-pink-400 font-bold text-[10px]">Rp 100rb</p>
+
+            {/* #4 */}
+            <div className="bg-[#2A2B3D] rounded-xl p-4 flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-zinc-700 mb-2"></div>
+              <h3 className="font-bold text-xs mb-0.5 text-center line-clamp-1">Hamba Allah</h3>
+              <p className="text-blue-400 text-[9px] mb-1">11 Jan</p>
+              <p className="text-pink-400 font-bold text-xs">Rp 100rb</p>
             </div>
           </div>
         </div>

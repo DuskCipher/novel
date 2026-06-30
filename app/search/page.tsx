@@ -130,23 +130,8 @@ function SearchContent() {
         </button>
       </form>
 
-      {source === 'donghua' && genres.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {genres.map((g) => (
-            <button
- key={g.genreId}
- onClick={() => handleGenreClick(g.genreId)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors border ${
-                selectedGenre === g.genreId 
-                  ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20' 
-                  : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-500'
-              }`}
-            >
-              {g.title}
-            </button>
-          ))}
-        </div>
-      )}
+
+
 
       {loading ? (
         <div className="flex flex-col gap-4">

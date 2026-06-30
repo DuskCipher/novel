@@ -143,19 +143,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <div className="h-px bg-zinc-800 w-full my-4"></div>
 
-          <Link href="/admin/notifications" className="px-3 py-2.5 rounded-lg flex items-center justify-between text-zinc-400 hover:bg-[#1A1D21] hover:text-zinc-200 transition-colors group">
-            <div className="flex items-center gap-3 font-medium text-sm">
-              <Bell size={18} className="text-zinc-500 group-hover:text-zinc-400" />
-              Notifications
-            </div>
-            <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">4</span>
-          </Link>
-          <Link href="/" className="px-3 py-2.5 rounded-lg flex items-center justify-between text-zinc-400 hover:bg-[#1A1D21] hover:text-zinc-200 transition-colors group">
-            <div className="flex items-center gap-3 font-medium text-sm">
-              <LifeBuoy size={18} className="text-zinc-500 group-hover:text-zinc-400" />
-              Support
-            </div>
-          </Link>
+
           <Link href="/admin/settings" className="px-3 py-2.5 rounded-lg flex items-center justify-between text-zinc-400 hover:bg-[#1A1D21] hover:text-zinc-200 transition-colors group">
             <div className="flex items-center gap-3 font-medium text-sm">
               <Settings size={18} className="text-zinc-500 group-hover:text-zinc-400" />

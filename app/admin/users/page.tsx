@@ -62,25 +62,52 @@ export default function AdminUsersPage() {
 
   const handleSaveEdit = async () => {
     if (!editingUser) return;
-    setSaving(true);
+    
+    const userId = editingUser.id;
+    const newLevel = Number(editLevel);
+    const newExp = Number(editExp);
+    const newRole = editRole;
+
+    // Optimistic UI Update: Langsung update UI tanpa menunggu API
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        return {
+          ...u,
+          level: newLevel,
+          exp: newExp,
+          raw_user_meta_data: {
+            ...u.raw_user_meta_data,
+            level: newLevel,
+            exp: newExp,
+            role: newRole
+          }
+        };
+      }
+      return u;
+    }));
+    
+    // Tutup popup langsung
+    setEditingUser(null);
+
     try {
-      const res = await fetch(`/api/admin/users/${editingUser.id}`, {
+      // Proses API berjalan di background
+      const res = await fetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          level: Number(editLevel),
-          exp: Number(editExp),
-          role: editRole
+          level: newLevel,
+          exp: newExp,
+          role: newRole
         })
       });
-      if (res.ok) {
-        setEditingUser(null);
+      
+      if (!res.ok) {
+        // Revert jika gagal
         fetchUsers();
       }
     } catch (e) {
       console.error('Failed to update user', e);
-    } finally {
-      setSaving(false);
+      fetchUsers(); // Revert
     }
   };
 
