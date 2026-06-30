@@ -4,7 +4,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url");
   
-  if (!url) return new NextResponse("URL is required", { status: 400 });
+  if (!url || url === 'undefined' || url === 'null') {
+    return NextResponse.redirect('https://placehold.co/200x300/151728/6b7280.png?text=Not+Found');
+  }
   
   try {
     // SakuraNovel uses Cloudflare bot protection which blocks server-side fetch.

@@ -133,33 +133,41 @@ export default function PustakaPage() {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
               {comics.map((c: any, i: number) => (
-                <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group overflow-hidden">
-                  <div className="relative w-full aspect-[3/4]">
-                    <div className="w-full h-full rounded-t-xl overflow-hidden">
-                      <img
-                        src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image || '')}`}
-                        alt={c.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'; }}
-                      />
-                    </div>
+                <Link href={`/comic/detail/${c.slug}`} key={i} className="flex flex-col relative group gap-2">
+                  <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
+                    <img
+                      src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image || '')}`}
+                      alt={c.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                    <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
+
+                    {/* Top Left: Type */}
                     {c.type && (
-                      <div className={`absolute top-2 left-2 ${c.type.toLowerCase() === 'manhua' ? 'bg-emerald-500' : c.type.toLowerCase() === 'manga' ? 'bg-blue-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>
-                        {c.type}
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">{c.type}</span>
                       </div>
                     )}
+
+                    {/* Top Right: Chapter */}
                     {c.chapter && (
-                      <div className="absolute -bottom-3 left-2 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md transition-transform group-hover:-translate-y-1 z-10">
+                      <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
                         {c.chapter}
                       </div>
                     )}
+
+                    {/* Bottom Left: Rating */}
+                    {c.rating && (
+                      <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
+                        <Star size={10} className="text-amber-400 fill-amber-400" />
+                        {c.rating}
+                      </div>
+                    )}
                   </div>
-                  <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                    <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
-                    <div className="flex justify-between items-center text-[10px] sm:text-xs text-zinc-400">
-                      {c.rating && <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {c.rating}</span>}
-                      {c.description && <span className="flex items-center gap-1"><Clock size={10} /> {c.description.replace('Update ', '')}</span>}
-                    </div>
+                  
+                  <div className="px-1 flex-1">
+                    <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{c.title}</h3>
                   </div>
                 </Link>
               ))}

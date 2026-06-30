@@ -119,8 +119,13 @@ export default function ProfilePage() {
     const { data: histData } = await supabase.from('user_history').select('*').eq('user_id', user.id).order('updated_at', { ascending: false });
     if (histData) setHistory(histData);
 
+    // Load bookmarks from Supabase
     const { data: bkmData } = await supabase.from('user_bookmarks').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-    if (bkmData) setBookmarks(bkmData);
+    if (bkmData) {
+      setBookmarks(bkmData);
+    } else {
+      setBookmarks([]);
+    }
 
     // Fetch real badges
     const { data: badgeData } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
@@ -696,11 +701,13 @@ export default function ProfilePage() {
                         }).map((item, idx) => (
                         <Link href={formatItemHref(item)} key={idx} className="group relative block rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800/50">
                           <div className="aspect-[3/4] relative overflow-hidden">
-                            {(item.poster || item.image || item.image_url || item.thumbnail) ? (
-                              <img src={item.poster || item.image || item.image_url || item.thumbnail} alt={item.title} 
+                            {(item.poster || item.image || item.image_url || item.thumbnail) ? (() => {
+                              const imgUrl = item.poster || item.image || item.image_url || item.thumbnail;
+                              const src = imgUrl.startsWith('http') ? `/api/image-proxy?url=${encodeURIComponent(imgUrl)}` : imgUrl;
+                              return <img src={src} alt={item.title} 
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/avatar.jpeg'; }} />
-                            ) : (
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/avatar.jpeg'; }} />;
+                            })() : (
                               <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-900 text-[10px]">No Image</div>
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>

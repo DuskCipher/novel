@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { BookOpen, Clock, PlayCircle, Trash2, Play, Heart, HeartOff } from 'lucide-react';
 import WidgetTitle from '../components/WidgetTitle';
 
+import { useAuth } from '@/app/components/AuthProvider';
+import { supabase } from '@/lib/supabase';
+
 export default function LibraryPage() {
+  const { user } = useAuth();
   const [history, setHistory] = useState<any[]>([]);
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'history'|'bookmarks'>('history');
@@ -17,14 +21,26 @@ export default function LibraryPage() {
       if (historyStr) {
         setHistory(JSON.parse(historyStr));
       }
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        setBookmarks(JSON.parse(bookmarksStr));
-      }
     } catch (e) {
       console.error(e);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      if (!user) return;
+      try {
+        const { data } = await supabase
+          .from('user_bookmarks')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('category', 'Donghua')
+          .order('created_at', { ascending: false });
+        if (data) setBookmarks(data);
+      } catch (e) {}
+    };
+    fetchBookmarks();
+  }, [user]);
 
   const clearHistory = () => {
     if (confirm('Apakah Anda yakin ingin menghapus semua riwayat?')) {
@@ -33,13 +49,13 @@ export default function LibraryPage() {
     }
   };
 
-  const removeBookmark = (url: string, e: React.MouseEvent) => {
+  const removeBookmark = async (url: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) return;
     try {
-      const newBookmarks = bookmarks.filter(b => b.novelUrl !== url);
-      setBookmarks(newBookmarks);
-      localStorage.setItem('valora_bookmarks', JSON.stringify(newBookmarks));
+      setBookmarks(prev => prev.filter(b => b.item_url !== url && b.novelUrl !== url));
+      await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: url });
     } catch(e) {}
   };
 
@@ -146,21 +162,23 @@ export default function LibraryPage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {bookmarks.filter(b => activeCategory === 'all' || (b.category || 'ongoing') === activeCategory).map((item, idx) => {
-                const isDonghua = item.source === 'donghua';
-                const catLabel = item.category === 'plan' ? 'Rencana' : item.category === 'completed' ? 'Selesai' : 'Sedang Diikuti';
-                const catColor = item.category === 'plan' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : item.category === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+              {bookmarks.filter(b => activeCategory === 'all' || (b.category || 'Donghua') === activeCategory).map((item, idx) => {
+                const isDonghua = true;
+                const catLabel = 'Donghua';
+                const catColor = 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
+                
+                const url = item.item_url || item.novelUrl;
 
                 return (
                   <Link 
                     key={idx}
-                    href={`/detail?url=${encodeURIComponent(item.novelUrl)}&source=${item.source || 'webtoons'}`}
+                    href={`/detail?url=${encodeURIComponent(url)}&source=donghua`}
                     className="flex items-center gap-4 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl p-3 border border-zinc-200 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-700/50 transition-all group"
                   >
                     <div className="w-16 h-24 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700">
-                      {item.thumbnail ? (
+                      {(item.poster || item.thumbnail) ? (
                         <img 
-                          src={`/api/image-proxy?url=${encodeURIComponent(item.thumbnail)}`} 
+                          src={`/api/image-proxy?url=${encodeURIComponent(item.poster || item.thumbnail)}`} 
                           alt={item.title} 
                           className="w-full h-full object-cover"
                         />
@@ -173,15 +191,14 @@ export default function LibraryPage() {
                       <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 line-clamp-2 mb-1 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors">{item.title}</h3>
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${catColor}`}>{catLabel}</span>
-                        {isDonghua && <span className="text-[10px] bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded">Donghua</span>}
                       </div>
                       <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-                        <span>Ditambahkan: {new Date(item.timestamp).toLocaleDateString('id-ID')}</span>
+                        <span>Ditambahkan: {item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : new Date().toLocaleDateString('id-ID')}</span>
                       </div>
                     </div>
 
                     <button 
- onClick={(e) => removeBookmark(item.novelUrl, e)} 
+                      onClick={(e) => removeBookmark(url, e)} 
                       className="shrink-0 p-2 text-rose-400 hover:text-white hover:bg-rose-500 rounded-full transition-colors"
                       title="Hapus dari Favorit"
                     >

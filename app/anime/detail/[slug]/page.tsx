@@ -28,14 +28,25 @@ export default function AnimeDetailPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
-    try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        const bookmarks = JSON.parse(bookmarksStr);
-        setIsBookmarked(bookmarks.some((b: any) => b.novelUrl === `/anime/detail/${slug}`));
+    const checkBookmark = async () => {
+      if (user) {
+        try {
+          const { data } = await supabase
+            .from('user_bookmarks')
+            .select('item_url')
+            .eq('user_id', user.id)
+            .eq('item_url', `/anime/detail/${slug}`)
+            .single();
+          
+          if (data) setIsBookmarked(true);
+        } catch (e) {}
+      } else {
+        setIsBookmarked(false);
       }
-    } catch(e) {}
-  }, [slug]);
+    };
+    
+    checkBookmark();
+  }, [slug, user]);
 
   useEffect(() => {
     if (!slug) return;
@@ -184,25 +195,25 @@ export default function AnimeDetailPage() {
             </Link>
             <button 
               onClick={async () => {
+                if (!user) {
+                  alert('Silakan login untuk menambahkan ke Watchlist!');
+                  return;
+                }
+                
                 try {
-                  const bookmarksStr = localStorage.getItem('valora_bookmarks');
-                  let bookmarks = bookmarksStr ? JSON.parse(bookmarksStr) : [];
                   if (isBookmarked) {
-                    bookmarks = bookmarks.filter((b: any) => b.novelUrl !== `/anime/detail/${slug}`);
+                    await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: `/anime/detail/${slug}` });
                     setIsBookmarked(false);
-                    if (user) await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: `/anime/detail/${slug}` });
                   } else {
-                    bookmarks.unshift({
-                      novelUrl: `/anime/detail/${slug}`,
-                      title: detail.title,
-                      thumbnail: detail.poster || detail.thumb,
-                      category: 'Anime',
-                      timestamp: Date.now()
-                    });
+                    await supabase.from('user_bookmarks').upsert({ 
+                      user_id: user.id, 
+                      item_url: `/anime/detail/${slug}`, 
+                      title: detail.title, 
+                      poster: detail.poster || detail.thumb, 
+                      category: 'Anime' 
+                    }, { onConflict: 'user_id,item_url' });
                     setIsBookmarked(true);
-                    if (user) await supabase.from('user_bookmarks').upsert({ user_id: user.id, item_url: `/anime/detail/${slug}`, title: detail.title, poster: detail.poster || detail.thumb, category: 'Anime' }, { onConflict: 'user_id,item_url' });
                   }
-                  localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
                 } catch(e) {}
               }}
               className={`flex-1 font-bold px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm border ${isBookmarked ? 'bg-red-500/10 border-red-500/50 hover:bg-red-500 text-white' : 'bg-[#2A2B3D] border-[#2A2B3D] hover:bg-[#3b3c54] text-white'}`}>

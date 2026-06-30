@@ -36,17 +36,27 @@ function DetailContent() {
   }, [epSearch, sortAsc]);
 
   useEffect(() => {
-    if (!url) return;
-    try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        const bookmarks = JSON.parse(bookmarksStr);
-        if (bookmarks.some((b: any) => b.novelUrl === url)) {
-          setIsBookmarked(true);
-        }
+    const checkBookmark = async () => {
+      if (user && url) {
+        try {
+          const { data } = await supabase
+            .from('user_bookmarks')
+            .select('item_url, category')
+            .eq('user_id', user.id)
+            .eq('item_url', url)
+            .single();
+          
+          if (data) {
+            setIsBookmarked(true);
+            setBookmarkCat(data.category || 'Donghua');
+          }
+        } catch(e) {}
+      } else {
+        setIsBookmarked(false);
       }
-    } catch(e) {}
-  }, [url]);
+    };
+    checkBookmark();
+  }, [url, user]);
 
   useEffect(() => {
     if (!url) return;
@@ -121,44 +131,32 @@ function DetailContent() {
 
   const toggleBookmark = async () => {
     if (!url || !detail) return;
+    if (!user) {
+      alert('Silakan login untuk menambahkan ke Watchlist!');
+      return;
+    }
+    
     try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks: any[] = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-      
       if (isBookmarked) {
-        bookmarks = bookmarks.filter(b => b.novelUrl !== url);
+        await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: url });
         setIsBookmarked(false);
-        
-        if (user) {
-          await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: url });
-        }
       } else {
-        bookmarks.unshift({
-          novelUrl: url,
-          title: detail.title,
-          thumbnail: detail.thumbnail || detail.poster,
-          source: source,
-          category: 'ongoing',
-          timestamp: Date.now()
-        });
-        setIsBookmarked(true);
+        let categoryName = 'Donghua';
+        if (source === 'anime') categoryName = 'Anime';
+        else if (source === 'novel') categoryName = 'Novel';
+        else if (source === 'comic' || source === 'komik' || source === 'webtoons') categoryName = 'Komik';
         
-        if (user) {
-          let categoryName = 'Anime';
-          if (source === 'donghua') categoryName = 'Donghua';
-          else if (source === 'novel') categoryName = 'Novel';
-          else if (source === 'comic' || source === 'komik') categoryName = 'Komik';
-          
-          await supabase.from('user_bookmarks').upsert({
-            user_id: user.id,
-            item_url: url,
-            title: detail.title,
-            poster: detail.thumbnail || detail.poster,
-            category: categoryName
-          }, { onConflict: 'user_id,item_url' });
-        }
+        await supabase.from('user_bookmarks').upsert({
+          user_id: user.id,
+          item_url: url,
+          title: detail.title,
+          poster: detail.thumbnail || detail.poster,
+          category: categoryName
+        }, { onConflict: 'user_id,item_url' });
+        
+        setIsBookmarked(true);
+        setBookmarkCat(categoryName);
       }
-      localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
     } catch (e) {
       console.error('Failed to save bookmark', e);
     }
@@ -182,31 +180,16 @@ function DetailContent() {
     }
   };
 
-  const changeBookmarkCategory = (newCat: string) => {
-    if (!url) return;
+  const changeBookmarkCategory = async (newCat: string) => {
+    if (!url || !user) return;
     try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks: any[] = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-      const idx = bookmarks.findIndex(b => b.novelUrl === url);
-      if (idx !== -1) {
-        bookmarks[idx].category = newCat;
-        localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
-      }
+      await supabase.from('user_bookmarks').update({ category: newCat }).match({ user_id: user.id, item_url: url });
+      setBookmarkCat(newCat);
     } catch (e) {}
   };
 
   // Baca kategori saat init
-  const [bookmarkCat, setBookmarkCat] = useState('ongoing');
-  useEffect(() => {
-    if (isBookmarked && url) {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        const bookmarks = JSON.parse(bookmarksStr);
-        const b = bookmarks.find((x: any) => x.novelUrl === url);
-        if (b && b.category) setBookmarkCat(b.category);
-      }
-    }
-  }, [isBookmarked, url]);
+  const [bookmarkCat, setBookmarkCat] = useState('Donghua');
 
   if (!url) {
     return <div className="text-center p-8 text-red-500 font-bold">Error: URL tidak ditemukan</div>;
@@ -429,8 +412,12 @@ function DetailContent() {
             {/* Left Side: Info & Poster */}
             <div className="w-full md:w-[300px] xl:w-[350px] flex flex-col items-center md:items-start shrink-0">
               {/* Poster */}
-              <div className="w-44 sm:w-56 md:w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl mb-5 border border-zinc-700/30">
-                <img src={`/api/image-proxy?url=${encodeURIComponent(detail.thumbnail || detail.poster)}`} alt={detail.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
+              <div className="w-44 sm:w-56 md:w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl mb-5 border border-zinc-700/30 bg-zinc-900 flex items-center justify-center">
+                {(detail.thumbnail || detail.poster) ? (
+                  <img src={`/api/image-proxy?url=${encodeURIComponent(detail.thumbnail || detail.poster)}`} alt={detail.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement?.classList.add('fallback-bg'); }} />
+                ) : (
+                  <span className="text-zinc-600 font-bold p-4 text-center">No Image</span>
+                )}
               </div>
 
               {/* Title */}

@@ -78,35 +78,45 @@ export default function NovelGenrePage() {
         ) : novels.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5">
             {novels.map((item: any, i: number) => (
-              <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-                <div className="relative w-full aspect-[3/4]">
-                  <div className="w-full h-full rounded-t-xl overflow-hidden">
-                    <img src={getImageUrl(item)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48L3N2Zz4=' }} />
+              <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="flex flex-col relative group gap-2">
+                <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
+                  <img src={getImageUrl(item)} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                  <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
+
+                  {/* Top Left: Novel */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">Novel</span>
                   </div>
-                  <div className="absolute top-2 left-2 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
-                    Valoranovel
-                  </div>
-                  <div className="absolute -bottom-3 left-2 bg-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md transition-transform group-hover:-translate-y-1">
-                    {(() => {
-                      const raw = item.latest_chapter || item.chapter;
-                      if (!raw) return 'Top';
-                      let clean = raw;
-                      if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
-                        clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
-                      }
-                      clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
-                      const chapMatch = clean.match(/chapter\s*\d+/i);
-                      return chapMatch ? chapMatch[0] : (clean || 'Top');
-                    })()}
-                  </div>
-                </div>
-                <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                  <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-1">{item.title}</h3>
-                  {item.score && (
-                    <p className="text-[10px] text-zinc-400 flex items-center gap-1 mt-auto">
-                      <Star size={10} className="fill-yellow-500 text-yellow-500" /> {item.score}
-                    </p>
+
+                  {/* Top Right: Chapter Pill */}
+                  {(() => {
+                    const raw = item.latest_chapter || item.chapter;
+                    if (!raw) return null;
+                    let clean = raw;
+                    if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
+                      clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
+                    }
+                    clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
+                    const chapMatch = clean.match(/chapter\s*\d+/i);
+                    const displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
+                    return (
+                      <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm capitalize">
+                        {displayChap}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Bottom Left: Score/Rating */}
+                  {(item.score || item.rating) && (
+                    <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
+                      <Star size={10} className="text-amber-400 fill-amber-400" />
+                      {item.score || item.rating}
+                    </div>
                   )}
+                </div>
+                
+                <div className="px-1 flex-1">
+                  <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{item.title}</h3>
                 </div>
               </Link>
             ))}

@@ -7,8 +7,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import CommentSection from '../../../components/CommentSection';
 import Sidebar from '../../../components/Sidebar';
+import { useAuth } from '@/app/components/AuthProvider';
+import { supabase } from '@/lib/supabase';
 
 export default function NovelDetailPage() {
+  const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -73,38 +76,45 @@ export default function NovelDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    if (data) {
-      try {
-        const bookmarksStr = localStorage.getItem('valora_bookmarks');
-        if (bookmarksStr) {
-          const bookmarks = JSON.parse(bookmarksStr);
-          setIsBookmarked(bookmarks.some((b: any) => b.novelUrl === `/novel/detail/${id}` || b.url === `/novel/detail/${id}`));
-        }
-      } catch (e) {}
-    }
-  }, [data, id]);
+    const checkBookmark = async () => {
+      if (user && data) {
+        try {
+          const { data: bkm } = await supabase
+            .from('user_bookmarks')
+            .select('item_url')
+            .eq('user_id', user.id)
+            .eq('item_url', `/novel/detail/${id}`)
+            .single();
+          if (bkm) setIsBookmarked(true);
+        } catch (e) {}
+      } else {
+        setIsBookmarked(false);
+      }
+    };
+    checkBookmark();
+  }, [data, id, user]);
 
   const chapters: any[] = data?.chapters || [];
 
-  const toggleBookmark = () => {
+  const toggleBookmark = async () => {
+    if (!user) {
+      alert('Silakan login untuk menambahkan ke Watchlist!');
+      return;
+    }
     try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-
       if (isBookmarked) {
-        bookmarks = bookmarks.filter((b: any) => b.novelUrl !== `/novel/detail/${id}` && b.url !== `/novel/detail/${id}`);
+        await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: `/novel/detail/${id}` });
         setIsBookmarked(false);
       } else {
-        bookmarks.unshift({
+        await supabase.from('user_bookmarks').upsert({
+          user_id: user.id,
+          item_url: `/novel/detail/${id}`,
           title: data.title,
           poster: getImageUrl(data),
-          novelUrl: `/novel/detail/${id}`,
-          type: 'Valoranovel',
-          chapter: chapters[0]?.title || 'Chapter 1',
-        });
+          category: 'Novel'
+        }, { onConflict: 'user_id,item_url' });
         setIsBookmarked(true);
       }
-      localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
     } catch (e) {}
   };
 

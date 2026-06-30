@@ -90,12 +90,12 @@ export default function AdvancedSearchPage() {
         </h1>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 sm:p-6 flex flex-col md:flex-row gap-8">
+      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6 lg:gap-8">
         
         {/* Filter Panel */}
-        <div className="w-full md:w-72 shrink-0">
+        <div className="w-full lg:w-80 shrink-0">
           <form onSubmit={handleSearch} className="bg-[#151728] border border-zinc-800 rounded-2xl p-5 sticky top-24">
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-bold mb-5 flex items-center gap-2">
               <FilterIcon /> Filter Komik
             </h2>
 
@@ -179,16 +179,16 @@ export default function AdvancedSearchPage() {
         {/* Results Panel */}
         <div className="flex-1 min-w-0">
           {!hasSearched ? (
-            <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-2xl text-zinc-500">
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#151728]/50 border border-zinc-800/50 rounded-2xl text-zinc-500">
               <Search size={48} className="mb-4 opacity-30" />
-              <p>Atur filter di samping untuk mencari komik spesifik.</p>
+              <p className="text-sm">Atur filter di samping untuk mencari komik spesifik.</p>
             </div>
           ) : loading ? (
             <div className="flex justify-center py-20">
               <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : results.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-2xl text-zinc-500">
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#151728]/50 border border-zinc-800/50 rounded-2xl text-zinc-500">
               <p>Tidak ada komik yang sesuai dengan filter.</p>
             </div>
           ) : (
@@ -197,29 +197,42 @@ export default function AdvancedSearchPage() {
                 <h2 className="font-bold text-lg">Hasil Pencarian</h2>
                 <span className="text-zinc-500 text-xs">{results.length} komik ditemukan</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                 {results.map((c: any, i: number) => (
-                  <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group overflow-hidden">
-                    <div className="relative w-full aspect-[3/4]">
-                      <div className="w-full h-full rounded-t-xl overflow-hidden">
-                        <img
-                          src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image || '')}`}
-                          alt={c.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'; }}
-                        />
-                      </div>
+                  <Link href={`/comic/detail/${c.slug}`} key={i} className="flex flex-col relative group gap-2">
+                    <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
+                      <img
+                        src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image || '')}`}
+                        alt={c.title}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                      <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
+                      
+                      {/* Top Left: Type */}
                       {c.type && (
-                        <div className={`absolute top-2 left-2 ${c.type.toLowerCase() === 'manhua' ? 'bg-emerald-500' : c.type.toLowerCase() === 'manga' ? 'bg-blue-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>
-                          {c.type}
+                        <div className="absolute top-2 left-2 z-10">
+                          <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">{c.type}</span>
+                        </div>
+                      )}
+
+                      {/* Top Right: Chapter */}
+                      {c.latest_chapter && (
+                        <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
+                          {c.latest_chapter}
+                        </div>
+                      )}
+
+                      {/* Bottom Left: Rating */}
+                      {c.rating && (
+                        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
+                          <Star size={10} className="text-amber-400 fill-amber-400" />
+                          {c.rating}
                         </div>
                       )}
                     </div>
-                    <div className="p-3 bg-[#1C1D2A] rounded-b-xl z-10 flex-1 flex flex-col justify-between">
-                      <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
-                      <div className="flex justify-between items-center text-[10px] sm:text-xs text-zinc-400">
-                        {c.rating && <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {c.rating}</span>}
-                      </div>
+                    <div className="px-1 flex-1">
+                      <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{c.title}</h3>
                     </div>
                   </Link>
                 ))}

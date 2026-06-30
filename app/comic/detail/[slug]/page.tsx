@@ -24,50 +24,46 @@ export default function ComicDetailPage() {
   const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
-    if (data) {
-      try {
-        const bookmarksStr = localStorage.getItem('valora_bookmarks');
-        if (bookmarksStr) {
-          const bookmarks = JSON.parse(bookmarksStr);
-          setIsBookmarked(bookmarks.some((b: any) => b.novelUrl === `/comic/detail/${slug}` || b.url === `/comic/detail/${slug}`));
-        }
-      } catch (e) {}
-    }
-  }, [data, slug]);
+    const checkBookmark = async () => {
+      if (user && data) {
+        try {
+          const { data: bkm } = await supabase
+            .from('user_bookmarks')
+            .select('item_url')
+            .eq('user_id', user.id)
+            .eq('item_url', slug)
+            .single();
+          
+          if (bkm) setIsBookmarked(true);
+        } catch (e) {}
+      } else {
+        setIsBookmarked(false);
+      }
+    };
+    
+    checkBookmark();
+  }, [data, slug, user]);
 
   const toggleBookmark = async () => {
+    if (!user) {
+      alert('Silakan login untuk menambahkan ke Watchlist!');
+      return;
+    }
+    
     try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-      
       if (isBookmarked) {
-        bookmarks = bookmarks.filter((b: any) => b.novelUrl !== `/comic/detail/${slug}` && b.url !== `/comic/detail/${slug}`);
+        await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: slug });
         setIsBookmarked(false);
-        
-        if (user) {
-          await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: slug });
-        }
       } else {
-        bookmarks.unshift({
+        await supabase.from('user_bookmarks').upsert({
+          user_id: user.id,
+          item_url: slug,
           title: data.title,
           poster: data.image || data.poster || data.thumbnail,
-          novelUrl: `/comic/detail/${slug}`,
-          type: data.type || data.metadata?.type || 'Comic',
-          chapter: chapters[0]?.chapter || 'Chapter 1'
-        });
+          category: 'Komik'
+        }, { onConflict: 'user_id,item_url' });
         setIsBookmarked(true);
-        
-        if (user) {
-          await supabase.from('user_bookmarks').upsert({
-            user_id: user.id,
-            item_url: slug,
-            title: data.title,
-            poster: data.image || data.poster || data.thumbnail,
-            category: 'Komik'
-          }, { onConflict: 'user_id,item_url' });
-        }
       }
-      localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
     } catch (e) {}
   };
 
@@ -278,16 +274,25 @@ export default function ComicDetailPage() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {recommendations.map((rec: any, i: number) => (
-                <Link href={`/comic/detail/${rec.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col group">
-                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-xl">
-                    <img src={`/api/image-proxy?url=${encodeURIComponent(rec.image)}`} alt={rec.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-0 right-0 bg-yellow-500 text-black font-bold text-[10px] px-2 py-1 rounded-bl-lg">
+                <Link href={`/comic/detail/${rec.slug}`} key={i} className="flex flex-col relative group gap-2">
+                  <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
+                    <img src={`/api/image-proxy?url=${encodeURIComponent(rec.image)}`} alt={rec.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" />
+                    <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
+
+                    {/* Top Right: Populer Badge */}
+                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm capitalize">
                       Populer
                     </div>
+                    
+                    {/* Bottom Right: Chapter */}
+                    {rec.chapter && (
+                      <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
+                        {rec.chapter}
+                      </div>
+                    )}
                   </div>
-                  <div className="p-3">
-                    <h3 className="text-white font-bold text-xs line-clamp-2">{rec.title}</h3>
-                    <p className="text-zinc-500 text-[10px] mt-1">{rec.chapter}</p>
+                  <div className="px-1 flex-1">
+                    <h3 className="text-white font-bold text-xs sm:text-sm group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{rec.title}</h3>
                   </div>
                 </Link>
               ))}

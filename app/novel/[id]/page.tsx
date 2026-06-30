@@ -9,8 +9,10 @@ import Sidebar from '../../components/Sidebar';
 import WidgetTitle from '../../components/WidgetTitle';
 import CommentSection from '../../components/CommentSection';
 import StarRating from '../../components/StarRating';
+import { supabase } from '@/lib/supabase';
 
 function NovelDetailContent() {
+  const { user } = useAuth();
   const { id } = useParams();
   const [novel, setNovel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -20,17 +22,27 @@ function NovelDetailContent() {
   const [bookmarkCat, setBookmarkCat] = useState('ongoing');
 
   useEffect(() => {
-    if (!id) return;
-    try {
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        const bookmarks = JSON.parse(bookmarksStr);
-        if (bookmarks.some((b: any) => b.novelUrl === `/novel/${id}`)) {
-          setIsBookmarked(true);
-        }
+    const checkBookmark = async () => {
+      if (user && id) {
+        try {
+          const { data } = await supabase
+            .from('user_bookmarks')
+            .select('item_url, category')
+            .eq('user_id', user.id)
+            .eq('item_url', `/novel/${id}`)
+            .single();
+          
+          if (data) {
+            setIsBookmarked(true);
+            setBookmarkCat(data.category || 'Novel');
+          }
+        } catch(e) {}
+      } else {
+        setIsBookmarked(false);
       }
-    } catch(e) {}
-  }, [id]);
+    };
+    checkBookmark();
+  }, [id, user]);
 
   useEffect(() => {
     if (id) {
@@ -43,56 +55,39 @@ function NovelDetailContent() {
     }
   }, [id]);
 
-  const toggleBookmark = () => {
+  const toggleBookmark = async () => {
     if (!id || !novel) return;
+    if (!user) {
+      alert('Silakan login untuk menambahkan ke Watchlist!');
+      return;
+    }
     try {
       const url = `/novel/${id}`;
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks: any[] = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-      
       if (isBookmarked) {
-        bookmarks = bookmarks.filter(b => b.novelUrl !== url);
+        await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: url });
         setIsBookmarked(false);
       } else {
-        bookmarks.unshift({
-          novelUrl: url,
+        await supabase.from('user_bookmarks').upsert({
+          user_id: user.id,
+          item_url: url,
           title: novel.title,
-          thumbnail: novel.thumbnail,
-          source: 'novel',
-          category: 'ongoing',
-          timestamp: Date.now()
-        });
+          poster: novel.thumbnail,
+          category: 'Novel'
+        }, { onConflict: 'user_id,item_url' });
         setIsBookmarked(true);
+        setBookmarkCat('Novel');
       }
-      localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
     } catch (e) {}
   };
 
-  const changeBookmarkCategory = (newCat: string) => {
-    if (!id) return;
+  const changeBookmarkCategory = async (newCat: string) => {
+    if (!id || !user) return;
     try {
       const url = `/novel/${id}`;
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      let bookmarks: any[] = bookmarksStr ? JSON.parse(bookmarksStr) : [];
-      const idx = bookmarks.findIndex(b => b.novelUrl === url);
-      if (idx !== -1) {
-        bookmarks[idx].category = newCat;
-        localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
-      }
+      await supabase.from('user_bookmarks').update({ category: newCat }).match({ user_id: user.id, item_url: url });
+      setBookmarkCat(newCat);
     } catch (e) {}
   };
-
-  useEffect(() => {
-    if (isBookmarked && id) {
-      const url = `/novel/${id}`;
-      const bookmarksStr = localStorage.getItem('valora_bookmarks');
-      if (bookmarksStr) {
-        const bookmarks = JSON.parse(bookmarksStr);
-        const b = bookmarks.find((x: any) => x.novelUrl === url);
-        if (b && b.category) setBookmarkCat(b.category);
-      }
-    }
-  }, [isBookmarked, id]);
 
   if (loading) {
     return (
