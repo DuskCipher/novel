@@ -6,11 +6,15 @@ import { ArrowLeft, Star, Clock, List, BookOpen, Bookmark, Home, Share2, Downloa
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import CommentSection from '../../../components/CommentSection';
+import { useAuth } from '../../../components/AuthProvider';
+import { supabase } from '@/lib/supabase';
+import Sidebar from '../../../components/Sidebar';
 
 export default function ComicDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
+  const { user } = useAuth();
   
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +35,7 @@ export default function ComicDetailPage() {
     }
   }, [data, slug]);
 
-  const toggleBookmark = () => {
+  const toggleBookmark = async () => {
     try {
       const bookmarksStr = localStorage.getItem('valora_bookmarks');
       let bookmarks = bookmarksStr ? JSON.parse(bookmarksStr) : [];
@@ -39,6 +43,10 @@ export default function ComicDetailPage() {
       if (isBookmarked) {
         bookmarks = bookmarks.filter((b: any) => b.novelUrl !== `/comic/detail/${slug}` && b.url !== `/comic/detail/${slug}`);
         setIsBookmarked(false);
+        
+        if (user) {
+          await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: slug });
+        }
       } else {
         bookmarks.unshift({
           title: data.title,
@@ -48,6 +56,16 @@ export default function ComicDetailPage() {
           chapter: chapters[0]?.chapter || 'Chapter 1'
         });
         setIsBookmarked(true);
+        
+        if (user) {
+          await supabase.from('user_bookmarks').upsert({
+            user_id: user.id,
+            item_url: slug,
+            title: data.title,
+            poster: data.image || data.poster || data.thumbnail,
+            category: 'Komik'
+          }, { onConflict: 'user_id,item_url' });
+        }
       }
       localStorage.setItem('valora_bookmarks', JSON.stringify(bookmarks));
     } catch (e) {}
@@ -134,6 +152,8 @@ export default function ComicDetailPage() {
   const chapters = data.chapters || data.chapterList || [];
 
   return (
+    <>
+    <div className="flex-1 min-w-0">
     <div className="min-h-screen bg-[#0B0D17] pb-24 font-sans relative">
       {/* 1. Blurred Background Top Section */}
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pt-8 pb-6 flex flex-col md:flex-row gap-6 md:gap-10">
@@ -274,10 +294,13 @@ export default function ComicDetailPage() {
             </div>
           </div>
         )}
-        <CommentSection novelUrl={`/comic/detail/${slug}`} novelTitle={data.title || "Comic"} />
+        <CommentSection itemUrl={`/comic/detail/${slug}`} />
 
       </div>
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }

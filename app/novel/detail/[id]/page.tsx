@@ -6,6 +6,7 @@ import { ArrowLeft, Star, Clock, List, BookOpen, Bookmark, Home, Share2, Downloa
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import CommentSection from '../../../components/CommentSection';
+import Sidebar from '../../../components/Sidebar';
 
 export default function NovelDetailPage() {
   const params = useParams();
@@ -159,6 +160,8 @@ export default function NovelDetailPage() {
   const slug = data._slug || (id.startsWith('sakura-') ? id.replace('sakura-', '') : id);
 
   return (
+    <>
+    <div className="flex-1 min-w-0">
     <div className="min-h-screen bg-[#0B0D17] pb-24 font-sans relative">
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pt-8 pb-6 flex flex-col md:flex-row gap-6 md:gap-10">
         <div className="absolute top-0 left-0 w-full h-[500px] overflow-hidden -z-10">
@@ -298,10 +301,13 @@ export default function NovelDetailPage() {
         </div>
 
         {/* Comment Section */}
-        <CommentSection novelUrl={`/novel/detail/${id}`} novelTitle={data.title || "Novel"} />
+        <CommentSection itemUrl={`/novel/detail/${id}`} />
 
       </div>
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }

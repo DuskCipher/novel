@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { ArrowLeft, Star, Clock, Filter, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Sidebar from '../../../components/Sidebar';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -224,12 +225,17 @@ function ComicListContent() {
 
 export default function ComicListPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[#0D0D11]">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    }>
-      <ComicListContent />
-    </Suspense>
+    <>
+    <div className="flex-1 min-w-0">
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-[#0D0D11]">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }>
+        <ComicListContent />
+      </Suspense>
+    </div>
+    <Sidebar />
+    </>
   );
 }

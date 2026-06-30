@@ -38,6 +38,9 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Live user profiles cache for accurate level/exp display
+  const [userProfiles, setUserProfiles] = useState<Record<string, any>>({});
+
   const pinnedMessages = messages.filter(m => m.is_pinned);
   const safeIndex = pinnedMessages.length > 0 ? currentPinnedIndex % pinnedMessages.length : 0;
   const activePinnedMessage = pinnedMessages[safeIndex];
@@ -113,6 +116,47 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
     };
   }, [isOpen, user]);
 
+  // Fetch live user profiles for accurate level display
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const uniqueUserIds = [...new Set(messages.map(m => m.user_id).filter(Boolean))];
+    // Only fetch profiles we don't already have
+    const missingIds = uniqueUserIds.filter(id => !userProfiles[id]);
+    if (missingIds.length === 0) return;
+
+    const fetchProfiles = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, level, exp, display_name, avatar_url, role, is_verified')
+        .in('id', missingIds);
+      if (data && data.length > 0) {
+        setUserProfiles(prev => {
+          const updated = { ...prev };
+          data.forEach(p => { updated[p.id] = p; });
+          return updated;
+        });
+      }
+    };
+    fetchProfiles();
+  }, [messages]);
+
+  // Helper: get rank name from level
+  const getRankName = (level: number) => {
+    const ranks = ['Rookie', 'Veteran', 'Elite', 'Legend', 'Mythic'];
+    return ranks[Math.min(Math.floor(level / 20), ranks.length - 1)];
+  };
+
+  // Helper: get live level text from profiles cache
+  const getLiveLevelText = (msg: any) => {
+    const profile = userProfiles[msg.user_id];
+    if (profile) {
+      const lvl = profile.level || 1;
+      return `Lvl ${lvl} - ${getRankName(lvl)}`;
+    }
+    // Fallback to stored level_text if profile not loaded yet
+    return msg.level_text || 'Lvl 1 - Rookie';
+  };
+
   // Handle Send Message
   const getBaseMsgData = () => {
     if (!user) return {};
@@ -125,18 +169,22 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
     let avatarColor = 'bg-zinc-700';
     let nameColor = 'text-zinc-100';
     let roleColor = 'text-zinc-500';
-    let levelText = 'Lvl 1 - Newbie';
     let isVerified = false;
+
+    // Get real level from profiles cache or user_metadata
+    const cachedProfile = userProfiles[user.id];
+    const realLevel = cachedProfile?.level || user.user_metadata?.level || 1;
+    let levelText = `Lvl ${realLevel} - ${getRankName(realLevel)}`;
 
     if (isDeveloper) {
       nameColor = 'text-[#00FF00] font-bold';
       roleColor = 'bg-[#00FF00] text-black font-extrabold tracking-widest';
-      levelText = 'Lvl 300 - Valoranime Lovers';
+      levelText = `Lvl ${realLevel} - Developer`;
       isVerified = true;
     } else if (metaRole === 'VIP') {
       nameColor = 'text-yellow-500 font-bold';
       roleColor = 'bg-yellow-500 text-black font-bold';
-      levelText = 'Lvl 100 - VIP Member';
+      levelText = `Lvl ${realLevel} - VIP Member`;
       isVerified = true;
       avatarColor = 'bg-yellow-500 text-black';
     }
@@ -436,11 +484,9 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
                             </span>
                           ))}
                         </div>
-                        {msg.level_text && (
-                          <span className="text-[10px] text-zinc-500 font-medium mt-0.5">
-                            {msg.level_text}
-                          </span>
-                        )}
+                        <span className="text-[10px] text-zinc-500 font-medium mt-0.5">
+                          {getLiveLevelText(msg)}
+                        </span>
                       </div>
                       
                       {/* Badges & Time */}

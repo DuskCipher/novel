@@ -48,6 +48,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           exp: meta.exp || 0,
           display_name: displayName,
           avatar_url: avatarUrl,
+          bio: meta.bio,
+          banner_url: meta.banner_url,
+          role: meta.role,
+          is_verified: meta.is_verified,
         }),
       });
     } catch (e) {
@@ -158,19 +162,26 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (error) return { error: error.message };
     if (result.user) {
       setUser(result.user);
-      // Jika ada update level, sync ke profiles
-      if (data.level !== undefined || data.exp !== undefined || data.display_name !== undefined || data.avatar_url !== undefined) {
+      // Jika ada update data profil dasar, pastikan sync langsung
+      if (data.level !== undefined || data.exp !== undefined || data.display_name !== undefined || data.avatar_url !== undefined || data.bio !== undefined || data.banner_url !== undefined) {
         const currentMeta = result.user.user_metadata;
         const displayName = currentMeta?.display_name || result.user.email?.split('@')[0] || 'Pengguna';
         const avatarUrl = currentMeta?.avatar_url || '/avatar.jpeg';
         
-        supabase.from('profiles').upsert({ 
+        const updatePayload: any = {
           id: result.user.id, 
           level: currentMeta?.level || 1,
           exp: currentMeta?.exp || 0,
           display_name: displayName,
           avatar_url: avatarUrl
-        }).then();
+        };
+        
+        if (currentMeta?.bio !== undefined) updatePayload.bio = currentMeta.bio;
+        if (currentMeta?.banner_url !== undefined) updatePayload.banner_url = currentMeta.banner_url;
+        if (currentMeta?.role !== undefined) updatePayload.role = currentMeta.role;
+        if (currentMeta?.is_verified !== undefined) updatePayload.is_verified = currentMeta.is_verified;
+
+        supabase.from('profiles').upsert(updatePayload).then();
       }
     }
     return { error: null };

@@ -62,6 +62,10 @@ export async function POST(req: Request) {
 
     if (mError || !mission) throw new Error('Mission not found');
 
+    if (mission.action_type !== 'login_daily') {
+      return NextResponse.json({ error: 'Misi ini hanya bisa diselesaikan otomatis saat Anda membaca atau menonton.' }, { status: 400 });
+    }
+
     // Cek progress saat ini
     const { data: currentProgress, error: cpError } = await supabaseAdmin
       .from('user_missions')

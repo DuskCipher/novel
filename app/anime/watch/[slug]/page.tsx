@@ -359,7 +359,7 @@ export default function AnimeWatchPage() {
 
         {/* COMMENTS SECTION */}
         <div className="px-4 w-full mb-10">
-          <CommentSection slug={slug} type="anime" />
+          <CommentSection itemUrl={`/anime/watch/${slug}`} />
         </div>
 
         {/* REKOMENDASI */}

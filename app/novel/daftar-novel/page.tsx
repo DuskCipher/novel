@@ -85,7 +85,7 @@ export default function DaftarNovelPage() {
   return (
     <>
     <div className="flex-1 flex flex-col min-h-screen bg-[#0a0a0c] text-white pb-24">
-      <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md px-4 py-3 flex items-center gap-3 border-b border-zinc-800">
+      <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md px-4 py-3 flex items-center gap-3 border-b border-zinc-800">
         <button onClick={() => router.back()} className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white transition-colors shrink-0">
           <ArrowLeft size={20} />
         </button>

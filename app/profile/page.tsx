@@ -61,6 +61,23 @@ export default function ProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
+  // Helper to format proper URL for history and bookmarks
+  const formatItemHref = (item: any) => {
+    const url = item.item_url || item.href || item.novelUrl || '#';
+    // If it's already a full path or external link, return as is
+    if (url.startsWith('/') || url.startsWith('http')) return url;
+    
+    // Otherwise, it's likely a slug. Format based on category
+    const cat = (item.category || item.source || 'donghua').toLowerCase();
+    if (cat === 'donghua') return `/detail?url=${url}&source=donghua`;
+    if (cat === 'anime') return `/anime/detail/${url}`;
+    if (cat === 'komik' || cat === 'comic') return `/comic/detail/${url}`;
+    if (cat === 'webtoon') return `/detail?url=${encodeURIComponent(url)}&source=webtoons`;
+    if (cat === 'novel') return `/novel/detail/${url}`;
+    
+    return url;
+  };
+
   // Showcase Modal
   const [showAddShowcase, setShowAddShowcase] = useState(false);
   const [showcaseSearch, setShowcaseSearch] = useState('');
@@ -660,14 +677,24 @@ export default function ProfilePage() {
 
                   {loadingData ? (
                     <div className="flex items-center justify-center py-8"><Loader2 size={20} className={`${theme.text} animate-spin`} /></div>
-                  ) : (activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).length === 0 ? (
-                    <div className="text-center py-8">
+                  ) : (activeTab === 'riwayat' ? history : bookmarks).filter(item => {
+                    const cat = (item.category || 'Donghua').toLowerCase();
+                    const tab = (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase();
+                    if (tab === 'komik' && (cat === 'komik' || cat === 'webtoon' || cat === 'comic')) return true;
+                    return cat === tab;
+                  }).length === 0 ? (
+                        <div className="text-center py-8">
                       <p className="text-xs text-zinc-500">Belum ada data.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                      {(activeTab === 'riwayat' ? history : bookmarks).filter(item => (item.category || 'Donghua').toLowerCase() === (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase()).map((item, idx) => (
-                        <Link href={item.item_url || item.href || '#'} key={idx} className="group relative block rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800/50">
+                        {(activeTab === 'riwayat' ? history : bookmarks).filter(item => {
+                          const cat = (item.category || 'Donghua').toLowerCase();
+                          const tab = (activeTab === 'riwayat' ? historyTab : bookmarkTab).toLowerCase();
+                          if (tab === 'komik' && (cat === 'komik' || cat === 'webtoon' || cat === 'comic')) return true;
+                          return cat === tab;
+                        }).map((item, idx) => (
+                        <Link href={formatItemHref(item)} key={idx} className="group relative block rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800/50">
                           <div className="aspect-[3/4] relative overflow-hidden">
                             {(item.poster || item.image || item.image_url || item.thumbnail) ? (
                               <img src={item.poster || item.image || item.image_url || item.thumbnail} alt={item.title} 

@@ -132,9 +132,11 @@ export default function MissionsPanel({ isOpen, onClose }: { isOpen: boolean, on
                             router.push('/anime');
                           } else if (m.action_type === 'comment') {
                             onClose();
-                            router.push('/anime'); // Or wherever they can comment
+                            router.push('/anime');
                           } else {
-                            claimMission(m.id);
+                            // Default redirect for unknown missions, prevent manual claiming
+                            onClose();
+                            router.push('/');
                           }
                         }}
                         disabled={claiming === m.id}

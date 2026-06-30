@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, X, BookOpen, Flame, Clock, Bookmark, List, Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Sidebar from '../components/Sidebar';
+import AnimeList from '../components/AnimeList';
 
 export default function NovelHubPage() {
   const [data, setData] = useState<any>({ trending: [], latest: [], genres: [], adminNovels: [] });
@@ -90,52 +91,33 @@ export default function NovelHubPage() {
     }
   };
 
-  const getImageUrl = (item: any) => {
-    const src = item?.poster || item?.cover || item?.thumbnail || '';
-    if (!src) return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+';
-    
-    let finalSrc = typeof src === 'string' ? src : src.url || '';
-    if (finalSrc.includes('sakuranovel.id')) return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+';
-    if (finalSrc && (finalSrc.includes('http'))) {
-      return `/api/image-proxy?url=${encodeURIComponent(finalSrc)}`;
+  const formatNovelForAnimeList = (item: any, isOriginal = false) => {
+    const rawChapter = item.latest_chapter || item.chapter;
+    let episodesText = 'Top';
+    if (rawChapter) {
+      let clean = rawChapter;
+      if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
+        clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
+      }
+      clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
+      const chapMatch = clean.match(/chapter\s*\d+/i);
+      episodesText = chapMatch ? chapMatch[0] : (clean || 'Top');
     }
-    return finalSrc;
-  };
 
-  const NovelCard = ({ item, isOriginal = false }: { item: any, isOriginal?: boolean }) => {
-    const linkHref = isOriginal ? `/novel/detail/${item.slug}` : `/novel/detail/sakura-${item.slug}`;
-    const badgeText = isOriginal ? 'Original' : 'Valoranovel';
-    const badgeColor = isOriginal ? 'bg-amber-500' : 'bg-pink-500';
+    // Hindari sakuranovel image block jika memungkinkan (AnimeList menangani proxy & fallback onError)
+    let posterUrl = item?.poster || item?.cover || item?.thumbnail || '';
+    if (posterUrl.includes('sakuranovel.id')) {
+        // Biarkan image proxy mencoba, jika gagal AnimeList punya fallback
+    }
 
-    return (
-      <Link href={linkHref} className="w-full bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-        <div className="relative w-full aspect-[3/4]">
-          <div className="w-full h-full rounded-t-xl overflow-hidden">
-            <img src={getImageUrl(item)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} />
-          </div>
-          <div className={`absolute top-2 left-2 ${badgeColor} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>{badgeText}</div>
-          <div className={`absolute -bottom-3 left-2 ${badgeColor} text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md z-10 transition-transform group-hover:-translate-y-1`}>
-            {(() => {
-              const raw = item.latest_chapter || item.chapter;
-              if (!raw) return 'Top';
-              let clean = raw;
-              if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
-                clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
-              }
-              clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
-              const chapMatch = clean.match(/chapter\s*\d+/i);
-              return chapMatch ? chapMatch[0] : (clean || 'Top');
-            })()}
-          </div>
-        </div>
-        <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-          <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug mb-2">{item.title}</h3>
-          <div className="flex justify-between items-center text-[10px] text-zinc-400">
-            <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {item.score || '9.0'}</span>
-          </div>
-        </div>
-      </Link>
-    );
+    return {
+      ...item,
+      poster: posterUrl,
+      href: isOriginal ? `/novel/detail/${item.slug}` : `/novel/detail/sakura-${item.slug}`,
+      episodes: episodesText,
+      rating: item.score || '9.0',
+      status: isOriginal ? 'Original' : 'Novel'
+    };
   };
 
   if (loading) {
@@ -186,37 +168,7 @@ export default function NovelHubPage() {
           {isSearching ? (
             <div className="flex justify-center py-10"><div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div></div>
           ) : searchResults.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 sm:gap-6 px-2 sm:px-0">
-              {searchResults.map((item: any, i: number) => (
-                <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-                  <div className="relative w-full aspect-[3/4]">
-                    <div className="w-full h-full rounded-t-xl overflow-hidden">
-                      <img src={getImageUrl(item)} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzE1MTcyOCIvPjwvc3ZnPg==' }} />
-                    </div>
-                    <div className="absolute top-2 left-2 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Sakura</div>
-                    <div className="absolute -bottom-3 left-2 bg-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md z-10 transition-transform group-hover:-translate-y-1">
-                      {(() => {
-                        const raw = item.latest_chapter || item.chapter;
-                        if (!raw) return 'Chapter ?';
-                        let clean = raw;
-                        if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
-                          clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
-                        }
-                        clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
-                        const chapMatch = clean.match(/chapter\s*\d+/i);
-                        return chapMatch ? chapMatch[0] : (clean || 'Chapter ?');
-                      })()}
-                    </div>
-                  </div>
-                  <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                    <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug mb-2">{item.title}</h3>
-                    <div className="flex justify-between items-center text-[10px] text-zinc-400">
-                      <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {item.score || '0'}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <AnimeList items={searchResults.map(item => formatNovelForAnimeList(item, false))} />
           ) : (
             <div className="text-center py-10 text-zinc-500">Tidak menemukan novel dengan judul tersebut.</div>
           )}
@@ -232,10 +184,10 @@ export default function NovelHubPage() {
                 <Link href={data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? `/novel/detail/${heroItem.slug}` : `/novel/detail/sakura-${heroItem.slug}`} className="w-full h-48 sm:h-64 relative rounded-2xl overflow-hidden bg-zinc-900 shadow-xl group block">
                   <img 
                     key={trendingIndex}
-                    src={getImageUrl(heroItem)} 
+                    src={heroItem.poster || heroItem.cover || heroItem.thumbnail || ''} 
                     alt={heroItem.title} 
                     className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700 animate-in fade-in" 
-                    onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} 
+                    onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22600%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22400%22%20height%3D%22600%22%20fill%3D%22%2327272a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%2371717a%22%3ENot%20Found%3C%2Ftext%3E%3C%2Fsvg%3E' }} 
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-end">
@@ -302,11 +254,7 @@ export default function NovelHubPage() {
                     Karya Original
                   </h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 sm:gap-6 px-2 sm:px-0 pb-4">
-                  {data.adminNovels.map((item: any, i: number) => (
-                    <NovelCard key={i} item={item} isOriginal={true} />
-                  ))}
-                </div>
+                <AnimeList items={data.adminNovels.map((n: any) => formatNovelForAnimeList(n, true))} />
               </section>
             )}
 
@@ -322,11 +270,7 @@ export default function NovelHubPage() {
                     Lihat Semua <ChevronRight size={14} />
                   </Link>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 sm:gap-6 px-2 sm:px-0 pb-4">
-                  {data.latest.map((item: any, i: number) => (
-                    <NovelCard key={i} item={item} />
-                  ))}
-                </div>
+                <AnimeList items={data.latest.map((n: any) => formatNovelForAnimeList(n, false))} />
               </section>
             )}
           </>

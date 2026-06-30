@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import Sidebar from '../../../../components/Sidebar';
 
 export default function NovelGenrePage() {
   const params = useParams();
@@ -54,27 +55,28 @@ export default function NovelGenrePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#0a0a0c] text-white">
-      <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center">
+    <>
+    <div className="flex-1 min-w-0">
+    <div className="min-h-screen bg-[#0a0a0c] text-white pb-20">
+      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center max-w-[1600px] mx-auto">
         <button onClick={() => router.back()} className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white transition-colors">
           <ArrowLeft size={20} />
         </button>
         <div className="text-center flex-1">
-          <h1 className="text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 capitalize">
-            {genreName || id.replace('sakura-', '')}
+          <h1 className="text-white font-bold text-sm sm:text-base capitalize">
+            Genre: <span className="text-pink-500">{genreName || 'Memuat...'}</span>
           </h1>
-          <p className="text-zinc-500 text-[10px]">Genre • Valoranovel</p>
         </div>
         <div className="w-9" />
-      </header>
+      </div>
 
-      <div className="p-4 sm:p-6">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : novels.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5">
             {novels.map((item: any, i: number) => (
               <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
                 <div className="relative w-full aspect-[3/4]">
@@ -116,5 +118,8 @@ export default function NovelGenrePage() {
         )}
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }

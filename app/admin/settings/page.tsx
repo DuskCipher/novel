@@ -8,7 +8,11 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     primary_color: '#60a5fa',
-    site_name: 'Valora'
+    site_name: 'Valora',
+    social_whatsapp: '',
+    social_discord: '',
+    social_facebook: '',
+    social_tiktok: ''
   });
   const [success, setSuccess] = useState(false);
 
@@ -19,7 +23,11 @@ export default function AdminSettingsPage() {
         if (data.primary_color || data.site_name) {
           setSettings({
             primary_color: data.primary_color || '#60a5fa',
-            site_name: data.site_name || 'Valora'
+            site_name: data.site_name || 'Valora',
+            social_whatsapp: data.social_whatsapp || '',
+            social_discord: data.social_discord || '',
+            social_facebook: data.social_facebook || '',
+            social_tiktok: data.social_tiktok || ''
           });
         }
         setLoading(false);
@@ -119,6 +127,53 @@ export default function AdminSettingsPage() {
               />
             </div>
             <p className="text-xs text-zinc-500 mt-2">Pilih warna khusus atau gunakan preset di atas. Perubahan mungkin memerlukan muat ulang halaman untuk diterapkan sepenuhnya.</p>
+          </div>
+
+          <div className="pt-6 border-t border-zinc-800">
+            <h2 className="text-lg font-bold text-white mb-4">Link Sosial Media</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">WhatsApp</label>
+                <input 
+                  type="text" 
+                  placeholder="https://wa.me/..."
+                  value={settings.social_whatsapp}
+                  onChange={e => setSettings({...settings, social_whatsapp: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-green-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">Discord</label>
+                <input 
+                  type="text" 
+                  placeholder="https://discord.gg/..."
+                  value={settings.social_discord}
+                  onChange={e => setSettings({...settings, social_discord: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">Facebook</label>
+                <input 
+                  type="text" 
+                  placeholder="https://facebook.com/..."
+                  value={settings.social_facebook}
+                  onChange={e => setSettings({...settings, social_facebook: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">TikTok</label>
+                <input 
+                  type="text" 
+                  placeholder="https://tiktok.com/@..."
+                  value={settings.social_tiktok}
+                  onChange={e => setSettings({...settings, social_tiktok: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 transition-colors"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-zinc-500 mt-3">Kosongkan kolom jika ikon tidak ingin ditampilkan di footer.</p>
           </div>
 
           <div className="pt-4 border-t border-zinc-800 flex items-center gap-4">

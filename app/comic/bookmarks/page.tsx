@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Star, Clock, Trash2, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Sidebar from '../../../components/Sidebar';
 
 export default function ComicBookmarksPage() {
   const router = useRouter();
@@ -47,7 +48,9 @@ export default function ComicBookmarksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D11] pb-24">
+    <>
+    <div className="flex-1 min-w-0">
+    <div className="min-h-screen bg-[#0D0D11] pb-24 font-sans text-white">
       <div className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center">
         <button onClick={() => router.back()} className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white transition-colors">
           <ArrowLeft size={20} />
@@ -104,5 +107,8 @@ export default function ComicBookmarksPage() {
         )}
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }

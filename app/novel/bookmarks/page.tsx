@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Trash2, BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Sidebar from '../../../components/Sidebar';
 
 export default function NovelBookmarksPage() {
   const router = useRouter();
@@ -25,8 +26,10 @@ export default function NovelBookmarksPage() {
   };
 
   return (
+    <>
+    <div className="flex-1 min-w-0">
     <div className="min-h-screen bg-[#0a0a0c] text-white pb-20">
-      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center">
+      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center max-w-[1600px] mx-auto">
         <button onClick={() => router.back()} className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white transition-colors">
           <ArrowLeft size={20} />
         </button>
@@ -38,7 +41,7 @@ export default function NovelBookmarksPage() {
         <div className="w-9" />
       </div>
 
-      <div className="p-4 sm:p-6">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         {bookmarks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-zinc-500">
             <BookOpen size={48} className="mb-4 opacity-50" />
@@ -46,7 +49,7 @@ export default function NovelBookmarksPage() {
             <Link href="/novel" className="mt-6 px-6 py-2.5 bg-green-600 font-bold text-white rounded-lg hover:bg-green-700 transition-colors shadow-lg shadow-green-900/50">Cari Novel</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5">
             {bookmarks.map((b, i) => {
               const url = b.novelUrl || b.url;
               return (
@@ -88,5 +91,8 @@ export default function NovelBookmarksPage() {
         )}
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }

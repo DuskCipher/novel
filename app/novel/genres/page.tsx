@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Search, List } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Sidebar from '../../../components/Sidebar';
 
 export default function NovelGenresPage() {
   const router = useRouter();
@@ -30,20 +31,22 @@ export default function NovelGenresPage() {
   const filteredGenres = genres.filter(g => (g.name || g.title || '').toLowerCase().includes(search.toLowerCase()));
 
   return (
+    <>
+    <div className="flex-1 min-w-0">
     <div className="min-h-screen bg-[#0a0a0c] text-white pb-20">
-      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center">
+      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 p-4 flex justify-between items-center max-w-[1600px] mx-auto">
         <button onClick={() => router.back()} className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white transition-colors">
           <ArrowLeft size={20} />
         </button>
         <div className="text-center flex-1">
           <h1 className="text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2">
-            <List size={18} className="text-pink-500" /> Genre Valoranovel
+            <List size={18} className="text-pink-500" /> Genre Novel
           </h1>
         </div>
         <div className="w-9" />
       </div>
 
-      <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         <div className="relative mb-6">
           <input
             type="text"
@@ -60,7 +63,7 @@ export default function NovelGenresPage() {
             <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
             {filteredGenres.map((g, i) => (
               <Link
                 key={i}
@@ -80,5 +83,8 @@ export default function NovelGenresPage() {
         )}
       </div>
     </div>
+    </div>
+    <Sidebar />
+    </>
   );
 }
