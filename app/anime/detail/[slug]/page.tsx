@@ -320,6 +320,7 @@ export default function AnimeDetailPage() {
           </div>
         )}
 
+        </div>
       </div>
     </div>
     </div>
