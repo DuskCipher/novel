@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/components/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import Sidebar from '@/app/components/Sidebar';
 
 export default function ComicBookmarksPage() {
   const router = useRouter();
