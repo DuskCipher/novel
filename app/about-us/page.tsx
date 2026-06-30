@@ -65,7 +65,7 @@ export default function AboutUsPage() {
             Menjadi jembatan antara budaya pop Jepang dengan para penggemar di seluruh dunia, membangun platform di mana siapapun bisa menikmati dan merayakan anime bersama-sama.
           </p>
           <div className="inline-flex items-center justify-center">
-            <img src="/logo.png" alt="Valoran!me Logo" className="h-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <img src="/logo.png" alt="Valoran!me Logo" className="h-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300" />
           </div>
         </div>
       </div>
