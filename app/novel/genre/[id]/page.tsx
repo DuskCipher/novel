@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
-import Sidebar from '../../../../components/Sidebar';
+import Sidebar from '@/app/components/Sidebar';
 
 export default function NovelGenrePage() {
   const params = useParams();

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Trash2, BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '../../../components/Sidebar';
+import Sidebar from '@/app/components/Sidebar';
 
 export default function NovelBookmarksPage() {
   const router = useRouter();
