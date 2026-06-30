@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { ArrowLeft, Star, Clock, Filter, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Sidebar from '../../../components/Sidebar';
+import Sidebar from '@/app/components/Sidebar';
 
 const ITEMS_PER_PAGE = 20;
 

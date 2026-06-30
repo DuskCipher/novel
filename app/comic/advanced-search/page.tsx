@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Search, SlidersHorizontal, Star, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Sidebar from '../../../components/Sidebar';
+import Sidebar from '@/app/components/Sidebar';
 
 export default function AdvancedSearchPage() {
   const router = useRouter();
