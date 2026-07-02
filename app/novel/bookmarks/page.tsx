@@ -77,7 +77,18 @@ export default function NovelBookmarksPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5">
             {bookmarks.map((b, i) => {
               const url = b.item_url || b.novelUrl || b.url;
-              return (
+              let displayChap = 'Top';
+              const raw = b.chapter || b.latest_chapter;
+              if (raw) {
+                let clean = raw;
+                if (b.title && clean.toLowerCase().includes(b.title.toLowerCase())) {
+                  clean = clean.replace(new RegExp(b.title, 'ig'), '').trim();
+                }
+                clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
+                const chapMatch = clean.match(/chapter\s*\d+/i);
+                displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
+              }
+              
               return (
                 <div key={i} className="relative group">
                   <AnimeCard3 
@@ -97,7 +108,6 @@ export default function NovelBookmarksPage() {
                     <Trash2 size={16} />
                   </button>
                 </div>
-              );
               );
             })}
           </div>
