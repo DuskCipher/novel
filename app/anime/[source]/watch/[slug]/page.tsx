@@ -227,6 +227,19 @@ export default function AnimeWatchPage() {
     resolveAndPlay();
   }, [rawServerUrl]);
 
+  // Auto-navigate pagination to the page containing the active episode
+  useEffect(() => {
+    if (!epData) return;
+    const episodeList = epData?.info?.episodeList || epData.episodeList || epData.all_episodes || [];
+    if (episodeList.length > 0 && epsQuery === '') {
+      const idx = episodeList.findIndex((ep: any) => (ep.episodeId || ep.slug) === slug);
+      if (idx !== -1) {
+        const correctPage = Math.floor(idx / itemsPerPage) + 1;
+        setEpsPage(prev => prev !== correctPage ? correctPage : prev);
+      }
+    }
+  }, [slug, epData?.episodeList, epData?.info?.episodeList, epData?.all_episodes, epsQuery, itemsPerPage]);
+
   if (loading) {
     return (
       <div className="min-h-screen pt-16 flex items-center justify-center">
