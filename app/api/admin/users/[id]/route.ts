@@ -37,6 +37,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
       if (profileError) {
         console.error('[PUT admin/users profileError]', profileError);
+        return NextResponse.json({ success: false, error: profileError.message }, { status: 500 });
       }
     }
 
@@ -54,14 +55,15 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       await supabaseAdmin.auth.admin.updateUserById(id, {
         user_metadata: { ...currentMeta, ...metaUpdate }
       });
-    } catch (adminError) {
+    } catch (adminError: any) {
       console.error('[PUT admin/users] Gagal update auth metadata:', adminError);
+      return NextResponse.json({ success: false, error: adminError.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, updated: updateData });
   } catch (error: any) {
     console.error('[PUT admin/users catch]', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 200 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
