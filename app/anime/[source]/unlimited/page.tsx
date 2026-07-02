@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllAnime } from '@/lib/anime-api';
 import AnimeCard3 from '../../components/AnimeCard3';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 
 export default function AnimeUnlimitedPage() {
   const params = useParams();
