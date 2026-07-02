@@ -37,6 +37,37 @@ export default function AnimeWatchPage() {
       try {
         const res = await getAnimeEpisode(slug, source);
         const data = res?.data || res?.episode_detail || res;
+        
+        // Fetch full episodes from Detail API to prevent truncated lists (e.g. One Piece having 1000+ eps but only 12 shown)
+        let animeSlug = data?.anime_id || data?.anime_slug;
+        if (!animeSlug && data?.title) {
+           const match = data.title.match(/(.+) Episode/i);
+           if (match) {
+             animeSlug = match[1].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+           }
+        }
+        
+        if (animeSlug) {
+           try {
+             const { getAnimeDetail } = await import('@/lib/anime-api');
+             const detailRes = await getAnimeDetail(animeSlug, source);
+             const detailData = detailRes?.data || detailRes?.anime_detail || detailRes;
+             
+             // Merge episodes
+             const fullEps = detailData?.episodeList || detailData?.episode_list || detailData?.episodes || [];
+             const currentEps = data?.info?.episodeList || data?.episodeList || [];
+             if (fullEps.length > currentEps.length) {
+                if (data.info) {
+                   data.info.episodeList = fullEps;
+                } else {
+                   data.episodeList = fullEps;
+                }
+             }
+           } catch(e) {
+             console.error("Could not fetch full episodes", e);
+           }
+        }
+
         setEpData(data);
         
         // Pick first server by default

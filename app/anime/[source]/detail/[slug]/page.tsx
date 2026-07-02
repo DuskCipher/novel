@@ -129,7 +129,7 @@ export default function AnimeDetailPage() {
           <img 
             src={`/api/image-proxy?url=${encodeURIComponent(detail.poster || detail.thumb)}`} 
             alt="background" 
-            className="w-full h-full object-cover opacity-40 blur-[20px] scale-110"
+            className="w-full h-full object-cover opacity-50 blur-md scale-105"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f13] via-[#0f0f13]/60 to-transparent"></div>
