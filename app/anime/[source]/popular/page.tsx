@@ -6,7 +6,7 @@ import {  useRouter , useParams } from 'next/navigation';
 import AnimeCard3 from '../../components/AnimeCard3';
 import { getAnimePopular } from '@/lib/anime-api';
 
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 
 export default function AnimePopularPage() {
   const params = useParams();

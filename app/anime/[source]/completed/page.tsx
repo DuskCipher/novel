@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, CheckSquare } from 'lucide-react';
 import {  useRouter , useParams } from 'next/navigation';
 import AnimeCard3 from '../../components/AnimeCard3';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 import { getAnimeCompleted } from '@/lib/anime-api';
 
 export default function AnimeCompletedPage() {
