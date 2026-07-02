@@ -62,8 +62,8 @@ export const getAnimeServer = async (serverId: string, source: string = 'otakude
   return await fetchAnimeApi(source === 'animasu' ? `/anime/animasu/server/${serverId}` : `/anime/server/${serverId}`);
 };
 
-export const getAllAnime = async (source: string = 'otakudesu') => {
-  return await fetchAnimeApi(source === 'animasu' ? "/anime/animasu/animelist" : "/anime/unlimited");
+export const getAllAnime = async (page: number = 1, source: string = 'otakudesu') => {
+  return await fetchAnimeApi(source === 'animasu' ? `/anime/animasu/animelist?page=${page}` : `/anime/unlimited?page=${page}`);
 };
 
 export const getAnimePopular = async (page: number = 1, source: string = 'otakudesu') => {
