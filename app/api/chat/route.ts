@@ -38,7 +38,18 @@ export async function POST(req: Request) {
       .single();
 
     // 3. INSERT MESSAGE
-    const isDbAdmin = (profile?.role || '').toLowerCase().includes('admin') || (profile?.role || '').toLowerCase().includes('developer');
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(user_id);
+    const metaData = authUser?.user?.user_metadata || {};
+    
+    const dbRole = (profile?.role || '').toLowerCase();
+    const metaRole = (metaData.role || '').toLowerCase();
+    const username = (metaData.username || metaData.display_name || '').toLowerCase();
+    const isVerifiedMeta = metaData.is_verified || false;
+
+    const isDbAdmin = dbRole.includes('admin') || dbRole.includes('developer') || dbRole.includes('moderator') || dbRole.includes('owner') ||
+                      metaRole.includes('admin') || metaRole.includes('developer') || metaRole.includes('moderator') ||
+                      username.includes('admin') || username.includes('dev') || username.includes('cs') || isVerifiedMeta;
+
     const isVerified = profile?.is_verified || isDbAdmin;
 
     const msgData = {

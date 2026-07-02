@@ -179,8 +179,8 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
     let levelText = `Lvl ${realLevel} - ${getRankName(realLevel)}`;
 
     if (isDeveloper) {
-      nameColor = 'text-[#00FF00] font-bold';
-      roleColor = 'bg-[#00FF00] text-black font-extrabold tracking-widest';
+      nameColor = 'text-blue-400 font-bold';
+      roleColor = 'bg-blue-600 text-white font-extrabold tracking-widest';
       levelText = `Lvl ${realLevel} - Developer`;
       isVerified = true;
     } else if (metaRole === 'VIP') {
@@ -518,8 +518,8 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
               (showOnlyPinned ? pinnedMessages : messages).map((msg, idx) => {
               const isDevRole = msg.roles && msg.roles.some((r: string) => r.toLowerCase().includes('dev') || r.toLowerCase().includes('admin'));
               const isVerified = msg.is_verified || isDevRole;
-              const nameColor = isDevRole ? 'text-green-400' : (msg.name_color || 'text-zinc-200');
-              const avatarColor = isDevRole ? 'bg-[#4B6B4C] text-white border border-[#5C8C5D]' : msg.avatar_color;
+              const nameColor = isDevRole ? 'text-blue-400 font-bold' : (msg.name_color || 'text-zinc-200');
+              const avatarColor = isDevRole ? 'bg-blue-600 text-white border-2 border-blue-400' : msg.avatar_color;
 
               // Check if current user is owner or developer
               const isOwner = user?.id === msg.user_id;
@@ -543,7 +543,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
                     <img 
                       src={msg.avatar_url} 
                       alt={msg.username} 
-                      className={`w-10 h-10 rounded-full object-cover shrink-0 shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${isDevRole ? 'border border-[#5C8C5D]' : ''}`} 
+                      className={`w-10 h-10 rounded-full object-cover shrink-0 shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${isDevRole ? 'border-2 border-blue-500 p-[1px]' : ''}`} 
                       onClick={() => router.push(`/user/${msg.user_id}`)} 
                       onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                     />
