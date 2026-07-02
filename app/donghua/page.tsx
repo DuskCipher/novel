@@ -39,19 +39,70 @@ export default function DonghuaPage() {
         ) : (
           <div className="flex flex-col gap-10">
             {donghua.recent.length > 0 && (
-              <div className="w-full h-48 sm:h-64 lg:h-80 relative rounded-2xl overflow-hidden bg-zinc-900 shadow-xl group">
+              <div className="relative w-full aspect-[4/5] sm:aspect-[21/9] lg:h-[420px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0a0a0f] group">
+                {/* Blurred Background Glow for depth */}
+                <div className="absolute inset-0 opacity-50 scale-125 saturate-200 blur-[40px] pointer-events-none">
+                  <img 
+                    src={`/api/image-proxy?url=${encodeURIComponent(donghua.recent[0].poster)}`} 
+                    alt="" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Main Image */}
                 <img 
                   src={`/api/image-proxy?url=${encodeURIComponent(donghua.recent[0].poster)}`} 
-                  alt="Featured" 
-                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                  alt={donghua.recent[0].title} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-60 transition-all duration-1000 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-6 lg:p-8">
-                  <span className="bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded mb-3 inline-block">EPISODE BARU</span>
-                  <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2 line-clamp-2">{donghua.recent[0].title}</h2>
-                  <a href={donghua.recent[0].href} className="inline-block mt-2 bg-white text-black hover:bg-amber-500 hover:text-white px-6 py-2.5 rounded-lg font-bold transition-colors">
-                    Tonton Sekarang
-                  </a>
+
+                {/* Cinematic Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/40 to-transparent sm:bg-gradient-to-r sm:from-[#0D0D11] sm:via-[#0D0D11]/80 sm:to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-transparent to-transparent opacity-90 sm:hidden"></div>
+
+                {/* Content Box */}
+                <div className="absolute bottom-0 left-0 p-5 pb-8 sm:p-8 lg:p-12 w-full sm:w-3/4 lg:w-2/3 flex flex-col justify-end h-full z-10">
+                  
+                  {/* Badges */}
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <span className="bg-transparent border border-rose-400/40 text-rose-300 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                      Trending #1
+                    </span>
+                    <span className="bg-purple-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">
+                      DONGHUA
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 leading-[1.2] line-clamp-2 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                    {donghua.recent[0].title}
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-zinc-400 text-xs sm:text-sm mb-3 line-clamp-2 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+                    Saksikan kelanjutan petualangan seru dari {donghua.recent[0].title} dengan kualitas terbaik dan subtitle Indonesia. Jangan sampai ketinggalan episode terbarunya!
+                  </p>
+
+                  {/* Info Row (Status & Episodes) */}
+                  <div className="flex items-center gap-3 text-[10px] sm:text-xs font-bold text-zinc-300 mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+                    <span className="flex items-center gap-1.5 uppercase">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> {donghua.recent[0].status || 'ONGOING'}
+                    </span>
+                    <span className="text-zinc-600">•</span>
+                    <span className="flex items-center gap-1.5">
+                      📅 {donghua.recent[0].episode || 'Baru'}
+                    </span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                    <a href={donghua.recent[0].href} className="flex items-center justify-center gap-2 bg-[#b48796] hover:bg-[#a37685] text-[#1a1a1a] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                      ▶ Mulai Nonton
+                    </a>
+                    <a href={donghua.recent[0].href} className="flex items-center justify-center bg-[#2a2a35] hover:bg-[#383846] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                      Detail
+                    </a>
+                  </div>
                 </div>
               </div>
             )}
