@@ -133,28 +133,44 @@ export default function AnimeHomePage() {
               <div className="absolute bottom-0 left-0 p-5 pb-12 sm:pb-8 sm:p-8 lg:p-12 w-full sm:w-3/4 lg:w-2/3 flex flex-col justify-end h-full z-10">
                 
                 {/* Badges */}
-                <div className="flex items-center gap-2 mb-3 sm:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <span className="flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-orange-500 text-white text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide border border-rose-400/20">
-                    <Flame size={12} className="animate-pulse" /> Sedang Hangat
+                <div className="flex items-center gap-2 mb-2 sm:mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <span className="bg-transparent border border-rose-400/40 text-rose-300 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                    Trending #{heroIndex + 1}
                   </span>
-                  <span className="bg-white/10 backdrop-blur-md border border-white/10 text-zinc-200 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    {heroItem.status}
+                  <span className="bg-purple-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">
+                    {heroItem.type}
                   </span>
                 </div>
 
-                {/* Title (Smaller Size, No Shadow) */}
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-4 sm:mb-6 leading-[1.2] line-clamp-2 sm:line-clamp-3 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                {/* Title */}
+                <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 leading-[1.2] line-clamp-2 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
                   {heroItem.title}
                 </h2>
 
-                {/* Action Buttons (Better layout, no shadow) */}
-                <div className="flex flex-row items-center gap-2 sm:gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-white text-black hover:bg-amber-400 px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-base hover:scale-105 active:scale-95 whitespace-nowrap">
-                    <Play size={14} className="fill-current sm:w-[18px] sm:h-[18px]" />
-                    <span>Tonton</span>
+                {/* Description */}
+                <p className="text-zinc-400 text-xs sm:text-sm mb-3 line-clamp-2 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+                  {heroItem.synopsis || `Saksikan kelanjutan cerita seru dari ${heroItem.title} dengan kualitas terbaik dan subtitle Indonesia. Jangan sampai ketinggalan episode terbarunya!`}
+                </p>
+
+                {/* Info Row (Status & Episodes) */}
+                <div className="flex items-center gap-3 text-[10px] sm:text-xs font-bold text-zinc-300 mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+                  <span className="flex items-center gap-1.5 uppercase">
+                    <Play size={10} className="fill-current text-zinc-400" /> {heroItem.status}
+                  </span>
+                  <span className="text-zinc-600">•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={12} className="text-zinc-400" /> {heroItem.episodes || 'TBA'}
+                  </span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                  <Link href={heroItem.href} className="flex items-center justify-center gap-2 bg-[#b48796] hover:bg-[#a37685] text-[#1a1a1a] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <Play size={14} className="fill-current" />
+                    <span>Mulai Nonton</span>
                   </Link>
-                  <Link href={heroItem.href} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-base hover:scale-105 active:scale-95 whitespace-nowrap">
-                    <span>Detail Info</span>
+                  <Link href={heroItem.href} className="flex items-center justify-center bg-[#2a2a35] hover:bg-[#383846] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <span>Detail</span>
                   </Link>
                 </div>
               </div>
