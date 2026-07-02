@@ -11,7 +11,7 @@ import {
   BadgeCheck, PlayCircle,
   MessageCircle, Crown, Search, Bookmark, History, Activity, Camera, ArrowLeft,
   Sparkles, Eye, Clock, Star, Users, Medal, Trophy, Palette, Pin, MonitorPlay,
-  Flame, Swords, Droplet, Award, Lock, Plus, AlertTriangle, Send, CheckCircle
+  Flame, Swords, Droplet, Award, Lock, Plus, AlertTriangle, Send, CheckCircle, Trash2
 } from 'lucide-react';
 import Link from 'next/link';
 
