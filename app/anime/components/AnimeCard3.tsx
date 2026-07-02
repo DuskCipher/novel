@@ -14,7 +14,7 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
   const isGenre = type === 'genre';
 
   const title = item.title || item.anime_name || item.name || '';
-  const poster = item.poster || item.thumb || item.thumbnail || '';
+  const poster = item.poster || item.thumb || item.thumbnail || item.image || '';
   
   if (isGenre) {
     return (
