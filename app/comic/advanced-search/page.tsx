@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Filter, Star, Clock } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Star, Clock, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AnimeCard3 from '@/app/anime/components/AnimeCard3';
@@ -97,7 +97,7 @@ export default function AdvancedSearchPage() {
         <div className="w-full lg:w-80 shrink-0">
           <form onSubmit={handleSearch} className="bg-[#151728] border border-zinc-800 rounded-2xl p-5 sticky top-24">
             <h2 className="text-lg font-bold mb-5 flex items-center gap-2">
-              <FilterIcon /> Filter Komik
+              <Filter size={18} /> Filter Komik
             </h2>
 
             {/* Keyword */}
