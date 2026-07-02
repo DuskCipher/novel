@@ -42,7 +42,7 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
     <Link href={href} className="group flex flex-col gap-2 relative">
       <div className="w-full aspect-[3/4] relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800/50 shadow-md group-hover:border-amber-500/30 transition-colors">
         <img 
-          src={poster.startsWith('/') || poster.startsWith('data:') ? poster : `/api/image-proxy?url=${encodeURIComponent(poster)}`} 
+          src={poster.startsWith('/') || poster.startsWith('data:') || poster.includes('sakuranovel.id') ? poster : `/api/image-proxy?url=${encodeURIComponent(poster)}`} 
           alt={title} 
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
