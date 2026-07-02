@@ -34,13 +34,9 @@ function SidebarContent() {
 
   if (isAnime) {
     searchPrefix = `/anime/${animeSource}/search?q=`;
-    menuTitle = `Menu Anime (${animeSource === 'animasu' ? 'Animasu' : 'Otakudesu'})`;
-    
-    // Toggle source option
-    const altSource = animeSource === 'animasu' ? 'otakudesu' : 'animasu';
+    menuTitle = `Menu Anime`;
     
     menuLinks = [
-      { label: `Ganti ke Server ${altSource === 'animasu' ? 'Animasu' : 'Otakudesu'}`, href: `/anime/${altSource}` },
       { label: "Beranda", href: `/anime/${animeSource}` },
       { label: "Sedang Berjalan (Ongoing)", href: `/anime/${animeSource}/ongoing` },
       { label: "Sudah Tamat (Completed)", href: `/anime/${animeSource}/completed` },

@@ -90,7 +90,7 @@ export default function Navbar() {
                   Anime <ChevronDown size={14} className="opacity-50 group-hover:rotate-180 transition-transform duration-300" />
                 </Link>
                 <div className="absolute top-full left-0 w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 flex flex-col overflow-hidden z-50">
-                  <Link href={`/anime/${animeSource === 'animasu' ? 'otakudesu' : 'animasu'}`} className="px-4 py-2.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-bold transition-colors">Ganti ke {animeSource === 'animasu' ? 'Otakudesu' : 'Animasu'}</Link>
+
                   <Link href={`/anime/${animeSource}`} className="px-4 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors">Home Anime</Link>
                   <Link href={`/anime/${animeSource}/schedule`} className="px-4 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors">Jadwal Rilis</Link>
                   <Link href={`/anime/${animeSource}/genre/movie`} className="px-4 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors">Anime Movie</Link>
@@ -227,7 +227,7 @@ export default function Navbar() {
           {mode === 'home-id' && (
             <div className="flex flex-col">
               <div className="px-5 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider" style={{ backgroundColor: '#1a1a1a' }}>MENU ANIME</div>
-              <Link href={`/anime/${animeSource === 'animasu' ? 'otakudesu' : 'animasu'}`} onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-amber-400 hover:text-amber-300 transition-colors" style={{ borderBottom: '1px solid #27272a', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>Ganti ke Server {animeSource === 'animasu' ? 'Otakudesu' : 'Animasu'}</Link>
+
               <Link href={`/anime/${animeSource}`} onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Home Anime</Link>
               <Link href={`/anime/${animeSource}/schedule`} onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Jadwal Rilis</Link>
               <Link href={`/anime/${animeSource}/genre/movie`} onClick={() => setMenuOpen(false)} className="px-5 py-4 font-bold text-[13px] text-zinc-200 hover:text-amber-500 transition-colors" style={{ borderBottom: '1px solid #27272a' }}>Anime Movie</Link>
