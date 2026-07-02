@@ -33,7 +33,7 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
         if (!error && data) {
           const profileIds = data.map(d => d.follower_id);
           if (profileIds.length > 0) {
-            const { data: profilesData, error: profError } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const { data: profilesData, error: profError } = await supabase.from('profiles').select('*').in('id', profileIds);
             if (profError) console.error("Error fetching profiles:", profError);
             const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
             setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
@@ -51,7 +51,7 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
         if (!error && data) {
           const profileIds = data.map(d => d.following_id);
           if (profileIds.length > 0) {
-            const { data: profilesData, error: profError } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const { data: profilesData, error: profError } = await supabase.from('profiles').select('*').in('id', profileIds);
             if (profError) console.error("Error fetching profiles:", profError);
             const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
             setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
@@ -107,7 +107,7 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-white text-sm truncate">{u.username || 'Pengguna'}</div>
+                    <div className="font-bold text-white text-sm truncate">{u.display_name || u.username || 'Pengguna'}</div>
                     <div className="text-[10px] text-zinc-400">Lv.{u.level || 1} • {u.role || 'User'}</div>
                   </div>
                 </Link>

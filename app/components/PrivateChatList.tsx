@@ -34,7 +34,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
         if (otherUserIds.length > 0) {
           const { data: profiles } = await supabase
             .from('profiles')
-            .select('id, username, avatar_url, role')
+            .select('*')
             .in('id', otherUserIds);
             
           const profilesMap = (profiles || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
@@ -76,8 +76,8 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
       setSearchingUser(true);
       const { data } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url, role')
-        .ilike('username', `%${searchNewUser}%`)
+        .select('*')
+        .or(`username.ilike.%${searchNewUser}%,display_name.ilike.%${searchNewUser}%`)
         .neq('id', user.id)
         .limit(10);
       setFoundUsers(data || []);
@@ -116,7 +116,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
     }
   };
 
-  const filteredChats = chats.filter(c => c.other_user.username?.toLowerCase().includes(search.toLowerCase()));
+  const filteredChats = chats.filter(c => (c.other_user.display_name || c.other_user.username || '').toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[#0a0a0a]">
@@ -169,7 +169,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="font-bold text-white truncate text-sm">{chat.other_user.username}</h3>
+                      <h3 className="font-bold text-white truncate text-sm">{chat.other_user.display_name || chat.other_user.username || 'Pengguna'}</h3>
                       {chat.last_message_time && (
                         <span className="text-[10px] text-zinc-500 shrink-0 ml-2">
                           {formatDistanceToNow(new Date(chat.last_message_time), { addSuffix: true, locale: idLocale })}
@@ -228,7 +228,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
                       </div>
                     )}
                     <div>
-                      <div className="font-bold text-sm text-white">{u.username}</div>
+                      <div className="font-bold text-sm text-white">{u.display_name || u.username || 'Pengguna'}</div>
                       <div className="text-xs text-amber-500">{u.role || 'User'}</div>
                     </div>
                   </button>

@@ -141,7 +141,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
             <div className="w-10 h-10 rounded-full bg-zinc-800" />
           )}
           <div>
-            <h2 className="font-bold text-white leading-tight">{chat.other_user.username}</h2>
+            <h2 className="font-bold text-white leading-tight">{chat.other_user.display_name || chat.other_user.username || 'Pengguna'}</h2>
             <div className="text-xs text-amber-500">{chat.other_user.role || 'User'}</div>
           </div>
         </Link>
@@ -153,7 +153,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
           <div className="flex justify-center flex-1 items-center"><Loader2 className="animate-spin text-amber-500" size={32} /></div>
         ) : messages.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-zinc-500 text-sm">
-            Mulai percakapan dengan {chat.other_user.username}...
+            Mulai percakapan dengan {chat.other_user.display_name || chat.other_user.username || 'Pengguna'}...
           </div>
         ) : (
           messages.map((msg, idx) => {
