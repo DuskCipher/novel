@@ -408,8 +408,14 @@ export default function AnimeWatchPage() {
             {episodeList.length > 0 ? (
               paginatedEpisodes.map((ep: any, i: number) => {
                 const titleStr = String(ep.title || ep.episode || '');
-                const match = titleStr.match(/\d+/);
-                const epNum = match ? match[0] : episodeList.length - ((epsPage - 1) * itemsPerPage + i);
+                let epNum;
+                const epMatch = titleStr.match(/(?:episode|eps|ep)\s*-?\s*(\d+)/i);
+                if (epMatch) {
+                  epNum = epMatch[1];
+                } else {
+                  const allNumbers = titleStr.match(/\d+/g);
+                  epNum = allNumbers ? allNumbers[allNumbers.length - 1] : episodeList.length - ((epsPage - 1) * itemsPerPage + i);
+                }
                 const isActive = slug === ep.episodeId;
                 return (
                   <Link 

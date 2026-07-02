@@ -313,8 +313,14 @@ export default function AnimeDetailPage() {
             {paginatedEpisodes.map((ep: any, i: number) => {
               // Extract episode number from string if possible
               const titleStr = String(ep.title || ep.episode || '');
-              const match = titleStr.match(/\d+/);
-              const epNum = match ? match[0] : (episodes.length - ((epsPage - 1) * itemsPerPage + i));
+              let epNum;
+              const epMatch = titleStr.match(/(?:episode|eps|ep)\s*-?\s*(\d+)/i);
+              if (epMatch) {
+                epNum = epMatch[1];
+              } else {
+                const allNumbers = titleStr.match(/\d+/g);
+                epNum = allNumbers ? allNumbers[allNumbers.length - 1] : (episodes.length - ((epsPage - 1) * itemsPerPage + i));
+              }
               return (
                 <Link key={i} href={`/anime/${source}/watch/${ep.episodeId || ep.slug}`} className="bg-[#2A2B3D] hover:bg-[#3b3c54] rounded-xl flex flex-col items-center justify-center py-2.5 gap-0.5 border border-zinc-800/50 transition-colors">
                   <span className="text-[10px] font-bold text-zinc-400">EP</span>
