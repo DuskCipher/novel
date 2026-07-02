@@ -23,8 +23,8 @@ export async function POST(req: Request) {
     
     if (bio !== undefined) updateData.bio = bio;
     if (banner_url !== undefined) updateData.banner_url = banner_url;
-    if (role !== undefined) updateData.role = role;
-    if (is_verified !== undefined) updateData.is_verified = is_verified;
+    // SECURITY FIX: Never allow users to update their own role or verified status via sync-profile
+    // Only admins should be able to update these fields.
 
     const { error } = await supabaseAdmin
       .from('profiles')

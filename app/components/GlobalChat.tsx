@@ -22,6 +22,8 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
   const [onlineCount, setOnlineCount] = useState(0);
   const [pinnedMessage, setPinnedMessage] = useState<any>(null);
   const [replyTo, setReplyTo] = useState<any>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [mentionSearch, setMentionSearch] = useState<string | null>(null);
   const [editMessageId, setEditMessageId] = useState<number | null>(null);
@@ -205,7 +207,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
   };
 
   const handleSendMessage = async () => {
-    if (!inputText.trim() || !user) return;
+    if (!inputText.trim() || !user || isSending || cooldown > 0) return;
     
     const content = inputText;
     setInputText('');
@@ -218,12 +220,42 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
       audio_url: null
     };
 
+    setIsSending(true);
+
     if (editMessageId) {
       setMessages(prev => prev.map(m => m.id === editMessageId ? { ...m, content: content, is_edited: true } : m));
       setEditMessageId(null);
       await supabase.from('global_messages').update({ content: content, is_edited: true } as any).eq('id', editMessageId);
+      setIsSending(false);
     } else {
-      await supabase.from('global_messages').insert([msgData as any]);
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(msgData)
+        });
+        const data = await res.json();
+        
+        if (!res.ok) {
+          alert(data.error || 'Gagal mengirim pesan.');
+        } else {
+          // Cooldown for 3 seconds
+          setCooldown(3);
+          const interval = setInterval(() => {
+            setCooldown(prev => {
+              if (prev <= 1) {
+                clearInterval(interval);
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+        }
+      } catch (err) {
+        console.error('Failed to send message:', err);
+      } finally {
+        setIsSending(false);
+      }
     }
   };
 
@@ -297,13 +329,39 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
         .from('chat_media')
         .getPublicUrl(fileName);
 
+      const audioUrl = publicUrlData.publicUrl;
+
       const msgData = {
         ...getBaseMsgData(),
-        content: '🎵 Pesan Suara',
-        audio_url: publicUrlData.publicUrl
+        content: null,
+        audio_url: audioUrl
       };
 
-      await supabase.from('global_messages').insert([msgData as any]);
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(msgData)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || 'Gagal mengirim voice note.');
+        } else {
+          // Cooldown for 3 seconds
+          setCooldown(3);
+          const interval = setInterval(() => {
+            setCooldown(prev => {
+              if (prev <= 1) {
+                clearInterval(interval);
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+        }
+      } catch (err) {
+        console.error('Failed to send audio:', err);
+      }
       setReplyTo(null);
     } catch (err: any) {
       console.error("Error uploading audio:", err);
@@ -723,11 +781,11 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
               </button>
             ) : inputText.trim() ? (
               <button 
-                className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors bg-[#6C7AEC] text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20"
                 onClick={handleSendMessage}
-                disabled={!user}
+                disabled={!inputText.trim() || isSending || cooldown > 0}
+                className="w-12 h-12 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-lg shadow-indigo-600/30"
               >
-                <Send size={16} className="-ml-1 fill-current" />
+                {cooldown > 0 ? <span className="font-bold text-xs">{cooldown}s</span> : <Send size={20} className="ml-1" />}
               </button>
             ) : (
               <button 
