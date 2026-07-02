@@ -38,20 +38,23 @@ export async function POST(req: Request) {
       .single();
 
     // 3. INSERT MESSAGE
+    const isDbAdmin = (profile?.role || '').toLowerCase().includes('admin') || (profile?.role || '').toLowerCase().includes('developer');
+    const isVerified = profile?.is_verified || isDbAdmin;
+
     const msgData = {
+      ...body,
       user_id,
-      content: content ? content.trim().substring(0, 1000) : '', // Max 1000 chars
-      reply_to: reply_to || null,
-      reply_to_username: reply_to_username || null,
-      level: level || 1,
-      level_text: level_text || 'Rookie',
-      avatar_url: avatar_url || null,
-      display_name: display_name || 'Pengguna',
+      content: content ? content.trim().substring(0, 1000) : null,
       audio_url: audio_url || null,
-      // Force use DB values to prevent injection
-      role: profile?.role || 'user',
-      is_verified: profile?.is_verified || false
+      // Overrides for security
+      roles: isDbAdmin ? ['Admin'] : [profile?.role || 'User'],
+      is_verified: isVerified
     };
+
+    // Remove undefined/invalid fields that we accidentally added in previous version
+    delete msgData.role;
+    delete msgData.display_name;
+    delete msgData.level;
 
     const { data: newMsg, error: insertError } = await supabaseAdmin
       .from('global_messages')
