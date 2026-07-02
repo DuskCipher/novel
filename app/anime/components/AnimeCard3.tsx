@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Eye, Clock } from 'lucide-react';
+import { Eye, Clock, PlayCircle } from 'lucide-react';
 
 interface AnimeCard3Props {
   item: any;
@@ -33,9 +33,9 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
     );
   }
 
-  const isOngoing = item.status?.toLowerCase() === 'ongoing' || item.status_or_day?.toLowerCase() === 'ongoing';
-  const isCompleted = item.status?.toLowerCase() === 'completed' || item.status?.toLowerCase() === 'tamat' || item.status_or_day?.toLowerCase() === 'tamat' || isMovie;
-  const displayStatus = isOngoing ? 'ONGOING' : isCompleted ? 'TAMAT' : (item.status || item.status_or_day || 'ONGOING').toUpperCase();
+  const isOngoing = item.status?.toLowerCase().includes('ongoing') || item.status_or_day?.toLowerCase().includes('ongoing');
+  const isCompleted = item.status?.toLowerCase().includes('completed') || item.status?.toLowerCase().includes('tamat') || item.status?.toLowerCase().includes('selesai') || item.status_or_day?.toLowerCase().includes('tamat') || isMovie;
+  const displayStatus = isOngoing ? 'ONGOING' : isCompleted ? (item.status || 'SELESAI ✔') : (item.status || item.status_or_day || 'ONGOING').toUpperCase();
   const displayType = item.type || (isMovie ? 'Movie' : 'Series');
 
   return (
@@ -56,7 +56,7 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
         <div className="absolute top-2 right-2 flex flex-col gap-1 items-end z-10">
           <div className={`text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 border ${
             isOngoing ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 backdrop-blur-md' : 
-            isCompleted ? 'bg-sky-500/20 text-sky-400 border-sky-500/30 backdrop-blur-md' : 
+            isCompleted ? 'bg-white/20 text-white border-transparent backdrop-blur-md' : 
             'bg-zinc-800/50 text-zinc-300 border-zinc-700/50 backdrop-blur-md'
           }`}>
             {isOngoing && <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></span>}
@@ -81,17 +81,17 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
                 </div>
               )}
               {/* Episodes / Time */}
-              {(item.episodes || item.episode || item.time || item.views) && (
-                <div className="flex items-center gap-1 text-[9px] font-medium text-zinc-300">
-                  {item.time ? <Clock size={9} className="text-zinc-400" /> : <Eye size={9} className="text-zinc-400" />}
-                  <span className="truncate max-w-[100px]">{item.time || item.episodes || item.episode || item.views}</span>
+              {(item.episodes || item.episode || item.time || item.views || item.chapter) && (
+                <div className="flex items-center gap-1 text-[9px] font-bold text-white">
+                  {item.time ? <Clock size={10} className="text-zinc-300" /> : <PlayCircle size={10} className="fill-white text-black" />}
+                  <span className="truncate max-w-[100px]">{item.time || item.episodes || item.episode || item.chapter || item.views}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
-      <h3 className="text-[11px] sm:text-xs font-bold text-zinc-200 line-clamp-2 group-hover:text-amber-500 transition-colors mt-1 leading-tight">
+      <h3 className="text-[11px] sm:text-xs font-bold text-white line-clamp-2 group-hover:text-[#60a5fa] transition-colors mt-1 leading-tight">
         {title}
       </h3>
     </Link>
