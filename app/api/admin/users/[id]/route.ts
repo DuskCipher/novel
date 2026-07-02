@@ -12,7 +12,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
     }
 
-    const updateData: any = { updated_at: new Date().toISOString() };
+    const updateData: any = {};
     if (level !== undefined) updateData.level = Number(level);
     if (exp !== undefined) updateData.exp = Number(exp);
 
