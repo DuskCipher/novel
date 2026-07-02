@@ -43,7 +43,7 @@ export default function ProfilePage() {
   // UI States
   const [activeTab, setActiveTab] = useState<'ringkasan' | 'showcase' | 'aktivitas' | 'riwayat' | 'bookmark' | 'pengaturan'>('ringkasan');
   const [historyTab, setHistoryTab] = useState<'Anime' | 'Komik' | 'Novel' | 'Donghua'>('Donghua');
-  const [bookmarkTab, setBookmarkTab] = useState<'Anime' | 'Comic' | 'Novel' | 'Donghua'>('Donghua');
+  const [bookmarkTab, setBookmarkTab] = useState<'Anime' | 'Komik' | 'Novel' | 'Donghua'>('Donghua');
   const [watchlistFilter, setWatchlistFilter] = useState<'Semua' | 'Watching' | 'Completed' | 'On Hold' | 'Plan to Watch'>('Semua');
   const [isDark, setIsDark] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
@@ -500,13 +500,19 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            {!previewMode && (
+            {!previewMode ? (
               <div className="flex gap-2 sm:mb-4 w-full sm:w-auto">
                 <button onClick={() => { setActiveTab('ringkasan'); setPreviewMode(true); }} className="flex-1 sm:flex-none px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-lg transition-colors border border-zinc-800 flex items-center justify-center gap-1.5">
-                  <User size={12} /> Preview
+                  <Eye size={12} /> Preview
                 </button>
                 <button onClick={openEditModal} className={`flex-1 sm:flex-none px-4 py-1.5 ${theme.bg} hover:opacity-90 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5`}>
                   <Edit3 size={12} /> Edit Profil
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 sm:mb-4 w-full sm:w-auto">
+                <button onClick={() => setPreviewMode(false)} className={`flex-1 sm:flex-none px-4 py-1.5 ${theme.bg} hover:opacity-90 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5`}>
+                  <ArrowLeft size={12} /> Keluar Preview
                 </button>
               </div>
             )}
