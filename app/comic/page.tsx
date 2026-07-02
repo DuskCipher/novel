@@ -26,62 +26,88 @@ export default function ComicHubPage() {
   }, [data.trending.length]);
 
   useEffect(() => {
-    const fetchHubData = async () => {
-      try {
-        const [popRes, terbaruRes, genreRes, trendingRes, coloredRes, webtoonRes] = await Promise.all([
-          fetch('/api/comic/populer').then(r => r.json()).catch(() => ({comics: []})),
-          fetch('/api/comic/terbaru').then(r => r.json()).catch(() => ({comics: []})),
-          fetch('/api/comic/genres').then(r => r.json()).catch(() => ({data: []})),
-          fetch('/api/comic/trending').then(r => r.json()).catch(() => ({comics: []})),
-          fetch('/api/comic/berwarna/1').then(r => r.json()).catch(() => ({data: {results: []}})),
-          fetch('/api/trending?source=webtoons').then(r => r.json()).catch(() => ({items: []})),
-        ]);
-        
-        const pop = popRes?.comics || [];
-        const terbaru = terbaruRes?.comics || [];
-        const genres = Array.isArray(genreRes?.data) ? genreRes.data : [];
-        const parseSlug = (link: string) => {
-          if (!link) return '';
-          if (link.startsWith('/')) {
-             const m = link.match(/\/manga\/([^/]+)/);
-             if (m) return m[1];
-             return link.replace(/^\/|\/$/g, ''); // strip slashes
+    const fetchHubData = () => {
+      const parseSlug = (link: string) => {
+        if (!link) return '';
+        if (link.startsWith('/')) {
+           const m = link.match(/\/manga\/([^/]+)/);
+           if (m) return m[1];
+           return link.replace(/^\/|\/$/g, '');
+        }
+        const urlMatch = link.match(/\/manga\/([^/]+)/);
+        return urlMatch ? urlMatch[1] : link;
+      };
+
+      const hardcodedGenres = [
+        { name: 'Action', slug: 'action' },
+        { name: 'Romance', slug: 'romance' },
+        { name: 'Fantasy', slug: 'fantasy' },
+        { name: 'Adventure', slug: 'adventure' },
+        { name: 'Comedy', slug: 'comedy' },
+        { name: 'Drama', slug: 'drama' },
+        { name: 'Isekai', slug: 'isekai' },
+        { name: 'Magic', slug: 'magic' },
+        { name: 'Martial Arts', slug: 'martial-arts' },
+        { name: 'Shounen', slug: 'shounen' }
+      ];
+
+      setData(prev => ({ ...prev, genres: hardcodedGenres }));
+
+      let loadedCount = 0;
+      const checkDone = () => {
+        loadedCount++;
+        if (loadedCount >= 2) setLoading(false); // Stop loading after main APIs (terbaru & populer)
+      };
+
+      fetch('/api/comic/populer')
+        .then(r => r.json())
+        .then(res => {
+          const parsedPop = (res.comics || res.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
+          setData(prev => ({ ...prev, popular: parsedPop }));
+        })
+        .catch(console.error)
+        .finally(checkDone);
+
+      fetch('/api/comic/terbaru')
+        .then(r => r.json())
+        .then(res => {
+          const parsedTerbaru = (res.comics || res.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
+          setData(prev => ({ ...prev, latest: parsedTerbaru }));
+        })
+        .catch(console.error)
+        .finally(checkDone);
+
+      fetch('/api/comic/trending')
+        .then(r => r.json())
+        .then(res => {
+          const parsedTrending = (res.trending || res.comics || res.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
+          setData(prev => ({ ...prev, trending: parsedTrending }));
+        })
+        .catch(console.error);
+
+      fetch('/api/comic/genres')
+        .then(r => r.json())
+        .then(res => {
+          if (Array.isArray(res.data) && res.data.length > 0) {
+            setData(prev => ({ ...prev, genres: res.data }));
           }
-          const urlMatch = link.match(/\/manga\/([^/]+)/);
-          return urlMatch ? urlMatch[1] : link;
-        };
+        })
+        .catch(console.error);
 
-        const parsedPop = (popRes.comics || popRes.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
-        const parsedTerbaru = (terbaruRes.comics || terbaruRes.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
-        const parsedTrending = (trendingRes.trending || trendingRes.comics || trendingRes.data || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
-        const parsedColored = (coloredRes.data?.results || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
+      fetch('/api/comic/berwarna/1')
+        .then(r => r.json())
+        .then(res => {
+          const parsedColored = (res.data?.results || []).map((c: any) => ({ ...c, slug: parseSlug(c.link || c.href || c.url) }));
+          setData(prev => ({ ...prev, berwarna: parsedColored }));
+        })
+        .catch(console.error);
 
-        const hardcodedGenres = [
-          { name: 'Action', slug: 'action' },
-          { name: 'Romance', slug: 'romance' },
-          { name: 'Fantasy', slug: 'fantasy' },
-          { name: 'Adventure', slug: 'adventure' },
-          { name: 'Comedy', slug: 'comedy' },
-          { name: 'Drama', slug: 'drama' },
-          { name: 'Isekai', slug: 'isekai' },
-          { name: 'Magic', slug: 'magic' },
-          { name: 'Martial Arts', slug: 'martial-arts' },
-          { name: 'Shounen', slug: 'shounen' }
-        ];
-
-        setData({
-          popular: parsedPop,
-          latest: parsedTerbaru,
-          trending: parsedTrending,
-          genres: (Array.isArray(genreRes?.data) && genreRes.data.length > 0) ? genreRes.data : hardcodedGenres,
-          berwarna: parsedColored,
-          webtoons: webtoonRes?.items || []
-        });
-      } catch (error) {
-        console.error("Failed to fetch comic hub data:", error);
-      } finally {
-        setLoading(false);
-      }
+      fetch('/api/trending?source=webtoons')
+        .then(r => r.json())
+        .then(res => {
+          setData(prev => ({ ...prev, webtoons: res.items || [] }));
+        })
+        .catch(console.error);
     };
     
     fetchHubData();

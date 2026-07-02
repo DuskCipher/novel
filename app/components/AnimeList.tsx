@@ -14,7 +14,7 @@ export default function AnimeList({ items }: { items: any[] }) {
         const mappedItem = {
           ...item,
           title: item.title || item.name || item.anime_name,
-          poster: item.poster || item.thumb || item.thumbnail,
+          poster: item.poster || item.thumb || item.thumbnail || item.image,
           status: item.status || item.status_or_day || (item.type === 'Movie' ? 'TAMAT' : 'ONGOING'),
           views: item.score || item.rating || item.episodes || item.episode || item.time || 'N/A',
           type: item.type || 'SERIES',

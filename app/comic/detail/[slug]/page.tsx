@@ -124,7 +124,7 @@ export default function ComicDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D0D11] p-6 flex flex-col gap-8 animate-pulse">
+      <div className="min-h-screen bg-transparent p-6 flex flex-col gap-8 animate-pulse">
         <div className="h-64 bg-zinc-900 rounded-2xl w-full"></div>
         <div className="h-96 bg-zinc-900 rounded-2xl w-full"></div>
       </div>
@@ -133,7 +133,7 @@ export default function ComicDetailPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0D0D11] flex flex-col items-center justify-center text-white">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center text-white">
         <h1 className="text-2xl font-bold mb-4">Komik tidak ditemukan</h1>
         <button onClick={() => router.back()} className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700">Kembali</button>
       </div>
@@ -151,13 +151,13 @@ export default function ComicDetailPage() {
   return (
     <>
     <div className="flex-1 min-w-0">
-    <div className="min-h-screen bg-[#0B0D17] pb-24 font-sans relative">
+    <div className="min-h-screen bg-transparent pb-24 font-sans relative">
       {/* 1. Blurred Background Top Section */}
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pt-8 pb-6 flex flex-col md:flex-row gap-6 md:gap-10">
         {/* Blurred Background Layer */}
         <div className="absolute top-0 left-0 w-full h-[500px] overflow-hidden -z-10">
           <img src={`/api/image-proxy?url=${encodeURIComponent(image)}`} alt="Background" className="w-full h-full object-cover blur-2xl opacity-20 scale-110" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0D17]/80 to-[#0B0D17]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]"></div>
         </div>
 
         {/* Left Side: Info & Poster */}
@@ -203,7 +203,7 @@ export default function ComicDetailPage() {
         {/* Right Side: Content */}
         <div className="flex-1 flex flex-col gap-6 w-full min-w-0">
         {/* 2. Synopsis Box */}
-        <div className="bg-[#151728] rounded-2xl p-5 border border-zinc-800/50">
+        <div className="bg-zinc-900/40 backdrop-blur-md rounded-2xl p-5 border border-zinc-800/50">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-blue-400 flex items-center gap-2">
               <BookOpen size={20} />
@@ -235,7 +235,7 @@ export default function ComicDetailPage() {
         </div>
 
         {/* 3. Daftar Chapter */}
-        <div className="bg-[#151728] rounded-2xl p-5 border border-zinc-800/50">
+        <div className="bg-zinc-900/40 backdrop-blur-md rounded-2xl p-5 border border-zinc-800/50">
           <div className="flex items-center gap-2 mb-5">
             <List size={20} className="text-blue-400" />
             <h2 className="text-lg font-bold text-white flex-1">Daftar Chapter</h2>
@@ -246,7 +246,7 @@ export default function ComicDetailPage() {
             <input 
               type="text" 
               placeholder="Cari chapter..." 
-              className="w-full bg-[#0B0D17] border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-zinc-600"
+              className="w-full bg-black/40 border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-zinc-600"
             />
           </div>
 
