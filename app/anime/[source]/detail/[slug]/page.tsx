@@ -262,7 +262,7 @@ export default function AnimeDetailPage() {
         {/* EPISODE LIST */}
         <div className="w-full bg-[#1C1D2A] p-5 sm:p-6 rounded-2xl border border-zinc-800/50">
           <h3 className="text-xl font-bold text-white mb-5 flex items-center gap-2 justify-center sm:justify-start">
-            <List size={20} className="text-[#60a5fa]" /> Daftar Episode
+            <List size={20} className="text-[#f40f25]" /> Daftar Episode
           </h3>
           
           <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-4">
@@ -275,7 +275,7 @@ export default function AnimeDetailPage() {
                 onChange={(e) => { setEpsQuery(e.target.value); setEpsPage(1); }}
                 className="w-full bg-[#1C1D2A] border border-zinc-800 text-white text-sm rounded-lg pl-9 pr-16 py-2 focus:outline-none focus:border-zinc-600"
               />
-              <button className="absolute right-1 top-1 bottom-1 px-3 bg-[#2A2B3D] text-xs font-bold rounded-lg text-[#60a5fa] hover:bg-[#3b3c54]">Cari</button>
+              <button className="absolute right-1 top-1 bottom-1 px-3 bg-[#2A2B3D] text-xs font-bold rounded-lg text-[#f40f25] hover:bg-[#3b3c54]">Cari</button>
             </div>
             <button onClick={() => setEpsSortAsc(!epsSortAsc)} className="bg-[#2A2B3D] hover:bg-[#3b3c54] border border-zinc-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shrink-0">
               Urutan: {epsSortAsc ? '1 -> 99' : '99 -> 1'}
@@ -296,7 +296,7 @@ export default function AnimeDetailPage() {
                 <ChevronLeft size={18} />
               </button>
               <div className="flex flex-col items-center">
-                <span className="text-zinc-300 text-xs font-bold">Page <span className="text-[#60a5fa]">{epsPage}</span></span>
+                <span className="text-zinc-300 text-xs font-bold">Page <span className="text-[#f40f25]">{epsPage}</span></span>
                 <span className="text-zinc-500 text-[10px]">Eps {startEps} - {endEps}</span>
               </div>
               <button 

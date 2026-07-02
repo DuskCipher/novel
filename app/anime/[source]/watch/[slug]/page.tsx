@@ -441,7 +441,7 @@ export default function AnimeWatchPage() {
         {/* DAFTAR EPISODE */}
         <div className="mb-8 px-4 w-full">
           <h3 className="text-[13px] font-bold text-white mb-4 flex items-center gap-2">
-            <List size={16} className="text-[#60a5fa]" /> Daftar Episode
+            <List size={16} className="text-[#f40f25]" /> Daftar Episode
           </h3>
           
           <div className="flex gap-2 mb-4">
@@ -468,7 +468,7 @@ export default function AnimeWatchPage() {
                 <ChevronLeft size={18} />
               </button>
               <div className="flex flex-col items-center">
-                <span className="text-zinc-300 text-xs font-bold">Page <span className="text-[#60a5fa]">{epsPage}</span></span>
+                <span className="text-zinc-300 text-xs font-bold">Page <span className="text-[#f40f25]">{epsPage}</span></span>
                 <span className="text-zinc-500 text-[10px]">Eps {startEps} - {endEps}</span>
               </div>
               <button 
