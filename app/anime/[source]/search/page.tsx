@@ -12,17 +12,18 @@ function AnimeSearchContent() {
   const searchParams = useSearchParams();
   const params = useParams();
   const source = (params?.source as string) || 'otakudesu';
-  const initialQuery = searchParams.get('q') || '';
+  const urlQuery = searchParams.get('q') || '';
 
-  const [query, setQuery] = useState(initialQuery);
+  const [query, setQuery] = useState(urlQuery);
   const [list, setList] = useState<any[]>([]);
   const [exploreList, setExploreList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(!!initialQuery);
+  const [hasSearched, setHasSearched] = useState(!!urlQuery);
   const [activeTab, setActiveTab] = useState('Semua');
 
+  // 1. Fetch Explore Tabs
   useEffect(() => {
-    if (!initialQuery) {
+    if (!hasSearched) {
       const fetchExploreTab = async () => {
         setLoading(true);
         try {
@@ -47,7 +48,8 @@ function AnimeSearchContent() {
             title: item.title || item.name,
             poster: item.poster || item.thumb,
             href: `/anime/${source}/detail/${item.animeId || item.id || item.slug || item.endpoint}`,
-            type: 'explore'
+            type: 'explore',
+            status: item.status || item.status_or_day || (activeTab === 'Tamat' ? 'TAMAT' : 'ONGOING')
           }));
           
           setExploreList(mapped);
@@ -59,43 +61,49 @@ function AnimeSearchContent() {
       };
       fetchExploreTab();
     }
-  }, [initialQuery, activeTab, source]);
+  }, [activeTab, source, hasSearched]);
 
-  const performSearch = async (q: string) => {
-    if (!q.trim()) return;
-    setLoading(true);
-    setHasSearched(true);
-    try {
-      const res = await searchAnime(q, 1, source);
-      const items = res?.data?.animeList || res?.animeList || res?.animes || res?.search_results || (Array.isArray(res?.data) ? res.data : []);
-      const mapped = (Array.isArray(items) ? items : []).map((item: any) => ({
-        title: item.title,
-        poster: item.poster || item.thumb,
-        href: `/anime/${source}/detail/${item.animeId || item.id || item.slug || item.endpoint}`,
-        type: 'SERIES',
-        status: item.status || 'UNKNOWN',
-        year: '2026',
-        views: item.score || item.rating || 'N/A'
-      }));
-      setList(mapped);
-    } catch (error) {
-      console.error("Failed to search anime", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 2. Perform Search based on URL Query
   useEffect(() => {
-    if (initialQuery) {
-      performSearch(initialQuery);
-    }
-  }, [initialQuery]);
+    const performSearch = async (q: string) => {
+      setLoading(true);
+      setHasSearched(true);
+      try {
+        const res = await searchAnime(q, 1, source);
+        const items = res?.data?.animeList || res?.animeList || res?.animes || res?.search_results || (Array.isArray(res?.data) ? res.data : []);
+        const mapped = (Array.isArray(items) ? items : []).map((item: any) => ({
+          title: item.title,
+          poster: item.poster || item.thumb,
+          href: `/anime/${source}/detail/${item.animeId || item.id || item.slug || item.endpoint}`,
+          type: item.type || 'explore',
+          status: item.status || item.status_or_day || 'UNKNOWN',
+          year: item.year || '2025',
+          views: item.score || item.rating || item.episode || 'N/A'
+        }));
+        setList(mapped);
+      } catch (error) {
+        console.error("Failed to search anime", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    if (urlQuery.trim()) {
+      setQuery(urlQuery); // Sync local state
+      performSearch(urlQuery);
+    } else {
+      setHasSearched(false);
+      setList([]);
+    }
+  }, [urlQuery, source]);
+
+  // 3. Handle Submit (Only updates URL)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       router.replace(`/anime/${source}/search?q=${encodeURIComponent(query)}`);
-      performSearch(query);
+    } else {
+      router.replace(`/anime/${source}/search`);
     }
   };
 
@@ -145,7 +153,13 @@ function AnimeSearchContent() {
           return (
             <button
               key={idx}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                if (hasSearched) {
+                  setQuery('');
+                  router.replace(`/anime/${source}/search`);
+                }
+              }}
               className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs transition-colors border ${
                 isActive 
                   ? 'bg-amber-500 text-black shadow-md border-amber-500' 

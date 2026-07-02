@@ -178,41 +178,41 @@ export default function AnimeHomePage() {
 
           {/* QUICK MENU */}
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 w-full pt-2 pb-4">
-            <Link href={`/anime/${source}/popular`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-rose-500 to-red-600 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-rose-900/20">
-                <Flame className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/popular`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-rose-500 hover:scale-110 transition-transform">
+                <Flame size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">Trending</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">Trending</span>
             </Link>
-            <Link href={`/anime/${source}/ongoing`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-900/20">
-                <PlayCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/ongoing`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-blue-500 hover:scale-110 transition-transform">
+                <PlayCircle size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">Ongoing</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">Ongoing</span>
             </Link>
-            <Link href={`/anime/${source}/completed`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-400 to-teal-600 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-emerald-900/20">
-                <CheckCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/completed`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-emerald-500 hover:scale-110 transition-transform">
+                <CheckCircle size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">Tamat</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">Tamat</span>
             </Link>
-            <Link href={`/anime/${source}/schedule`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-amber-900/20">
-                <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/schedule`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-amber-500 hover:scale-110 transition-transform">
+                <Calendar size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">Jadwal</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">Jadwal</span>
             </Link>
-            <Link href={`/anime/${source}/genre/movie`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-600 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-purple-900/20">
-                <Film className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/genre/movie`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-purple-500 hover:scale-110 transition-transform">
+                <Film size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">Movie</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">Movie</span>
             </Link>
-            <Link href={`/anime/${source}/unlimited`} className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-2xl flex items-center justify-center bg-gradient-to-br from-zinc-700 to-zinc-900 text-white transition-transform hover:scale-105 active:scale-95 shadow-md shadow-zinc-900/20">
-                <LayoutGrid className="w-6 h-6 sm:w-7 sm:h-7" />
+            <Link href={`/anime/${source}/unlimited`} className="flex flex-col items-center justify-center gap-1.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1D2A] flex items-center justify-center text-zinc-400 hover:scale-110 transition-transform">
+                <LayoutGrid size={22} className="sm:w-6 sm:h-6" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 text-center leading-tight">A-Z</span>
+              <span className="text-[10px] sm:text-xs text-zinc-300">A-Z</span>
             </Link>
           </div>
 

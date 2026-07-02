@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, PlayCircle, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import {  useRouter , useParams } from 'next/navigation';
 import AnimeCard3 from '../../components/AnimeCard3';
+import Sidebar from '../../components/Sidebar';
 import { getAnimeOngoing } from '@/lib/anime-api';
 
 export default function AnimeOngoingPage() {
@@ -19,7 +20,7 @@ export default function AnimeOngoingPage() {
     setLoading(true);
     try {
       const res = await getAnimeOngoing(p, source);
-      const items = res?.data?.animeList || res?.animeList || res?.ongoing_anime || (Array.isArray(res?.data) ? res.data : []);
+      const items = res?.data?.animeList || res?.animeList || res?.ongoing_anime || res?.animes || (Array.isArray(res?.data) ? res.data : []);
       const mapped = items.map((item: any) => ({
         title: item.title,
         poster: item.poster || item.thumb,
@@ -43,6 +44,7 @@ export default function AnimeOngoingPage() {
   }, [page]);
 
   return (
+    <>
     <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
       
       {/* Header */}
@@ -91,5 +93,7 @@ export default function AnimeOngoingPage() {
         )}
       </div>
     </div>
+    <Sidebar />
+    </>
   );
 }
