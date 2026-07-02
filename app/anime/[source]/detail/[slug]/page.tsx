@@ -120,123 +120,141 @@ export default function AnimeDetailPage() {
 
   return (
     <>
-    <div className="flex-1 min-w-0">
-    <div className="min-h-screen pt-16 text-white pb-24 font-sans">
+    <div className="flex-1 min-w-0 bg-[#0f0f13]">
+    <div className="min-h-screen pb-24 font-sans text-white">
       
+      {/* HEADER BANNER - Blurred Background */}
+      <div className="relative w-full h-[240px] sm:h-[300px] md:h-[350px] overflow-hidden">
+        <div className="absolute inset-0 bg-black">
+          <img 
+            src={`/api/image-proxy?url=${encodeURIComponent(detail.poster || detail.thumb)}`} 
+            alt="background" 
+            className="w-full h-full object-cover opacity-40 blur-[20px] scale-110"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f13] via-[#0f0f13]/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f13]/80 to-transparent"></div>
+      </div>
 
-      <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row gap-8 pt-8 px-4 sm:px-6">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative -mt-32 sm:-mt-40 flex flex-col items-center">
         
-        {/* LEFT COLUMN */}
-        <div className="w-full md:w-[300px] lg:w-[320px] shrink-0 flex flex-col items-center md:items-start">
-          {/* POSTER */}
-          <div className="w-32 sm:w-48 md:w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,153,187,0.15)] mb-6">
-            <img 
-              src={`/api/image-proxy?url=${encodeURIComponent(detail.poster || detail.thumb)}`} 
-              alt={detail.title} 
-              className="w-full h-full object-cover"
-            />
-          </div>
+        {/* POSTER */}
+        <div className="w-36 sm:w-48 aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.8)] border border-white/10 mb-5 sm:mb-6">
+          <img 
+            src={`/api/image-proxy?url=${encodeURIComponent(detail.poster || detail.thumb)}`} 
+            alt={detail.title} 
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-          {/* TITLES */}
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-center md:text-left text-white mb-2 leading-tight">
-            {detail.title}
-          </h1>
-          <p className="text-sm text-zinc-400 text-center md:text-left mb-5 w-full">
-            {detail.japanese || detail.title}
-          </p>
+        {/* TITLES */}
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-center text-white mb-2 leading-tight drop-shadow-md">
+          {detail.title}
+        </h1>
+        <p className="text-sm italic text-zinc-400 text-center mb-6">
+          {detail.japanese || detail.title}
+        </p>
 
-          {/* STATS */}
-          <div className="flex items-center justify-center md:justify-start gap-3 mb-4 w-full">
-            <div className="bg-[#2A2B3D] px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold">
-              <Eye size={14} className="text-[#60a5fa]" />
-              <span className="text-zinc-300">530.403 Views</span>
+        {/* BADGES */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
+          <span className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold ${
+            (detail.status?.toLowerCase() === 'ongoing') ? 'bg-[#00d285] text-white' : 'bg-sky-500 text-white'
+          }`}>
+            {detail.status || 'Ongoing'}
+          </span>
+          <span className="bg-[#1C1D2A] border border-zinc-700/50 text-zinc-300 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5">
+            <Play size={14} className="text-zinc-400" /> {detail.type || 'Series'}
+          </span>
+          <span className="bg-[#1C1D2A] border border-amber-900/50 text-amber-500 text-xs sm:text-sm font-black px-4 py-1.5 rounded-full flex items-center gap-1.5">
+            <span className="text-[10px]">⭐</span> {detail.score || detail.rating || 'N/A'}
+          </span>
+        </div>
+
+        {/* METADATA LIST */}
+        <div className="w-full max-w-2xl bg-transparent border-t border-b border-zinc-800/60 py-4 mb-6">
+          <div className="flex flex-col gap-3 sm:gap-4 text-xs sm:text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">Studio</span>
+              <span className="text-white font-bold text-right">{detail.studio || '-'}</span>
             </div>
-            <div className="bg-[#2A2B3D] px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold">
-              <Heart size={14} className="text-[#60a5fa] fill-current" />
-              <span className="text-zinc-300">16759 Favs</span>
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">Season</span>
+              <span className="text-white font-bold text-right">{detail.season || detail.year || '-'}</span>
             </div>
-          </div>
-
-          {/* INFO TAGS */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-3 w-full">
-            <span className="bg-[#2A2B3D] border border-zinc-700/50 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Film size={14} /> SERIES
-            </span>
-            <span className="bg-[#5c3e58] text-[#60a5fa] text-xs font-bold px-3 py-1.5 rounded-full uppercase">
-              {detail.status || 'FINISHED'}
-            </span>
-            <span className="bg-[#2a3457] text-[#8fb3ff] text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Calendar size={14} /> {detail.release_date || detail.aired || '2019-07-08'}
-            </span>
-            <span className="bg-[#2a3457] text-[#8fb3ff] text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Calendar size={14} /> {detail.year || '2024'}
-            </span>
-          </div>
-
-          {/* STUDIO */}
-          <div className="flex justify-center md:justify-start mb-5 w-full">
-            <span className="bg-[#214a38] text-[#81e8b5] text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5">
-              <Building2 size={14} /> {detail.studio || 'White Fox'}
-            </span>
-          </div>
-
-          {/* GENRES */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-8 w-full">
-            {(detail.genre_list || detail.genres || []).map((g: any, i: number) => (
-              <Link key={i} href={`/anime/${source}/genre/${g.genreId || g.slug}`} className="bg-[#2A2B3D] text-zinc-300 hover:text-white text-xs font-medium px-4 py-1.5 rounded-lg transition-colors">
-                {g.genreName || g.name}
-              </Link>
-            ))}
-          </div>
-
-          {/* MAIN BUTTONS */}
-          <div className="w-full flex flex-col sm:flex-row md:flex-col lg:flex-row justify-center md:justify-start gap-3 mb-10 md:mb-0">
-            <Link href={episodes.length > 0 ? `/anime/${source}/watch/${episodes[episodes.length - 1]?.episodeId || episodes[episodes.length - 1]?.slug}` : '#'} className="flex-1 bg-[#60a5fa] hover:bg-[#3b82f6] text-[#2c131b] font-extrabold px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm shadow-lg shadow-blue-900/20">
-              <Play size={16} className="fill-current" /> Lanjut Eps {episodes.length > 0 ? 1 : 0}
-            </Link>
-            <button 
-              onClick={async () => {
-                if (!user) {
-                  alert('Silakan login untuk menambahkan ke Watchlist!');
-                  return;
-                }
-                
-                try {
-                  if (isBookmarked) {
-                    await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: `/anime/${source}/detail/${slug}` });
-                    setIsBookmarked(false);
-                  } else {
-                    await supabase.from('user_bookmarks').upsert({ 
-                      user_id: user.id, 
-                      item_url: `/anime/${source}/detail/${slug}`, 
-                      title: detail.title, 
-                      poster: detail.poster || detail.thumb, 
-                      category: 'Anime' 
-                    }, { onConflict: 'user_id,item_url' });
-                    setIsBookmarked(true);
-                  }
-                } catch(e) {}
-              }}
-              className={`flex-1 font-bold px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm border ${isBookmarked ? 'bg-red-500/10 border-red-500/50 hover:bg-red-500 text-white' : 'bg-[#2A2B3D] border-[#2A2B3D] hover:bg-[#3b3c54] text-white'}`}>
-              <Bookmark size={16} className={isBookmarked ? "fill-current" : ""} /> {isBookmarked ? 'Hapus' : 'Watchlist'}
-            </button>
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">Total Eps</span>
+              <span className="text-white font-bold text-right">{detail.episodes || detail.episode || '-'}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">Released</span>
+              <span className="text-white font-bold text-right">{detail.release_date || detail.aired || '-'}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">Duration</span>
+              <span className="text-white font-bold text-right">{detail.duration || detail.time || '-'}</span>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN (Content) */}
-        <div className="flex-1 min-w-0 w-full flex flex-col gap-10">
+        {/* GENRES */}
+        <div className="flex flex-wrap justify-center items-center gap-2 mb-8 max-w-2xl">
+          <span className="text-rose-500 mr-1"><Bookmark size={14} className="fill-current" /></span>
+          {(detail.genre_list || detail.genres || []).map((g: any, i: number) => (
+            <Link key={i} href={`/anime/${source}/genre/${g.genreId || g.slug}`} className="bg-[#1C1D2A] border border-zinc-700/50 text-zinc-300 hover:text-white text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full transition-colors">
+              {g.genreName || g.name}
+            </Link>
+          ))}
+        </div>
+
+        {/* ACTION BUTTONS */}
+        <div className="w-full max-w-2xl flex flex-row gap-2 sm:gap-3 mb-10">
+          <Link href={episodes.length > 0 ? `/anime/${source}/watch/${episodes[episodes.length - 1]?.episodeId || episodes[episodes.length - 1]?.slug}` : '#'} className="flex-[2] sm:flex-[3] bg-[#f40f25] hover:bg-[#d60a1e] text-white font-extrabold px-2 sm:px-5 py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-[13px] sm:text-sm">
+            <Play size={16} className="fill-current" /> Tonton
+          </Link>
+          <button 
+            onClick={async () => {
+              if (!user) {
+                alert('Silakan login untuk menambahkan ke Watchlist!');
+                return;
+              }
+              try {
+                if (isBookmarked) {
+                  await supabase.from('user_bookmarks').delete().match({ user_id: user.id, item_url: `/anime/${source}/detail/${slug}` });
+                  setIsBookmarked(false);
+                } else {
+                  await supabase.from('user_bookmarks').upsert({ 
+                    user_id: user.id, 
+                    item_url: `/anime/${source}/detail/${slug}`, 
+                    title: detail.title, 
+                    poster: detail.poster || detail.thumb, 
+                    category: 'Anime' 
+                  }, { onConflict: 'user_id,item_url' });
+                  setIsBookmarked(true);
+                }
+              } catch(e) {}
+            }}
+            className={`flex-[1.5] sm:flex-[2] font-bold px-2 sm:px-5 py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-[13px] sm:text-sm border ${isBookmarked ? 'bg-red-500/10 border-red-500/50 hover:bg-red-500 text-white' : 'bg-[#1C1D2A] border-zinc-800/50 hover:bg-[#2b2c3d] text-zinc-300'}`}>
+            <Bookmark size={14} className={isBookmarked ? "fill-current" : ""} /> {isBookmarked ? 'Hapus' : 'Simpan'}
+          </button>
+          <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link dicopy!'); }} className="flex-[1.5] sm:flex-[2] bg-[#1C1D2A] hover:bg-[#2b2c3d] border border-zinc-800/50 text-zinc-300 font-bold px-2 sm:px-5 py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-[13px] sm:text-sm">
+            <Copy size={14} /> Share
+          </button>
+        </div>
+
+        {/* BOTTOM CONTENT AREA */}
+        <div className="w-full max-w-4xl flex flex-col gap-8">
           
           {/* SYNOPSIS */}
-          <div className="w-full text-center md:text-left bg-[#1C1D2A] p-5 sm:p-6 rounded-2xl border border-zinc-800/50">
-            <h3 className="text-lg font-bold text-white mb-4 hidden md:flex items-center gap-2">
-              <Building2 size={18} className="text-[#60a5fa]" /> Sinopsis
+          <div className="w-full bg-[#1C1D2A] p-5 sm:p-6 rounded-2xl border border-zinc-800/50">
+            <h3 className="text-base sm:text-lg font-black text-white mb-4">
+              Sinopsis
             </h3>
-            <div className="text-zinc-300 text-sm leading-relaxed mb-3 text-left space-y-3 whitespace-pre-wrap">
-              {showFullSynopsis ? synopsisText : synopsisText.slice(0, 200) + (isSynopsisLong ? '...' : '')}
+            <div className="text-zinc-400 text-[13px] sm:text-sm leading-relaxed mb-3 text-left space-y-3 whitespace-pre-wrap">
+              {showFullSynopsis ? synopsisText : synopsisText.slice(0, 250) + (isSynopsisLong ? '...' : '')}
             </div>
             {isSynopsisLong && (
-              <button onClick={() => setShowFullSynopsis(!showFullSynopsis)} className="text-[#60a5fa] text-sm font-bold hover:underline w-full md:w-auto text-left">
-                {showFullSynopsis ? 'Sembunyikan' : 'Lihat Selengkapnya...'}
+              <button onClick={() => setShowFullSynopsis(!showFullSynopsis)} className="text-[#f40f25] text-xs sm:text-sm font-bold hover:underline">
+                {showFullSynopsis ? 'Sembunyikan' : 'Selengkapnya'}
               </button>
             )}
           </div>
