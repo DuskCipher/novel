@@ -24,26 +24,38 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
     setLoading(true);
     try {
       if (type === 'followers') {
-        // Get users who follow this userId (follower_id)
         const { data, error } = await supabase
           .from('user_follows')
-          .select('follower_id, follower:profiles!user_follows_follower_id_fkey(id, username, avatar_url, level, role)')
+          .select('follower_id')
           .eq('following_id', userId)
           .order('created_at', { ascending: false });
           
         if (!error && data) {
-          setUsers(data.map(d => d.follower).filter(Boolean));
+          const profileIds = data.map(d => d.follower_id);
+          if (profileIds.length > 0) {
+            const { data: profilesData } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
+            setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
+          } else {
+            setUsers([]);
+          }
         }
       } else {
-        // Get users who this userId follows (following_id)
         const { data, error } = await supabase
           .from('user_follows')
-          .select('following_id, following:profiles!user_follows_following_id_fkey(id, username, avatar_url, level, role)')
+          .select('following_id')
           .eq('follower_id', userId)
           .order('created_at', { ascending: false });
           
         if (!error && data) {
-          setUsers(data.map(d => d.following).filter(Boolean));
+          const profileIds = data.map(d => d.following_id);
+          if (profileIds.length > 0) {
+            const { data: profilesData } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
+            setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
+          } else {
+            setUsers([]);
+          }
         }
       }
     } catch (e) {

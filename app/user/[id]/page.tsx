@@ -151,7 +151,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         {/* Profile Header */}
         <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 -mt-14 sm:-mt-20 relative z-20 flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-5">
           <div className="relative shrink-0">
-            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full border-[3px] border-[#0a0a0a] bg-zinc-900 overflow-hidden shadow-xl ${isAdmin ? 'ring-4 ring-blue-500' : `ring-2 ${theme.ring}`} ring-offset-2 ring-offset-[#0a0a0a]`}>
+            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-zinc-900 overflow-hidden shadow-xl ${isAdmin ? 'border-4 border-blue-500' : `border-[3px] border-[#0a0a0a] ring-2 ${theme.ring} ring-offset-2 ring-offset-[#0a0a0a]`}`}>
               <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             </div>
             <div className={`absolute bottom-1 right-1 w-7 h-7 ${theme.bg} rounded-full border-2 border-[#0a0a0a] flex items-center justify-center text-white`}>
