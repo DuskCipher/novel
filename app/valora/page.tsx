@@ -17,6 +17,8 @@ export default function ValoraHome() {
   const [valoraComments, setValoraComments] = useState<any[]>([]);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [communityUrl, setCommunityUrl] = useState('https://whatsapp.com/channel/0029Vb7w9Dt4yltJRP5azv0k');
+  const [supportUrl, setSupportUrl] = useState('https://saweria.co/valoranime');
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: any) => {
@@ -70,6 +72,15 @@ export default function ValoraHome() {
       .then(res => res.json())
       .then(data => {
         if (data.count) setTotalUsers(data.count);
+      })
+      .catch(console.error);
+
+    // Fetch site settings for links
+    fetch('/api/admin/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.community_url) setCommunityUrl(data.community_url);
+        if (data.support_url) setSupportUrl(data.support_url);
       })
       .catch(console.error);
   }, []);
@@ -167,8 +178,8 @@ export default function ValoraHome() {
           <Link href="/" onClick={() => document.cookie = "valora_hub_passed=true; max-age=2592000; path=/"} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold text-sm md:text-base rounded-lg py-3 flex items-center justify-center gap-2 transition-all  ">
             Jelajahi Valora <ArrowRight size={16} className="bg-white text-red-600 rounded-full p-0.5" />
           </Link>
-          <button onClick={() => window.open('https://saweria.co/valoranime', '_blank')} className="w-full bg-[#1DA1F2] hover:bg-blue-400 text-white font-bold text-sm md:text-base rounded-lg py-3 transition-all  ">
-            Dukung Valora
+          <button onClick={() => window.open(supportUrl, '_blank')} className="w-full bg-[#1DA1F2] hover:bg-blue-400 text-white font-bold text-sm md:text-base rounded-lg py-3 transition-all  ">
+            Support Valora!me
           </button>
           
           {/* Anime & Update Buttons */}
@@ -350,36 +361,45 @@ export default function ValoraHome() {
       {/* Announcement Popup (Once a day) */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-[#2A2B3D] rounded-xl w-full max-w-sm p-6 relative  border border-zinc-700 flex flex-col items-center">
-            <button onClick={closePopup} className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors">
-              <X size={20} />
+          <div className="bg-[#1A1A24] rounded-2xl w-full max-w-[340px] p-5 md:p-7 relative border border-zinc-800 shadow-2xl flex flex-col items-center">
+            <button onClick={closePopup} className="absolute top-3 right-3 text-zinc-500 hover:text-white bg-zinc-800/50 hover:bg-zinc-700 rounded-full p-1.5 transition-all">
+              <X size={18} />
             </button>
             
-            <h2 className="text-lg md:text-xl font-bold text-center mb-4">Pemberitahuan !!</h2>
+            <h2 className="text-xl font-extrabold text-center mb-5 text-white tracking-wide">Pemberitahuan !!</h2>
             
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <img src="/welcome-logo.png" alt="Valoran!me" className="w-10 h-10 object-contain " onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
-              <span className="font-bold text-lg"><span className="text-red-600">V</span>aloran!me</span>
+            <div className="flex items-center justify-center gap-3 mb-6 bg-zinc-900/50 px-6 py-3 rounded-2xl border border-zinc-800/50">
+              <img src="/welcome-logo.png" alt="Valoran!me" className="w-12 h-12 object-contain drop-shadow-md" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
+              <span className="font-bold text-xl tracking-tight"><span className="text-red-500">V</span>aloran!me</span>
             </div>
 
-            <p className="text-center text-xs md:text-[13px] text-zinc-300 mb-6 leading-relaxed">
-              <strong className="text-white">Website ini dikelola sepenuh hati.</strong><br/>
-              Kami berkomitmen menghadirkan platform hiburan yang bersih, aman, dan <strong className="text-white">Tanpa Iklan Sama Sekali.</strong>
-              <br/><br/>
-              Jika Anda ingin <strong className="text-white">Berkontribusi</strong> untuk biaya server kami, silakan klik tombol <strong className="text-white">Support Valora</strong>.<br/>
-              Jangan Lupa Untuk Join <strong className="text-white">Komunitas Valora!</strong> 😊
-            </p>
+            <div className="text-center text-[13px] md:text-sm text-zinc-400 mb-7 leading-relaxed space-y-3 px-1">
+              <p>
+                <strong className="text-white">Website ini dikelola sepenuh hati.</strong>
+              </p>
+              <p>
+                Kami berkomitmen menghadirkan platform hiburan yang bersih, aman, dan <strong className="text-red-400">Tanpa Iklan Sama Sekali.</strong>
+              </p>
+              <p>
+                Jika Anda ingin <strong className="text-white">Berkontribusi</strong> untuk biaya server kami, silakan klik tombol <strong className="text-blue-400">Support Valora</strong>.
+              </p>
+              <p className="font-medium">
+                Jangan Lupa Untuk Join <strong className="text-emerald-400">Komunitas Valora!</strong> 😊
+              </p>
+            </div>
 
-            <div className="w-full flex gap-3 mb-3">
-              <button onClick={() => { window.open('https://whatsapp.com/channel/0029Vb7w9Dt4yltJRP5azv0k', '_blank'); }} className="flex-1 bg-[#10B981] hover:bg-emerald-400 text-white font-bold text-xs py-3 rounded-lg flex items-center justify-center gap-1 transition-all ">
-                <Globe size={14} /> Komunitas
-              </button>
-              <button onClick={() => { window.open('https://saweria.co/valoranime', '_blank'); }} className="flex-1 bg-[#1DA1F2] hover:bg-blue-400 text-white font-bold text-xs py-3 rounded-lg flex items-center justify-center gap-1 transition-all ">
-                <Heart size={14} /> Support
-              </button>
+            <div className="w-full flex flex-col gap-3 mb-4">
+              <div className="flex gap-3">
+                <button onClick={() => { window.open(communityUrl, '_blank'); }} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-[13px] py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                  <Globe size={16} /> Komunitas
+                </button>
+                <button onClick={() => { window.open(supportUrl, '_blank'); }} className="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold text-[13px] py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                  <Heart size={16} /> Support
+                </button>
+              </div>
             </div>
             
-            <button onClick={closePopup} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold text-sm py-3 rounded-lg flex items-center justify-center gap-2 transition-all ">
+            <button onClick={closePopup} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold text-[13px] py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-600/20 active:scale-95">
               Lanjut <ArrowRight size={16} />
             </button>
           </div>

@@ -12,7 +12,9 @@ export default function AdminSettingsPage() {
     social_whatsapp: '',
     social_discord: '',
     social_facebook: '',
-    social_tiktok: ''
+    social_tiktok: '',
+    community_url: '',
+    support_url: ''
   });
   const [success, setSuccess] = useState(false);
 
@@ -27,7 +29,9 @@ export default function AdminSettingsPage() {
             social_whatsapp: data.social_whatsapp || '',
             social_discord: data.social_discord || '',
             social_facebook: data.social_facebook || '',
-            social_tiktok: data.social_tiktok || ''
+            social_tiktok: data.social_tiktok || '',
+            community_url: data.community_url || '',
+            support_url: data.support_url || ''
           });
         }
         setLoading(false);
@@ -174,6 +178,33 @@ export default function AdminSettingsPage() {
               </div>
             </div>
             <p className="text-xs text-zinc-500 mt-3">Kosongkan kolom jika ikon tidak ingin ditampilkan di footer.</p>
+          </div>
+
+          <div className="pt-6 border-t border-zinc-800">
+            <h2 className="text-lg font-bold text-white mb-4">Link Popup Utama & Donasi</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">Link Komunitas</label>
+                <input 
+                  type="text" 
+                  placeholder="https://whatsapp.com/channel/..."
+                  value={settings.community_url}
+                  onChange={e => setSettings({...settings, community_url: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-300 mb-2">Link Support / Donasi</label>
+                <input 
+                  type="text" 
+                  placeholder="https://saweria.co/..."
+                  value={settings.support_url}
+                  onChange={e => setSettings({...settings, support_url: e.target.value})}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-zinc-500 mt-3">Link ini digunakan untuk tombol di Home Page dan Popup Pemberitahuan.</p>
           </div>
 
           <div className="pt-4 border-t border-zinc-800 flex items-center gap-4">

@@ -26,7 +26,7 @@ export async function GET() {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { primary_color, site_name, social_whatsapp, social_discord, social_facebook, social_tiktok } = body;
+    const { primary_color, site_name, social_whatsapp, social_discord, social_facebook, social_tiktok, community_url, support_url } = body;
 
     const updates = [];
     if (primary_color) {
@@ -46,6 +46,12 @@ export async function PUT(req: Request) {
     }
     if (social_tiktok !== undefined) {
       updates.push({ key: 'social_tiktok', value: social_tiktok, updated_at: new Date().toISOString() });
+    }
+    if (community_url !== undefined) {
+      updates.push({ key: 'community_url', value: community_url, updated_at: new Date().toISOString() });
+    }
+    if (support_url !== undefined) {
+      updates.push({ key: 'support_url', value: support_url, updated_at: new Date().toISOString() });
     }
 
     if (updates.length > 0) {

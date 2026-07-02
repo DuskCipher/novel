@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     // Abaikan auth check jika sedang di halaman login
@@ -62,20 +63,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`${menuOpen ? 'flex' : 'hidden'} md:flex w-full md:w-72 bg-[#0F1115] border-r border-zinc-800 flex-col p-4 md:sticky md:top-0 md:h-screen fixed inset-0 top-[73px] z-40 overflow-y-auto`}>
         
         {/* User Profile Card */}
-        <div className="flex items-center justify-between p-3 bg-[#1A1D21] rounded-xl mb-4 border border-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <img src="/avatar.jpeg" alt="Admin" className="w-10 h-10 rounded-full object-cover" />
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1A1D21] rounded-full"></div>
+        <div className="relative mb-4">
+          <div className="flex items-center justify-between p-3 bg-[#1A1D21] rounded-xl border border-zinc-800">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <img src="/avatar.jpeg" alt="Admin" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1A1D21] rounded-full"></div>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-zinc-100">Valora Admin</span>
+                <span className="text-xs text-zinc-400">admin@valora.com</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-zinc-100">Valora Admin</span>
-              <span className="text-xs text-zinc-400">admin@valora.com</span>
-            </div>
+            <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="text-zinc-400 hover:text-white p-1 rounded-md hover:bg-zinc-800 transition-colors">
+              <MoreVertical size={16} />
+            </button>
           </div>
-          <button className="text-zinc-400 hover:text-white">
-            <MoreVertical size={16} />
-          </button>
+          
+          {/* User Dropdown */}
+          {userMenuOpen && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-[#1A1D21] border border-zinc-800 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+              <Link href="/" className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors">
+                <Home size={16} className="text-zinc-400" />
+                Kembali ke Beranda
+              </Link>
+              <div className="h-px bg-zinc-800 my-1"></div>
+              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors">
+                <LogOut size={16} />
+                Keluar (Logout)
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Workspace Title */}
@@ -83,9 +101,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="text-sm font-semibold text-zinc-100 border-b-2 border-white pb-1">
             Valora Dashboard
           </div>
-          <button className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white">
-            <Plus size={14} /> Create team
-          </button>
+          <Link href="/admin/users" className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition-colors bg-zinc-800/50 hover:bg-zinc-700 px-2 py-1 rounded-md">
+            <Users size={12} /> Kelola Akses
+          </Link>
         </div>
 
         {/* Search */}

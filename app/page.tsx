@@ -19,6 +19,7 @@ export default function HomePage() {
   
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ anime: 0, donghua: 0, comic: 0, novel: 0 });
+  const [supportUrl, setSupportUrl] = useState('https://saweria.co/valoranime');
 
   useEffect(() => {
     // 1. Fetch Histories from local storage for "Lanjutkan Menonton / Membaca"
@@ -55,13 +56,18 @@ export default function HomePage() {
     // 2. Fetch Data from all APIs
     const fetchData = async () => {
       try {
-        const [dhRes, anRes, wtRes, comicRes, novelRes] = await Promise.all([
+        const [dhRes, anRes, wtRes, comicRes, novelRes, settingsRes] = await Promise.all([
           fetch('/api/donghua/home').then(r => r.json()).catch(() => ({ recent: [], completed: [] })),
           getAnimeOngoing(1).catch(() => ({ animeList: [] })),
           fetch('/api/trending?source=webtoons&day=trending').then(r => r.json()).catch(() => ({ items: [] })),
           fetch('/api/comic/populer').then(r => r.json()).catch(() => ({comics: []})),
-          fetch('/api/novels').then(r => r.json()).catch(() => [])
+          fetch('/api/novels').then(r => r.json()).catch(() => []),
+          fetch('/api/admin/settings').then(r => r.json()).catch(() => ({}))
         ]);
+
+        if (settingsRes && settingsRes.support_url) {
+          setSupportUrl(settingsRes.support_url);
+        }
 
         let combinedHero = [];
 
@@ -371,10 +377,12 @@ export default function HomePage() {
                     <p className="text-zinc-400 text-xs leading-relaxed mb-4">
                       Server & domain butuh biaya. Donasi kamu sangat berarti untuk menjaga Valora tetap gratis dan bebas iklan. 🫡
                     </p>
-                    <a href="https://saweria.co/valoranime" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-amber-500/15">
-                      <Gift size={14} />
-                      <span>Donasi via Saweria</span>
-                    </a>
+                    <div className="flex justify-center mt-2">
+                      <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-amber-500/15">
+                        <Coffee size={16} className="animate-pulse" />
+                        <span>Donasi via Saweria</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
