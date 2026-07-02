@@ -158,12 +158,12 @@ export default function AnimeDetailPage() {
         {/* BADGES */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
           <span className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold ${
-            (detail.status?.toLowerCase() === 'ongoing') ? 'bg-[#00d285] text-white' : 'bg-sky-500 text-white'
+            (typeof detail.status === 'string' && detail.status?.toLowerCase() === 'ongoing') ? 'bg-[#00d285] text-white' : 'bg-sky-500 text-white'
           }`}>
-            {detail.status || 'Ongoing'}
+            {typeof detail.status === 'object' ? (detail.status?.name || 'Ongoing') : (detail.status || 'Ongoing')}
           </span>
           <span className="bg-[#1C1D2A] border border-zinc-700/50 text-zinc-300 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5">
-            <Play size={14} className="text-zinc-400" /> {detail.type || 'Series'}
+            <Play size={14} className="text-zinc-400" /> {typeof detail.type === 'object' ? (detail.type?.name || 'Series') : (detail.type || 'Series')}
           </span>
           <span className="bg-[#1C1D2A] border border-amber-900/50 text-amber-500 text-xs sm:text-sm font-black px-4 py-1.5 rounded-full flex items-center gap-1.5">
             <span className="text-[10px]">⭐</span> {detail.score || detail.rating || 'N/A'}
@@ -175,23 +175,23 @@ export default function AnimeDetailPage() {
           <div className="flex flex-col gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Studio</span>
-              <span className="text-white font-bold text-right">{detail.studio || '-'}</span>
+              <span className="text-white font-bold text-right">{typeof detail.studio === 'object' ? detail.studio?.name : (detail.studio || '-')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Season</span>
-              <span className="text-white font-bold text-right">{detail.season || detail.year || '-'}</span>
+              <span className="text-white font-bold text-right">{typeof detail.season === 'object' ? detail.season?.name : (detail.season || detail.year || '-')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Total Eps</span>
-              <span className="text-white font-bold text-right">{detail.episodes || detail.episode || '-'}</span>
+              <span className="text-white font-bold text-right">{typeof detail.episodes === 'object' ? detail.episodes?.name : (detail.episodes || detail.episode || '-')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Released</span>
-              <span className="text-white font-bold text-right">{detail.release_date || detail.aired || '-'}</span>
+              <span className="text-white font-bold text-right">{typeof detail.release_date === 'object' ? detail.release_date?.name : (detail.release_date || detail.aired || '-')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Duration</span>
-              <span className="text-white font-bold text-right">{detail.duration || detail.time || '-'}</span>
+              <span className="text-white font-bold text-right">{typeof detail.duration === 'object' ? detail.duration?.name : (detail.duration || detail.time || '-')}</span>
             </div>
           </div>
         </div>
