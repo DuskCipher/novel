@@ -73,15 +73,18 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       errors.push(`Auth: ${adminError.message}`);
     }
 
-    // 2. Hapus komentar user
-    const { error: commentError } = await supabaseAdmin
-      .from('comments')
-      .delete()
-      .eq('user_id', id);
-    
-    if (commentError) {
-      console.error('[DELETE admin/users] comments delete error:', commentError);
-      errors.push(`Comments: ${commentError.message}`);
+    // 2. Hapus data terkait
+    const tables = ['comments', 'global_messages', 'user_bookmarks', 'user_activity'];
+    for (const table of tables) {
+      const { error: tableError } = await supabaseAdmin
+        .from(table)
+        .delete()
+        .eq('user_id', id);
+      
+      if (tableError) {
+        console.error(`[DELETE admin/users] ${table} delete error:`, tableError);
+        errors.push(`${table}: ${tableError.message}`);
+      }
     }
 
     // 3. Hapus dari tabel profiles
