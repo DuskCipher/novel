@@ -125,7 +125,7 @@ export default function NovelDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D0D11] p-6 flex flex-col gap-8 animate-pulse">
+      <div className="min-h-screen bg-zinc-950 p-6 flex flex-col gap-8 animate-pulse">
         <div className="h-64 bg-zinc-900 rounded-2xl w-full"></div>
         <div className="h-96 bg-zinc-900 rounded-2xl w-full"></div>
       </div>
@@ -134,7 +134,7 @@ export default function NovelDetailPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0D0D11] flex flex-col items-center justify-center text-white">
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-white">
         <h1 className="text-2xl font-bold mb-4">Novel tidak ditemukan</h1>
         <button onClick={() => router.back()} className="px-6 py-2 bg-pink-600 rounded-lg hover:bg-pink-700">Kembali</button>
       </div>
@@ -171,11 +171,11 @@ export default function NovelDetailPage() {
   return (
     <>
     <div className="flex-1 min-w-0">
-    <div className="min-h-screen bg-[#0B0D17] pb-24 font-sans relative">
+    <div className="min-h-screen bg-zinc-950 pb-24 font-sans relative">
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pt-8 pb-6 flex flex-col md:flex-row gap-6 md:gap-10">
         <div className="absolute top-0 left-0 w-full h-[500px] overflow-hidden -z-10">
           <img src={image} alt="bg" referrerPolicy="no-referrer" className="w-full h-full object-cover blur-2xl opacity-20 scale-110" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0D17]/80 to-[#0B0D17]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/80 to-zinc-950"></div>
         </div>
 
         {/* Left Side: Info & Poster */}
@@ -224,7 +224,7 @@ export default function NovelDetailPage() {
         {/* Right Side: Content */}
         <div className="flex-1 flex flex-col gap-6 w-full min-w-0">
         {/* Synopsis Box */}
-        <div className="bg-[#151728] rounded-2xl p-5 border border-zinc-800/50">
+        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800/50">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-pink-400 flex items-center gap-2">
               <BookOpen size={20} />
@@ -256,7 +256,7 @@ export default function NovelDetailPage() {
         </div>
 
         {/* Daftar Chapter */}
-        <div className="bg-[#151728] rounded-2xl p-5 border border-zinc-800/50">
+        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800/50">
           <div className="flex items-center gap-2 mb-5">
             <List size={20} className="text-pink-400" />
             <h2 className="text-lg font-bold text-white flex-1">Daftar Chapter ({chapters.length})</h2>
@@ -271,7 +271,7 @@ export default function NovelDetailPage() {
               placeholder="Cari chapter..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#0B0D17] border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-zinc-600"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-zinc-600 focus:ring-0"
             />
           </div>
 
@@ -295,7 +295,7 @@ export default function NovelDetailPage() {
                 const displayTitle = formatChapterTitle(chap.title || chap.chapter || '', data.title);
 
                 return (
-                  <Link href={chapterHref} key={chap.slug || i} className="flex justify-between items-center p-4 bg-[#1A1C30]/50 hover:bg-[#1A1C30] rounded-lg transition-colors border border-transparent hover:border-zinc-700">
+                  <Link href={chapterHref} key={chap.slug || i} className="flex justify-between items-center p-4 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-colors border border-transparent hover:border-zinc-700">
                     <span className="text-white text-sm font-bold truncate pr-4 capitalize">{displayTitle}</span>
                     <div className="flex items-center gap-3 shrink-0 text-zinc-500">
                       <span className="text-[10px]">{chap.date || chap.released || 'Baru'}</span>
