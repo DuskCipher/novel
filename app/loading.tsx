@@ -2,7 +2,7 @@
 
 export default function Loading() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
+    <div className="fixed inset-0 z-[100] bg-[#09090b] flex flex-col items-center justify-center">
       <div className="relative flex flex-col items-center">
         <img 
           src="/welcome-logo.png" 
