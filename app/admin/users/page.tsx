@@ -75,6 +75,7 @@ export default function AdminUsersPage() {
           ...u,
           level: newLevel,
           exp: newExp,
+          role: newRole,
           raw_user_meta_data: {
             ...u.raw_user_meta_data,
             level: newLevel,

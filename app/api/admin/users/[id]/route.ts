@@ -20,24 +20,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // 1. Update tabel profiles (level, exp, is_banned, ban_reason)
     if (level !== undefined || exp !== undefined || is_banned !== undefined || ban_reason !== undefined) {
-      const { data: existingProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('id')
-        .eq('id', id)
-        .single();
-
-      let profileError = null;
-      if (existingProfile) {
-        const { error } = await supabaseAdmin.from('profiles').update(updateData).eq('id', id);
-        profileError = error;
-      } else {
-        const { error } = await supabaseAdmin.from('profiles').insert({ id, ...updateData });
-        profileError = error;
-      }
+      const { error: profileError } = await supabaseAdmin.from('profiles').upsert(
+        { id, ...updateData },
+        { onConflict: 'id' }
+      );
 
       if (profileError) {
         console.error('[PUT admin/users profileError]', profileError);
-        return NextResponse.json({ success: false, error: profileError.message }, { status: 500 });
+        // Kita tidak mereturn 500 di sini, agar metadata tetap terupdate, tapi kita log errornya
       }
     }
 
