@@ -197,7 +197,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
       avatar_text: avatarText,
       avatar_color: avatarColor,
       name_color: nameColor,
-      roles: isDeveloper ? ['Admin'] : [metaRole],
+      roles: isDeveloper ? [metaRole && metaRole !== 'User' ? metaRole : 'Admin'] : [metaRole],
       role_color: roleColor,
       level_text: levelText,
       is_verified: isVerified,

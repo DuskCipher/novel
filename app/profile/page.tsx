@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import FollowListModal from '@/app/components/FollowListModal';
 import { 
   User, Settings, Info, LogOut, ChevronRight, X, Edit3, 
   Image as ImageIcon, Loader2, Key, Shield, 
@@ -113,6 +114,9 @@ export default function ProfilePage() {
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
 
+  const [showFollowModal, setShowFollowModal] = useState(false);
+  const [followModalType, setFollowModalType] = useState<'followers' | 'following'>('followers');
+
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
     const savedTheme = localStorage.getItem('profileTheme') || 'amber';
@@ -172,7 +176,7 @@ export default function ProfilePage() {
                 if (idx !== -1) updated[idx] = { ...updated[idx], poster };
                 
                 // Update database
-                supabase.from('user_history').update({ poster }).match({ user_id: user.id, item_url: item.item_url }).then();
+                supabase.from('user_history').update({ poster }).match({ user_id: user.id, item_url: user.id, item_url: item.item_url }).then();
               }
             } catch (e) {
               // Silently skip failed repairs
@@ -487,13 +491,13 @@ export default function ProfilePage() {
               </div>
               <p className="text-sm text-zinc-400 max-w-xl line-clamp-2 mb-2">{bio}</p>
               
-              <div className="flex items-center justify-center sm:justify-start gap-4 text-sm">
-                <span className="text-zinc-400"><span className="font-bold text-white">{followersCount}</span> Followers</span>
-                <span className="text-zinc-400"><span className="font-bold text-white">{followingCount}</span> Following</span>
-                {previewMode && (
-                  <button className={`ml-2 px-3 py-1 ${theme.bg} text-white text-xs font-bold rounded-full`}>Ikuti</button>
-                )}
-              </div>
+                <div className="flex items-center justify-center sm:justify-start gap-4 text-[11px]">
+                  <button onClick={() => { setFollowModalType('followers'); setShowFollowModal(true); }} className="text-zinc-400 hover:text-white transition-colors cursor-pointer"><span className="font-bold text-white">{followersCount}</span> Followers</button>
+                  <button onClick={() => { setFollowModalType('following'); setShowFollowModal(true); }} className="text-zinc-400 hover:text-white transition-colors cursor-pointer"><span className="font-bold text-white">{followingCount}</span> Following</button>
+                  {previewMode && (
+                    <button className={`ml-2 px-3 py-1 ${theme.bg} text-white text-xs font-bold rounded-full`}>Ikuti</button>
+                  )}
+                </div>
             </div>
 
             {!previewMode && (
@@ -1042,6 +1046,9 @@ export default function ProfilePage() {
         )}
 
       </div>
+      {user && (
+        <FollowListModal isOpen={showFollowModal} onClose={() => setShowFollowModal(false)} userId={user.id} type={followModalType} />
+      )}
     </>
   );
 }

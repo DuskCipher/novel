@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       content: content ? content.trim().substring(0, 1000) : null,
       audio_url: audio_url || null,
       // Overrides for security
-      roles: isDbAdmin ? ['Admin'] : [profile?.role || 'User'],
+      roles: isDbAdmin ? [metaData.role || profile?.role || 'Admin'] : [profile?.role || 'User'],
       is_verified: isVerified
     };
 

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/app/components/AuthProvider';
+import FollowListModal from '@/app/components/FollowListModal';
 
 const badgeIconMap: Record<string, any> = {
   'Marathoner': Flame,
@@ -36,6 +37,9 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [showcase, setShowcase] = useState<any[]>([]);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+
+  const [showFollowModal, setShowFollowModal] = useState(false);
+  const [followModalType, setFollowModalType] = useState<'followers' | 'following'>('followers');
 
   useEffect(() => {
     async function loadUser() {
@@ -178,8 +182,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             <p className="text-[11px] text-zinc-400 max-w-xl line-clamp-2 mb-2">{bio}</p>
             
             <div className="flex items-center justify-center sm:justify-start gap-4 text-[11px]">
-              <span className="text-zinc-400"><span className="font-bold text-white">{followersCount}</span> Followers</span>
-              <span className="text-zinc-400"><span className="font-bold text-white">{followingCount}</span> Following</span>
+              <button onClick={() => { setFollowModalType('followers'); setShowFollowModal(true); }} className="text-zinc-400 hover:text-white transition-colors cursor-pointer"><span className="font-bold text-white">{followersCount}</span> Followers</button>
+              <button onClick={() => { setFollowModalType('following'); setShowFollowModal(true); }} className="text-zinc-400 hover:text-white transition-colors cursor-pointer"><span className="font-bold text-white">{followingCount}</span> Following</button>
               {currentUser && currentUser.id !== userId && (
                 <button onClick={handleFollow}
                   className={`ml-2 px-3 py-1 ${isFollowing ? 'bg-zinc-800 text-white border border-zinc-700' : `${theme.bg} text-white`} text-[10px] font-bold rounded-full transition-colors`}>
@@ -354,6 +358,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </div>
+      <FollowListModal isOpen={showFollowModal} onClose={() => setShowFollowModal(false)} userId={userId} type={followModalType} />
     </div>
   );
 }
