@@ -15,9 +15,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const updateData: any = {};
     if (level !== undefined) updateData.level = Number(level);
     if (exp !== undefined) updateData.exp = Number(exp);
+    if (role !== undefined) updateData.role = role;
 
-    // 1. Update tabel profiles (hanya level dan exp)
-    if (level !== undefined || exp !== undefined) {
+    // 1. Update tabel profiles
+    if (level !== undefined || exp !== undefined || role !== undefined) {
       const { error: profileError } = await supabaseAdmin.from('profiles').upsert(
         { id, ...updateData },
         { onConflict: 'id' }
