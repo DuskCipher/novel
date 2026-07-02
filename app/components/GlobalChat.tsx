@@ -407,6 +407,28 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
     ? uniqueUsers.filter(u => String(u).toLowerCase().includes(mentionSearch.toLowerCase())).slice(0, 5)
     : [];
 
+  const metaRoleGlobal = user?.user_metadata?.role || 'User';
+  const usernameGlobal = user?.user_metadata?.display_name || user?.user_metadata?.username || user?.email?.split('@')[0] || 'User';
+  const isGlobalAdmin = usernameGlobal.toLowerCase().includes('admin') || usernameGlobal.toLowerCase().includes('cs') || usernameGlobal.toLowerCase().includes('dev') || metaRoleGlobal === 'Developer' || metaRoleGlobal === 'Admin' || metaRoleGlobal === 'Moderator';
+
+  const handleClearAllChat = async () => {
+    if (!user) return;
+    if (!confirm('PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SEMUA pesan chat? Tindakan ini tidak dapat dibatalkan.')) return;
+    
+    try {
+      const res = await fetch(`/api/chat/clear?userId=${user.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Gagal menghapus semua pesan.');
+      } else {
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan saat menghapus pesan.');
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -420,6 +442,15 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
+            {isGlobalAdmin && (
+              <button 
+                onClick={handleClearAllChat}
+                className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500 flex items-center justify-center transition-colors mr-1"
+                title="Hapus Semua Chat (Admin Only)"
+              >
+                <Trash2 size={14} className="text-red-400 hover:text-white" />
+              </button>
+            )}
             <button 
               onClick={() => setShowOnlyPinned(!showOnlyPinned)}
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${showOnlyPinned ? 'bg-yellow-500 hover:bg-yellow-400' : 'bg-white/20 hover:bg-white/30'}`}
