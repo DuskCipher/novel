@@ -28,7 +28,6 @@ export default function NovelDetailPage() {
     const src = item?.poster || item?.cover || item?.thumbnail || '';
     if (!src) return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48L3N2Zz4=';
     let finalSrc = typeof src === 'string' ? src : src.url || '';
-    if (finalSrc.includes('sakuranovel.id')) return finalSrc;
     if (finalSrc && finalSrc.includes('http')) {
       return `/api/image-proxy?url=${encodeURIComponent(finalSrc)}`;
     }

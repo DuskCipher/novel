@@ -9,9 +9,8 @@ export async function GET(req: NextRequest) {
   }
   
   try {
-    // SakuraNovel uses Cloudflare bot protection which blocks server-side fetch.
-    // Redirect directly so the user's browser handles the image loading.
-    if (url.includes('sakuranovel.id') || url.includes('otakudesu')) {
+    // otakudesu blocks server-side fetch.
+    if (url.includes('otakudesu')) {
       return NextResponse.redirect(url);
     }
 
@@ -23,6 +22,8 @@ export async function GET(req: NextRequest) {
       referer = 'https://www.sankavollerei.com/';
     } else if (url.includes('anichin')) {
       referer = 'https://anichin.vip/';
+    } else if (url.includes('sakuranovel.id')) {
+      referer = 'https://sakuranovel.id/';
     }
 
     const response = await fetch(url, {
