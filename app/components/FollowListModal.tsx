@@ -27,13 +27,14 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
         const { data, error } = await supabase
           .from('user_follows')
           .select('follower_id')
-          .eq('following_id', userId)
-          .order('created_at', { ascending: false });
+          .eq('following_id', userId);
           
+        if (error) console.error("Error fetching followers:", error);
         if (!error && data) {
           const profileIds = data.map(d => d.follower_id);
           if (profileIds.length > 0) {
-            const { data: profilesData } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const { data: profilesData, error: profError } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            if (profError) console.error("Error fetching profiles:", profError);
             const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
             setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
           } else {
@@ -44,13 +45,14 @@ export default function FollowListModal({ isOpen, onClose, userId, type }: Follo
         const { data, error } = await supabase
           .from('user_follows')
           .select('following_id')
-          .eq('follower_id', userId)
-          .order('created_at', { ascending: false });
+          .eq('follower_id', userId);
           
+        if (error) console.error("Error fetching following:", error);
         if (!error && data) {
           const profileIds = data.map(d => d.following_id);
           if (profileIds.length > 0) {
-            const { data: profilesData } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            const { data: profilesData, error: profError } = await supabase.from('profiles').select('id, username, avatar_url, level, role').in('id', profileIds);
+            if (profError) console.error("Error fetching profiles:", profError);
             const profilesMap = (profilesData || []).reduce((acc: any, p: any) => ({...acc, [p.id]: p}), {});
             setUsers(profileIds.map(id => profilesMap[id]).filter(Boolean));
           } else {
