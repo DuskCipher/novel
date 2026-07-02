@@ -312,7 +312,7 @@ export default function AnimeDetailPage() {
           <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3">
             {paginatedEpisodes.map((ep: any, i: number) => {
               // Extract episode number from string if possible
-              const titleStr = String(ep.title || ep.episode || '');
+              const titleStr = String(ep.title || ep.name || ep.episode || '');
               let epNum;
               const epMatch = titleStr.match(/(?:episode|eps|ep)\s*-?\s*(\d+)/i);
               if (epMatch) {
@@ -322,7 +322,7 @@ export default function AnimeDetailPage() {
                 epNum = allNumbers ? allNumbers[allNumbers.length - 1] : (episodes.length - ((epsPage - 1) * itemsPerPage + i));
               }
               return (
-                <Link key={i} href={`/anime/${source}/watch/${ep.episodeId || ep.slug}`} className="bg-[#2A2B3D] hover:bg-[#3b3c54] rounded-xl flex flex-col items-center justify-center py-2.5 gap-0.5 border border-zinc-800/50 transition-colors">
+                <Link key={i} href={`/anime/${source}/watch/${ep.episodeId || ep.slug}?detail_slug=${slug}`} className="bg-[#2A2B3D] hover:bg-[#3b3c54] rounded-xl flex flex-col items-center justify-center py-2.5 gap-0.5 border border-zinc-800/50 transition-colors">
                   <span className="text-[10px] font-bold text-zinc-400">EP</span>
                   <span className="text-xs sm:text-sm font-bold text-white">{epNum}</span>
                 </Link>

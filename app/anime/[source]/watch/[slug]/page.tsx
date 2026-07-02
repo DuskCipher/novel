@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Play, Download, Search, Settings, ShieldAlert, Monitor, Server, VolumeX, List, ChevronLeft, ChevronRight, Film } from 'lucide-react';
 import Link from 'next/link';
 import { getAnimeEpisode, getAnimeOngoing } from '@/lib/anime-api';
@@ -17,6 +17,8 @@ export default function AnimeWatchPage() {
   const router = useRouter();
   const slug = params.slug as string;
   const source = (params?.source as string) || 'otakudesu';
+  const searchParams = useSearchParams();
+  const detailSlugParam = searchParams.get('detail_slug');
   const { user } = useAuth();
 
   const [epData, setEpData] = useState<any>(null);
@@ -50,7 +52,7 @@ export default function AnimeWatchPage() {
         setLoading(false); // Stop loading immediately so player shows up
         
         // Asynchronously fetch full episodes from Detail API so we don't block the player
-        let animeSlug = data?.anime_id || data?.anime_slug;
+        let animeSlug = detailSlugParam || data?.anime_id || data?.anime_slug;
         if (!animeSlug && data?.title) {
            const match = data.title.match(/(.+) Episode/i);
            if (match) {
@@ -267,11 +269,11 @@ export default function AnimeWatchPage() {
     // Usually episode lists are sorted latest first (index 0 = newest)
     if (currentEpIndex > 0) {
       const nextEp = episodeList[currentEpIndex - 1];
-      nextUrl = `/anime/${source}/watch/${nextEp.episodeId || nextEp.slug}`;
+      nextUrl = `/anime/${source}/watch/${nextEp.episodeId || nextEp.slug}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}`;
     }
     if (currentEpIndex < episodeList.length - 1) {
       const prevEp = episodeList[currentEpIndex + 1];
-      prevUrl = `/anime/${source}/watch/${prevEp.episodeId || prevEp.slug}`;
+      prevUrl = `/anime/${source}/watch/${prevEp.episodeId || prevEp.slug}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}`;
     }
   } else {
     // Fallback to API provided links
@@ -279,12 +281,12 @@ export default function AnimeWatchPage() {
        if (!url) return '#';
        if (url.startsWith('http')) {
           const m = url.match(/([^\/]+)\/?$/);
-          return m ? `/anime/${source}/watch/${m[1]}` : '#';
+          return m ? `/anime/${source}/watch/${m[1]}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}` : '#';
        }
-       return `/anime/${source}/watch/${url.replace(/^\//, '')}`;
+       return `/anime/${source}/watch/${url.replace(/^\//, '')}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}`;
     };
-    prevUrl = epData.prevEpisode?.episodeId ? `/anime/${source}/watch/${epData.prevEpisode.episodeId}` : getSafeUrl(epData.prev_episode_url);
-    nextUrl = epData.nextEpisode?.episodeId ? `/anime/${source}/watch/${epData.nextEpisode.episodeId}` : getSafeUrl(epData.next_episode_url);
+    prevUrl = epData.prevEpisode?.episodeId ? `/anime/${source}/watch/${epData.prevEpisode.episodeId}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}` : getSafeUrl(epData.prev_episode_url);
+    nextUrl = epData.nextEpisode?.episodeId ? `/anime/${source}/watch/${epData.nextEpisode.episodeId}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}` : getSafeUrl(epData.next_episode_url);
   }
 
   return (
@@ -482,7 +484,7 @@ export default function AnimeWatchPage() {
                 return (
                   <Link 
                     key={i} 
-                    href={`/anime/${source}/watch/${ep.episodeId || ep.slug}`} 
+                    href={`/anime/${source}/watch/${ep.episodeId || ep.slug}${detailSlugParam ? `?detail_slug=${detailSlugParam}` : ''}`} 
                     className={`${isActive ? 'bg-[#ffb6c1] text-[#2c131b]' : 'bg-[#2A2B3D] border-zinc-800/50 hover:bg-[#3b3c54] text-zinc-300'} font-bold text-[11px] sm:text-xs py-2.5 rounded-[8px] transition-all flex items-center justify-center`}
                   >
                     {epNum}
