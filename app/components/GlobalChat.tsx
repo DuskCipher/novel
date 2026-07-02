@@ -2,8 +2,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageCircle, Pin, Volume2, MapPin, Smile, Send, BadgeCheck, Reply, Trash2, Pencil, PinOff, MoreVertical, Mic } from 'lucide-react';
+import { X, MessageCircle, Pin, Volume2, MapPin, Smile, Send, BadgeCheck, Reply, Trash2, Pencil, PinOff, MoreVertical, Mic, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthProvider';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
@@ -444,6 +445,14 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link 
+              href="/chat"
+              onClick={() => onClose()}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors mr-1"
+              title="Pesan Pribadi"
+            >
+              <MessageSquare size={16} className="text-white" />
+            </Link>
             {isGlobalAdmin && (
               <button 
                 onClick={handleClearAllChat}
