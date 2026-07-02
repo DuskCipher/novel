@@ -38,7 +38,18 @@ export default function AnimeWatchPage() {
         const res = await getAnimeEpisode(slug, source);
         const data = res?.data || res?.episode_detail || res;
         
-        // Fetch full episodes from Detail API to prevent truncated lists (e.g. One Piece having 1000+ eps but only 12 shown)
+        // Pick first server by default so video can play instantly
+        let defaultServer = '';
+        if (data?.defaultStreamingUrl) defaultServer = data.defaultStreamingUrl;
+        else if (data?.stream_servers?.length > 0) defaultServer = data.stream_servers[0].iframe;
+        else if (data?.streams?.length > 0) defaultServer = data.streams[0].url;
+        else if (data?.streamUrl) defaultServer = data.streamUrl;
+        
+        setRawServerUrl(defaultServer);
+        setEpData(data);
+        setLoading(false); // Stop loading immediately so player shows up
+        
+        // Asynchronously fetch full episodes from Detail API so we don't block the player
         let animeSlug = data?.anime_id || data?.anime_slug;
         if (!animeSlug && data?.title) {
            const match = data.title.match(/(.+) Episode/i);
@@ -48,41 +59,37 @@ export default function AnimeWatchPage() {
         }
         
         if (animeSlug) {
-           try {
-             const { getAnimeDetail } = await import('@/lib/anime-api');
-             const detailRes = await getAnimeDetail(animeSlug, source);
-             const detailData = detailRes?.data || detailRes?.anime_detail || detailRes;
-             
-             // Merge episodes
-             const fullEps = detailData?.episodeList || detailData?.episode_list || detailData?.episodes || [];
-             const currentEps = data?.info?.episodeList || data?.episodeList || [];
-             if (fullEps.length > currentEps.length) {
-                if (data.info) {
-                   data.info.episodeList = fullEps;
-                } else {
-                   data.episodeList = fullEps;
-                }
+           import('@/lib/anime-api').then(async ({ getAnimeDetail }) => {
+             try {
+               const detailRes = await getAnimeDetail(animeSlug, source);
+               // Handle different API response structures (e.g. animasu wraps in detailRes.detail)
+               const detailData = detailRes?.detail || detailRes?.data || detailRes?.anime_detail || detailRes;
+               
+               // Merge episodes
+               const fullEps = detailData?.episodeList || detailData?.episode_list || detailData?.episodes || [];
+               const currentEps = data?.info?.episodeList || data?.episodeList || [];
+               
+               if (fullEps.length > currentEps.length) {
+                  setEpData((prev: any) => {
+                     const newData = { ...prev };
+                     if (newData.info) {
+                        newData.info.episodeList = fullEps;
+                     } else {
+                        newData.episodeList = fullEps;
+                     }
+                     return newData;
+                  });
+               }
+             } catch(e) {
+               console.error("Could not fetch full episodes", e);
              }
-           } catch(e) {
-             console.error("Could not fetch full episodes", e);
-           }
+           });
         }
-
-        setEpData(data);
-        
-        // Pick first server by default
-        let defaultServer = '';
-        if (data?.defaultStreamingUrl) defaultServer = data.defaultStreamingUrl;
-        else if (data?.stream_servers?.length > 0) defaultServer = data.stream_servers[0].iframe;
-        else if (data?.streams?.length > 0) defaultServer = data.streams[0].url;
-        else if (data?.streamUrl) defaultServer = data.streamUrl;
-        
-        setRawServerUrl(defaultServer);
       } catch (err: any) {
         console.error("Error:", err);
-      } finally {
         setLoading(false);
       }
+
     };
     
     const fetchRek = async () => {
@@ -241,7 +248,7 @@ export default function AnimeWatchPage() {
   // Extract episodes for the list
   const episodeList = epData?.info?.episodeList || epData.episodeList || epData.all_episodes || [];
   const filteredEpisodes = episodeList.filter((ep: any) => 
-    (ep.title || ep.episode || '').toLowerCase().includes(epsQuery.toLowerCase())
+    (ep.title || ep.name || ep.episode || '').toLowerCase().includes(epsQuery.toLowerCase())
   );
 
   const totalEpsPages = Math.ceil(filteredEpisodes.length / itemsPerPage);
@@ -253,8 +260,32 @@ export default function AnimeWatchPage() {
     q.serverList.map((s: any) => ({ server: `${q.title} - ${s.title}`, iframe: s.href }))
   ) || epData.stream_servers || (epData.streams ? epData.streams.map((s: any) => ({ server: s.name, iframe: s.url })) : []);
 
-  const prevUrl = epData.prevEpisode?.episodeId ? `/anime/${source}/watch/${epData.prevEpisode.episodeId}` : (epData.prev_episode_url || '#');
-  const nextUrl = epData.nextEpisode?.episodeId ? `/anime/${source}/watch/${epData.nextEpisode.episodeId}` : (epData.next_episode_url || '#');
+  let prevUrl = '#';
+  let nextUrl = '#';
+  const currentEpIndex = episodeList.findIndex((ep: any) => (ep.episodeId || ep.slug) === slug);
+  if (currentEpIndex !== -1) {
+    // Usually episode lists are sorted latest first (index 0 = newest)
+    if (currentEpIndex > 0) {
+      const nextEp = episodeList[currentEpIndex - 1];
+      nextUrl = `/anime/${source}/watch/${nextEp.episodeId || nextEp.slug}`;
+    }
+    if (currentEpIndex < episodeList.length - 1) {
+      const prevEp = episodeList[currentEpIndex + 1];
+      prevUrl = `/anime/${source}/watch/${prevEp.episodeId || prevEp.slug}`;
+    }
+  } else {
+    // Fallback to API provided links
+    const getSafeUrl = (url: string) => {
+       if (!url) return '#';
+       if (url.startsWith('http')) {
+          const m = url.match(/([^\/]+)\/?$/);
+          return m ? `/anime/${source}/watch/${m[1]}` : '#';
+       }
+       return `/anime/${source}/watch/${url.replace(/^\//, '')}`;
+    };
+    prevUrl = epData.prevEpisode?.episodeId ? `/anime/${source}/watch/${epData.prevEpisode.episodeId}` : getSafeUrl(epData.prev_episode_url);
+    nextUrl = epData.nextEpisode?.episodeId ? `/anime/${source}/watch/${epData.nextEpisode.episodeId}` : getSafeUrl(epData.next_episode_url);
+  }
 
   return (
     <>
@@ -438,7 +469,7 @@ export default function AnimeWatchPage() {
           <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3">
             {episodeList.length > 0 ? (
               paginatedEpisodes.map((ep: any, i: number) => {
-                const titleStr = String(ep.title || ep.episode || '');
+                const titleStr = String(ep.title || ep.name || ep.episode || '');
                 let epNum;
                 const epMatch = titleStr.match(/(?:episode|eps|ep)\s*-?\s*(\d+)/i);
                 if (epMatch) {
@@ -447,7 +478,7 @@ export default function AnimeWatchPage() {
                   const allNumbers = titleStr.match(/\d+/g);
                   epNum = allNumbers ? allNumbers[allNumbers.length - 1] : episodeList.length - ((epsPage - 1) * itemsPerPage + i);
                 }
-                const isActive = slug === ep.episodeId;
+                const isActive = slug === (ep.episodeId || ep.slug);
                 return (
                   <Link 
                     key={i} 
