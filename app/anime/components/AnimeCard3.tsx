@@ -33,66 +33,67 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
     );
   }
 
+  const isOngoing = item.status?.toLowerCase() === 'ongoing' || item.status_or_day?.toLowerCase() === 'ongoing';
+  const isCompleted = item.status?.toLowerCase() === 'completed' || item.status?.toLowerCase() === 'tamat' || item.status_or_day?.toLowerCase() === 'tamat' || isMovie;
+  const displayStatus = isOngoing ? 'ONGOING' : isCompleted ? 'TAMAT' : (item.status || item.status_or_day || 'ONGOING').toUpperCase();
+  const displayType = item.type || (isMovie ? 'Movie' : 'Series');
+
   return (
-    <Link href={href} className="group flex flex-col gap-2 relative w-full">
-      <div className="w-full aspect-[3/4] relative rounded-xl overflow-hidden shadow-md border border-zinc-200 dark:border-zinc-800/50 bg-[#232330]">
+    <Link href={href} className="group flex flex-col gap-2 relative">
+      <div className="w-full aspect-[3/4] relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800/50 shadow-md group-hover:border-amber-500/30 transition-colors">
         <img 
-          src={`/api/image-proxy?url=${encodeURIComponent(poster)}`}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={(e) => { e.currentTarget.src = '/logo.png'; }}
+          src={poster.startsWith('/') || poster.startsWith('data:') ? poster : `/api/image-proxy?url=${encodeURIComponent(poster)}`} 
+          alt={title} 
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22600%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22400%22%20height%3D%22600%22%20fill%3D%22%2327272a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%2371717a%22%3ENot%20Found%3C%2Ftext%3E%3C%2Fsvg%3E';
+          }}
         />
-
-        {/* Top Left Badge */}
-        <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-lg bg-[#60a5fa] text-blue-950 text-[9px] font-black uppercase shadow-sm z-10">
-          {isMovie ? 'MOVIE' : 'SERIES'}
-        </div>
-
-        {/* Top Right Badge / Status */}
-        {!isMovie && !isSchedule && (
-          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-lg bg-emerald-500 text-emerald-950 text-[9px] font-black uppercase shadow-sm z-10">
-            {item.status || 'ONGOING'}
-          </div>
-        )}
         
-        {isSchedule && (
-          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-lg bg-emerald-500 text-emerald-950 text-[9px] font-black uppercase shadow-sm z-10">
-            ONGOING
+        {/* Top Right: Status Badge & Type */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1 items-end z-10">
+          <div className={`text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 border ${
+            isOngoing ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 backdrop-blur-md' : 
+            isCompleted ? 'bg-sky-500/20 text-sky-400 border-sky-500/30 backdrop-blur-md' : 
+            'bg-zinc-800/50 text-zinc-300 border-zinc-700/50 backdrop-blur-md'
+          }`}>
+            {isOngoing && <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></span>}
+            {displayStatus}
           </div>
-        )}
-      </div>
-
-      {/* Bottom Content / Outside Card */}
-      <div className="flex flex-col px-0.5">
-        <h3 className="font-bold text-[11px] sm:text-xs text-zinc-100 line-clamp-2 leading-tight mb-1 group-hover:text-[#60a5fa] transition-colors">{title}</h3>
-        
-        <div className="flex items-center justify-between mt-auto">
-          {isSchedule ? (
-            <>
-              <span className="text-[10px] text-zinc-500 font-medium">SERIES</span>
-              <span className="text-[10px] text-rose-400 font-bold flex items-center gap-1">
-                <Clock size={10} /> new !!
-              </span>
-            </>
-          ) : isMovie ? (
-            <>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                TAMAT
-              </span>
-              <span className="text-[10px] text-zinc-500 font-medium flex items-center gap-1">
-                <Eye size={10} /> {item.views || Math.floor(Math.random() * 100000)}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="text-[10px] text-zinc-500 font-medium">{item.year || '2024'}</span>
-              <span className="text-[10px] text-zinc-500 font-medium flex items-center gap-1">
-                <Eye size={10} /> {item.views || Math.floor(Math.random() * 100000)}
-              </span>
-            </>
+          
+          {displayType && (
+            <div className="bg-black/60 backdrop-blur-md text-white/90 border border-white/10 text-[8px] font-bold px-1.5 py-0.5 rounded flex items-center">
+              {displayType}
+            </div>
           )}
         </div>
+
+        {/* Bottom Gradient Area for Details (Episodes, Time, Rating) */}
+        <div className="absolute bottom-0 left-0 right-0 pt-12 pb-2 px-2 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col justify-end z-10">
+          <div className="flex items-end justify-between w-full">
+            <div className="flex flex-col gap-0.5">
+              {/* Rating */}
+              {(item.rating || item.score || item.likes) && (
+                <div className="flex items-center gap-1 text-[10px] font-black text-amber-400">
+                  <span className="text-[9px]">⭐</span> {item.rating || item.score || item.likes}
+                </div>
+              )}
+              {/* Episodes / Time */}
+              {(item.episodes || item.episode || item.time || item.views) && (
+                <div className="flex items-center gap-1 text-[9px] font-medium text-zinc-300">
+                  {item.time ? <Clock size={9} className="text-zinc-400" /> : <Eye size={9} className="text-zinc-400" />}
+                  <span className="truncate max-w-[100px]">{item.time || item.episodes || item.episode || item.views}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
+      <h3 className="text-[11px] sm:text-xs font-bold text-zinc-200 line-clamp-2 group-hover:text-amber-500 transition-colors mt-1 leading-tight">
+        {title}
+      </h3>
     </Link>
   );
 }
