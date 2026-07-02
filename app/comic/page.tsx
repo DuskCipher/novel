@@ -120,34 +120,84 @@ export default function ComicHubPage() {
         
         {/* 1. Slider Trending */}
         {!loading && data.trending.length > 0 && (
-          <Link href={`/comic/detail/${data.trending[trendingIndex]?.slug}`} className="w-full h-48 sm:h-64 relative rounded-2xl overflow-hidden bg-zinc-900 shadow-xl group block">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[21/9] lg:h-[420px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0a0a0f] group">
+            {/* Blurred Background Glow for depth */}
+            <div className="absolute inset-0 opacity-50 scale-125 saturate-200 blur-[40px] pointer-events-none transition-all duration-700">
+              <img 
+                src={`/api/image-proxy?url=${encodeURIComponent(data.trending[trendingIndex]?.poster || data.trending[trendingIndex]?.image)}`} 
+                alt="" 
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} 
+              />
+            </div>
+
+            {/* Main Image */}
             <img 
-              key={trendingIndex}
+              key={`hero-img-${trendingIndex}`}
               src={`/api/image-proxy?url=${encodeURIComponent(data.trending[trendingIndex]?.poster || data.trending[trendingIndex]?.image)}`} 
-              alt="Trending" 
-              className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700 animate-in fade-in" 
+              alt={data.trending[trendingIndex]?.title} 
+              className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-60 transition-all duration-1000 ease-out animate-in fade-in"
               onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-end">
-              <div>
-                <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm mb-2 inline-block uppercase">Trending</span>
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 line-clamp-1">{data.trending[trendingIndex]?.title}</h2>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded">{data.trending[trendingIndex]?.chapter || 'Tamat'}</span>
-                  <span className="text-zinc-400 flex items-center gap-1">⚡ {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'})}</span>
-                </div>
+
+            {/* Cinematic Gradients */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/40 to-transparent sm:bg-gradient-to-r sm:from-[#0D0D11] sm:via-[#0D0D11]/80 sm:to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-transparent to-transparent opacity-90 sm:hidden"></div>
+
+            {/* Content Box */}
+            <div className="absolute bottom-0 left-0 p-5 pb-8 sm:p-8 lg:p-12 w-full sm:w-3/4 lg:w-2/3 flex flex-col justify-end h-full z-10">
+              
+              {/* Badges */}
+              <div key={`hero-badges-${trendingIndex}`} className="flex items-center gap-2 mb-2 sm:mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <span className="bg-transparent border border-rose-400/40 text-rose-300 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                  Trending #{trendingIndex + 1}
+                </span>
+                <span className="bg-blue-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">
+                  KOMIK
+                </span>
               </div>
-              <div className="flex gap-1 mb-1">
-                {data.trending.slice(0, 5).map((_: any, idx: number) => (
-                  <div 
-                    key={idx} 
-                    className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === trendingIndex ? 'bg-white' : 'bg-white/30'}`}
-                  ></div>
-                ))}
+
+              {/* Title */}
+              <h2 key={`hero-title-${trendingIndex}`} className="text-2xl sm:text-4xl font-bold text-white mb-2 leading-[1.2] line-clamp-2 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                {data.trending[trendingIndex]?.title}
+              </h2>
+
+              {/* Description */}
+              <p key={`hero-desc-${trendingIndex}`} className="text-zinc-400 text-xs sm:text-sm mb-3 line-clamp-2 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+                Baca kelanjutan cerita seru dari {data.trending[trendingIndex]?.title}. Tersedia update chapter terbaru dengan kualitas terjemahan bahasa Indonesia terbaik.
+              </p>
+
+              {/* Info Row */}
+              <div key={`hero-info-${trendingIndex}`} className="flex items-center gap-3 text-[10px] sm:text-xs font-bold text-zinc-300 mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+                <span className="flex items-center gap-1.5 uppercase text-blue-400">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> {data.trending[trendingIndex]?.chapter || 'Baru'}
+                </span>
+                <span className="text-zinc-600">•</span>
+                <span className="flex items-center gap-1.5 text-zinc-400">
+                  <Clock size={14} className="text-zinc-500" /> Hari Ini
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div key={`hero-btn-${trendingIndex}`} className="flex flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                <Link href={`/comic/detail/${data.trending[trendingIndex]?.slug}`} className="flex items-center justify-center gap-2 bg-[#b48796] hover:bg-[#a37685] text-[#1a1a1a] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                  <BookOpen size={16} className="fill-current" /> Baca Sekarang
+                </Link>
               </div>
             </div>
-          </Link>
+            
+            {/* Carousel Indicators */}
+            <div className="absolute bottom-4 sm:bottom-6 right-5 sm:right-8 flex items-center gap-2 z-20">
+              {data.trending.slice(0, 5).map((_: any, i: number) => (
+                <button 
+                  key={i}
+                  onClick={(e) => { e.preventDefault(); setTrendingIndex(i); }}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${trendingIndex === i ? 'w-6 sm:w-8 bg-blue-500' : 'w-1.5 sm:w-2 bg-white/30 hover:bg-white/60'}`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         {/* 2. Search Bar */}

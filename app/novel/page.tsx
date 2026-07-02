@@ -181,36 +181,86 @@ export default function NovelHubPage() {
             {/* HERO BANNER */}
             {heroItem && (
               <section className="px-4 sm:px-6">
-                <Link href={data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? `/novel/detail/${heroItem.slug}` : `/novel/detail/sakura-${heroItem.slug}`} className="w-full h-48 sm:h-64 relative rounded-2xl overflow-hidden bg-zinc-900 shadow-xl group block">
+                <div className="relative w-full aspect-[4/5] sm:aspect-[21/9] lg:h-[420px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0a0a0f] group">
+                  {/* Blurred Background Glow for depth */}
+                  <div className="absolute inset-0 opacity-50 scale-125 saturate-200 blur-[40px] pointer-events-none transition-all duration-700">
+                    <img 
+                      src={heroItem.poster || heroItem.cover || heroItem.thumbnail || ''} 
+                      alt="" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22600%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22400%22%20height%3D%22600%22%20fill%3D%22%2327272a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%2371717a%22%3ENot%20Found%3C%2Ftext%3E%3C%2Fsvg%3E' }} 
+                    />
+                  </div>
+
+                  {/* Main Image */}
                   <img 
-                    key={trendingIndex}
+                    key={`hero-img-${trendingIndex}`}
                     src={heroItem.poster || heroItem.cover || heroItem.thumbnail || ''} 
                     alt={heroItem.title} 
-                    className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700 animate-in fade-in" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-60 transition-all duration-1000 ease-out animate-in fade-in"
                     onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22600%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22400%22%20height%3D%22600%22%20fill%3D%22%2327272a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%2371717a%22%3ENot%20Found%3C%2Ftext%3E%3C%2Fsvg%3E' }} 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-end">
-                    <div>
-                      <span className={`${data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? 'bg-amber-500' : 'bg-pink-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm mb-2 inline-block uppercase`}>
-                        {data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? 'Original Novel' : 'Valoranovel'}
+
+                  {/* Cinematic Gradients */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/40 to-transparent sm:bg-gradient-to-r sm:from-[#0D0D11] sm:via-[#0D0D11]/80 sm:to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-transparent to-transparent opacity-90 sm:hidden"></div>
+
+                  {/* Content Box */}
+                  <div className="absolute bottom-0 left-0 p-5 pb-8 sm:p-8 lg:p-12 w-full sm:w-3/4 lg:w-2/3 flex flex-col justify-end h-full z-10">
+                    
+                    {/* Badges */}
+                    <div key={`hero-badges-${trendingIndex}`} className="flex items-center gap-2 mb-2 sm:mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <span className="bg-transparent border border-rose-400/40 text-rose-300 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                        Trending #{trendingIndex + 1}
                       </span>
-                      <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 line-clamp-1">{heroItem.title}</h2>
-                      <div className="flex items-center gap-2 text-xs">
-                        {heroItem.score && <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded flex items-center gap-1"><Star size={10} className="fill-blue-400" /> {heroItem.score}</span>}
-                        {heroItem.author && <span className="text-zinc-400 flex items-center gap-1"><BookOpen size={10} /> {heroItem.author}</span>}
-                      </div>
+                      <span className={`${data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? 'bg-amber-500' : 'bg-pink-500'} text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm`}>
+                        {data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? 'Original' : 'Novel'}
+                      </span>
                     </div>
-                    <div className="flex gap-1 mb-1">
-                      {heroItems.map((_: any, idx: number) => (
-                        <div 
-                          key={idx} 
-                          className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === trendingIndex ? 'bg-white' : 'bg-white/30'}`}
-                        ></div>
-                      ))}
+
+                    {/* Title */}
+                    <h2 key={`hero-title-${trendingIndex}`} className="text-2xl sm:text-4xl font-bold text-white mb-2 leading-[1.2] line-clamp-2 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                      {heroItem.title}
+                    </h2>
+
+                    {/* Description */}
+                    <p key={`hero-desc-${trendingIndex}`} className="text-zinc-400 text-xs sm:text-sm mb-3 line-clamp-2 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+                      Baca novel pilihan terbaik dengan cerita menarik dan update rutin setiap harinya. Jangan sampai terlewat cerita terbarunya.
+                    </p>
+
+                    {/* Info Row */}
+                    <div key={`hero-info-${trendingIndex}`} className="flex items-center gap-3 text-[10px] sm:text-xs font-bold text-zinc-300 mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+                      {heroItem.score && (
+                        <span className="flex items-center gap-1.5 text-blue-400">
+                          <Star size={14} className="fill-blue-400" /> {heroItem.score}
+                        </span>
+                      )}
+                      {heroItem.score && <span className="text-zinc-600">•</span>}
+                      <span className="flex items-center gap-1.5 text-zinc-400">
+                        <BookOpen size={14} className="text-zinc-500" /> {heroItem.author || 'Unknown'}
+                      </span>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div key={`hero-btn-${trendingIndex}`} className="flex flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                      <Link href={data.adminNovels?.some((n: any) => n.slug === heroItem.slug) ? `/novel/detail/${heroItem.slug}` : `/novel/detail/sakura-${heroItem.slug}`} className="flex items-center justify-center gap-2 bg-[#b48796] hover:bg-[#a37685] text-[#1a1a1a] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-all duration-300 text-[11px] sm:text-sm hover:scale-105 active:scale-95 whitespace-nowrap">
+                        <BookOpen size={16} className="fill-current" /> Baca Sekarang
+                      </Link>
                     </div>
                   </div>
-                </Link>
+                  
+                  {/* Carousel Indicators */}
+                  <div className="absolute bottom-4 sm:bottom-6 right-5 sm:right-8 flex items-center gap-2 z-20">
+                    {heroItems.map((_: any, idx: number) => (
+                      <button 
+                        key={idx}
+                        onClick={(e) => { e.preventDefault(); setTrendingIndex(idx); }}
+                        className={`h-1.5 rounded-full transition-all duration-500 ${trendingIndex === idx ? 'w-6 sm:w-8 bg-pink-500' : 'w-1.5 sm:w-2 bg-white/30 hover:bg-white/60'}`}
+                        aria-label={`Go to slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </section>
             )}
 
