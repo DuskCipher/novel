@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { Calendar } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { Calendar, ChevronLeft } from 'lucide-react';
 import { getAnimeSchedule } from '@/lib/anime-api';
 import AnimeCard3 from '../../components/AnimeCard3';
 import Sidebar from '@/app/components/Sidebar';
 
 export default function AnimeSchedulePage() {
   const params = useParams();
+  const router = useRouter();
   const source = (params?.source as string) || 'otakudesu';
 
   const [scheduleData, setScheduleData] = useState<any[]>([]);
@@ -52,8 +53,13 @@ export default function AnimeSchedulePage() {
         
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <Calendar size={28} className="text-amber-500" />
-          <h1 className="text-2xl font-bold text-white">Jadwal Tayang</h1>
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+            <ChevronLeft size={18} className="text-zinc-400" />
+          </button>
+          <div className="flex items-center gap-2">
+            <Calendar size={20} className="text-[#f40f25]" />
+            <h1 className="text-lg sm:text-xl font-bold text-white">Jadwal Tayang</h1>
+          </div>
         </div>
 
         {/* Filter Pills */}

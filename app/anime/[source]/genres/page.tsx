@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { Layers, Search } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { Layers, Search, ChevronLeft } from 'lucide-react';
 import { getAnimeGenres } from '@/lib/anime-api';
 import AnimeCard3 from '../../components/AnimeCard3';
 import Sidebar from '../../../components/Sidebar';
 
 export default function AnimeGenresPage() {
   const params = useParams();
+  const router = useRouter();
   const source = (params?.source as string) || 'otakudesu';
 
   const [genres, setGenres] = useState<any[]>([]);
@@ -48,13 +49,13 @@ export default function AnimeGenresPage() {
       <div className="flex-1 flex flex-col min-h-screen text-white pb-24 font-sans w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
       
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-          <Layers size={24} className="text-amber-500" />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[10px] font-black text-zinc-400 tracking-wider">KATEGORI</span>
-          <h1 className="text-2xl font-bold text-white">Daftar Genre</h1>
+      <div className="flex items-center gap-3 mb-8">
+        <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+          <ChevronLeft size={18} className="text-zinc-400" />
+        </button>
+        <div className="flex items-center gap-2">
+          <Layers size={20} className="text-[#f40f25]" />
+          <h1 className="text-lg sm:text-xl font-bold text-white">Daftar Genre</h1>
         </div>
       </div>
 

@@ -123,10 +123,13 @@ function AnimeSearchContent() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-            <Compass size={24} className="text-amber-500" />
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+            <ArrowLeft size={18} className="text-zinc-400" />
+          </button>
+          <div className="flex items-center gap-2">
+            <Compass size={20} className="text-[#f40f25]" />
+            <h1 className="text-lg sm:text-xl font-bold text-white">Explore & Cari Anime</h1>
           </div>
-          <h1 className="text-2xl font-bold text-white">Explore & Cari Anime</h1>
         </div>
         <form onSubmit={handleSubmit} className="relative w-full md:w-[400px] flex gap-2">
           <div className="relative flex-1">

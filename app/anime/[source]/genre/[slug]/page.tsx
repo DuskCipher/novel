@@ -75,19 +75,26 @@ export default function AnimeGenreDetailPage() {
       {/* Header */}
       {isFormatPage ? (
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-full bg-[#2A2B3D] flex items-center justify-center">
-            <Film size={24} className="text-[#60a5fa]" />
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+            <ChevronLeft size={18} className="text-zinc-400" />
+          </button>
+          <div className="flex items-center gap-2">
+            <Film size={20} className="text-[#f40f25]" />
+            <h1 className="text-lg sm:text-xl font-bold text-white capitalize">
+              Format: {slug}
+            </h1>
           </div>
-          <h1 className="text-2xl font-bold text-white capitalize">{slug}</h1>
         </div>
       ) : (
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-full bg-[#2A2B3D] flex items-center justify-center">
-            <Layers size={24} className="text-[#60a5fa]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-zinc-400 tracking-wider uppercase">GENRE</span>
-            <h1 className="text-2xl font-bold text-white capitalize">{slug.replace(/-/g, ' ')}</h1>
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+            <ChevronLeft size={18} className="text-zinc-400" />
+          </button>
+          <div className="flex items-center gap-2">
+            <Layers size={20} className="text-[#f40f25]" />
+            <h1 className="text-lg sm:text-xl font-bold text-white capitalize">
+              Genre: {slug.replace(/-/g, ' ')}
+            </h1>
           </div>
         </div>
       )}

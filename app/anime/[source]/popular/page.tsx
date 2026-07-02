@@ -50,10 +50,13 @@ export default function AnimePopularPage() {
       
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center">
-          <Flame size={24} className="text-rose-500" />
+        <button onClick={() => router.back()} className="w-8 h-8 rounded-lg bg-[#2A2B3D] hover:bg-[#3b3c54] flex items-center justify-center transition-colors">
+          <ChevronLeft size={18} className="text-zinc-400" />
+        </button>
+        <div className="flex items-center gap-2">
+          <Flame size={20} className="text-[#f40f25]" />
+          <h1 className="text-lg sm:text-xl font-bold text-white">Anime Trending / Populer</h1>
         </div>
-        <h1 className="text-2xl font-bold text-white">Anime Trending / Populer</h1>
       </div>
 
       <div className="w-full">
