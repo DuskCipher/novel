@@ -17,9 +17,8 @@ export async function POST(req: Request) {
       id,
       level: level || 1,
       exp: exp || 0,
-      display_name: display_name || 'Pengguna',
+      username: display_name || 'Pengguna',
       avatar_url: avatar_url || '/avatar.jpeg',
-      updated_at: new Date().toISOString(),
     };
     
     if (bio !== undefined) updateData.bio = bio;
