@@ -15,11 +15,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const updateData: any = { updated_at: new Date().toISOString() };
     if (level !== undefined) updateData.level = Number(level);
     if (exp !== undefined) updateData.exp = Number(exp);
-    if (is_banned !== undefined) updateData.is_banned = Boolean(is_banned);
-    if (ban_reason !== undefined) updateData.ban_reason = ban_reason;
 
-    // 1. Update tabel profiles (level, exp, is_banned, ban_reason)
-    if (level !== undefined || exp !== undefined || is_banned !== undefined || ban_reason !== undefined) {
+    // 1. Update tabel profiles (hanya level dan exp)
+    if (level !== undefined || exp !== undefined) {
       const { error: profileError } = await supabaseAdmin.from('profiles').upsert(
         { id, ...updateData },
         { onConflict: 'id' }
@@ -31,11 +29,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }
     }
 
-    // 2. Update auth user metadata agar sinkron (jika service role key tersedia)
     const metaUpdate: any = {};
     if (level !== undefined) metaUpdate.level = Number(level);
     if (exp !== undefined) metaUpdate.exp = Number(exp);
     if (role !== undefined) metaUpdate.role = role;
+    if (is_banned !== undefined) metaUpdate.is_banned = Boolean(is_banned);
+    if (ban_reason !== undefined) metaUpdate.ban_reason = ban_reason;
 
     try {
       // Perlu baca metadata saat ini dulu agar tidak tertimpa

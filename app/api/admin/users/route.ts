@@ -29,8 +29,8 @@ export async function GET() {
         avatar_url: p?.avatar_url || u.user_metadata?.avatar_url,
         level: p?.level || u.user_metadata?.level || 1,
         exp: p?.exp || u.user_metadata?.exp || 0,
-        is_banned: p?.is_banned || false,
-        ban_reason: p?.ban_reason || '',
+        is_banned: u.user_metadata?.is_banned || false,
+        ban_reason: u.user_metadata?.ban_reason || '',
         role: u.user_metadata?.role || 'User',
         created_at: u.created_at,
         updated_at: p?.updated_at || u.updated_at
