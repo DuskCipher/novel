@@ -45,6 +45,7 @@ export default function AnimeCard3({ item, href, type = 'explore', genreName }: 
           src={poster.startsWith('/') || poster.startsWith('data:') || poster.includes('sakuranovel.id') ? poster : `/api/image-proxy?url=${encodeURIComponent(poster)}`} 
           alt={title} 
           loading="lazy"
+          referrerPolicy="no-referrer"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           onError={(e) => {
             e.currentTarget.onerror = null;
