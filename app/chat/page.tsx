@@ -2,27 +2,89 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Loader2, Search, MessageSquare, Plus } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import PrivateChatList from '../components/PrivateChatList';
 import PrivateChatRoom from '../components/PrivateChatRoom';
 
 export default function ChatPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   const [selectedChat, setSelectedChat] = useState<any>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [initLoading, setInitLoading] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); // initial check
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (loading) {
-    return <div className="flex h-screen items-center justify-center bg-[#0a0a0a]"><Loader2 className="animate-spin text-amber-500" size={32} /></div>;
+  // Auto-open chat room if ?user=<id> is provided (from profile page)
+  useEffect(() => {
+    const targetUserId = searchParams.get('user');
+    if (!targetUserId || !user || initLoading) return;
+
+    const openChatWithUser = async () => {
+      setInitLoading(true);
+
+      // Fetch the target user's profile
+      const { data: targetProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', targetUserId)
+        .single();
+
+      if (!targetProfile) {
+        setInitLoading(false);
+        return;
+      }
+
+      // Ensure consistent user ordering for the unique constraint
+      const u1 = user.id < targetUserId ? user.id : targetUserId;
+      const u2 = user.id < targetUserId ? targetUserId : user.id;
+
+      // Check if chat already exists
+      const { data: existingChat } = await supabase
+        .from('private_chats')
+        .select('*')
+        .eq('user1_id', u1)
+        .eq('user2_id', u2)
+        .single();
+
+      if (existingChat) {
+        setSelectedChat({ ...existingChat, other_user: targetProfile });
+      } else {
+        // Create new chat
+        const { data: newChat } = await supabase
+          .from('private_chats')
+          .insert({ user1_id: u1, user2_id: u2, last_message_time: new Date().toISOString() })
+          .select()
+          .single();
+
+        if (newChat) {
+          setSelectedChat({ ...newChat, other_user: targetProfile });
+        }
+      }
+      setInitLoading(false);
+    };
+
+    openChatWithUser();
+  }, [user, searchParams]);
+
+  if (loading || initLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="animate-spin text-amber-500" size={32} />
+          {initLoading && <p className="text-zinc-400 text-sm">Membuka obrolan...</p>}
+        </div>
+      </div>
+    );
   }
 
   if (!user) {

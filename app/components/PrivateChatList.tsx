@@ -77,7 +77,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
       const { data } = await supabase
         .from('profiles')
         .select('*')
-        .or(`username.ilike.%${searchNewUser}%,display_name.ilike.%${searchNewUser}%`)
+        .ilike('display_name', `%${searchNewUser}%`)
         .neq('id', user.id)
         .limit(10);
       setFoundUsers(data || []);

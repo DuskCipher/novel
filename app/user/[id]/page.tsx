@@ -190,7 +190,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     className={`px-3 py-1 ${isFollowing ? 'bg-zinc-800 text-white border border-zinc-700' : `${theme.bg} text-white`} text-[10px] font-bold rounded-full transition-colors`}>
                     {isFollowing ? 'Mengikuti' : 'Ikuti'}
                   </button>
-                  <Link href="/chat" className="px-3 py-1 bg-zinc-800 text-white border border-zinc-700 text-[10px] font-bold rounded-full hover:bg-zinc-700 transition-colors flex items-center gap-1">
+                  <Link href={`/chat?user=${userId}`} className="px-3 py-1 bg-zinc-800 text-white border border-zinc-700 text-[10px] font-bold rounded-full hover:bg-zinc-700 transition-colors flex items-center gap-1">
                     Chat
                   </Link>
                 </div>
