@@ -2,13 +2,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Clock, List, BookOpen, Bookmark, Home, Share2, Download, MessageCircle } from 'lucide-react';
+import { Star, Clock, AlertTriangle, ArrowLeft, Bookmark, Download, Share2, BookOpen, MessageCircle, List, Home } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import CommentSection from '../../../components/CommentSection';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '../../../components/Sidebar';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 
 export default function ComicDetailPage() {
   const params = useParams();
@@ -274,27 +275,11 @@ export default function ComicDetailPage() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {recommendations.map((rec: any, i: number) => (
-                <Link href={`/comic/detail/${rec.slug}`} key={i} className="flex flex-col relative group gap-2">
-                  <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                    <img src={`/api/image-proxy?url=${encodeURIComponent(rec.image)}`} alt={rec.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" />
-                    <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
-
-                    {/* Top Right: Populer Badge */}
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm capitalize">
-                      Populer
-                    </div>
-                    
-                    {/* Bottom Right: Chapter */}
-                    {rec.chapter && (
-                      <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
-                        {rec.chapter}
-                      </div>
-                    )}
-                  </div>
-                  <div className="px-1 flex-1">
-                    <h3 className="text-white font-bold text-xs sm:text-sm group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{rec.title}</h3>
-                  </div>
-                </Link>
+                <AnimeCard3 
+                  key={i} 
+                  item={{...rec, type: rec.type || 'Komik', episode: rec.chapter, poster: rec.image}} 
+                  href={`/comic/detail/${rec.slug}`} 
+                />
               ))}
             </div>
           </div>

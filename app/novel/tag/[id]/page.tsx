@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 
 export default function NovelTagPage() {
   const params = useParams();
@@ -71,22 +72,33 @@ export default function NovelTagPage() {
           </div>
         ) : novels.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-            {novels.map((item: any, i: number) => (
-              <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col group overflow-hidden">
-                <div className="relative w-full aspect-[3/4]">
-                  <img src={getImageUrl(item)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48L3N2Zz4=' }} />
-                  <div className="absolute top-2 left-2 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Valoranovel</div>
-                </div>
-                <div className="p-3 bg-[#1C1D2A] rounded-b-xl flex-1 flex flex-col">
-                  <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-1">{item.title}</h3>
-                  {item.score && (
-                    <p className="text-[10px] text-zinc-400 flex items-center gap-1 mt-auto">
-                      <Star size={10} className="fill-yellow-500 text-yellow-500" /> {item.score}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            ))}
+            {novels.map((item: any, i: number) => {
+              let displayChap = 'Top';
+              const raw = item.latest_chapter || item.chapter;
+              if (raw) {
+                let clean = raw;
+                if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
+                  clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
+                }
+                clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
+                const chapMatch = clean.match(/chapter\s*\d+/i);
+                displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
+              }
+
+              return (
+                <AnimeCard3 
+                  key={i} 
+                  item={{
+                    ...item, 
+                    type: 'Novel', 
+                    episode: displayChap, 
+                    poster: getImageUrl(item),
+                    rating: item.score || item.rating
+                  }} 
+                  href={`/novel/detail/sakura-${item.slug}`} 
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 text-zinc-500">

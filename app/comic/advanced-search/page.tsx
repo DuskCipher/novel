@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Search, SlidersHorizontal, Star, Clock } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Star, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 import Sidebar from '@/app/components/Sidebar';
 
 export default function AdvancedSearchPage() {
@@ -199,42 +200,11 @@ export default function AdvancedSearchPage() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                 {results.map((c: any, i: number) => (
-                  <Link href={`/comic/detail/${c.slug}`} key={i} className="flex flex-col relative group gap-2">
-                    <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                      <img
-                        src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image || '')}`}
-                        alt={c.title}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                      <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
-                      
-                      {/* Top Left: Type */}
-                      {c.type && (
-                        <div className="absolute top-2 left-2 z-10">
-                          <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">{c.type}</span>
-                        </div>
-                      )}
-
-                      {/* Top Right: Chapter */}
-                      {c.latest_chapter && (
-                        <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
-                          {c.latest_chapter}
-                        </div>
-                      )}
-
-                      {/* Bottom Left: Rating */}
-                      {c.rating && (
-                        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
-                          <Star size={10} className="text-amber-400 fill-amber-400" />
-                          {c.rating}
-                        </div>
-                      )}
-                    </div>
-                    <div className="px-1 flex-1">
-                      <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{c.title}</h3>
-                    </div>
-                  </Link>
+                  <AnimeCard3 
+                    key={i} 
+                    item={{...c, type: c.type || 'Komik', episode: c.latest_chapter}} 
+                    href={`/comic/detail/${c.slug}`} 
+                  />
                 ))}
               </div>
             </div>

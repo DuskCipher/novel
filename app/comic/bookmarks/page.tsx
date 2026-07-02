@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Clock, Trash2, Bookmark } from 'lucide-react';
+import { ArrowLeft, Trash2, Bookmark, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/components/AuthProvider';
+import { useAuth } from '@/app/context/AuthContext';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/app/components/Sidebar';
 
@@ -87,45 +88,18 @@ export default function ComicBookmarksPage() {
               const finalSrc = imgUrl.startsWith('http') ? `/api/image-proxy?url=${encodeURIComponent(imgUrl)}` : imgUrl;
               
               return (
-                <Link href={href} key={i} className="flex flex-col relative group gap-2">
-                  <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                    {finalSrc ? (
-                      <img src={finalSrc} alt={c.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    ) : null}
-                    <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
-
-                    <button 
-                      onClick={(e) => removeBookmark(rawUrl, e)}
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-red-500 backdrop-blur-md rounded-full text-white z-20 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-
-                    {/* Top Left: Type */}
-                    <div className="absolute top-2 left-2 z-10">
-                      <span className={`text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm drop-shadow-md ${isWebtoon ? 'bg-green-600' : 'bg-blue-600'}`}>{isWebtoon ? 'Webtoon' : (c.type || 'Komik')}</span>
-                    </div>
-
-                    {/* Top Right: Chapter */}
-                    {c.chapter && (
-                      <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
-                        {c.chapter}
-                      </div>
-                    )}
-
-                    {/* Bottom Left: Rating */}
-                    {c.rating && (
-                      <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
-                        <Star size={10} className="text-amber-400 fill-amber-400" />
-                        {c.rating}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="px-1 flex-1">
-                    <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{c.title}</h3>
-                  </div>
-                </Link>
+                <div key={i} className="relative group">
+                  <AnimeCard3 
+                    item={{...c, type: isWebtoon ? 'Webtoon' : (c.type || 'Komik'), episode: c.chapter, poster: imgUrl}} 
+                    href={href} 
+                  />
+                  <button 
+                    onClick={(e) => removeBookmark(rawUrl, e)}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-red-500 backdrop-blur-md rounded-full text-white z-20 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               );
             })}
           </div>

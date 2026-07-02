@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Trash2, BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/app/components/Sidebar';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 
 import { useAuth } from '@/app/components/AuthProvider';
 import { supabase } from '@/lib/supabase';
@@ -77,54 +78,26 @@ export default function NovelBookmarksPage() {
             {bookmarks.map((b, i) => {
               const url = b.item_url || b.novelUrl || b.url;
               return (
-                <Link href={url} key={i} className="flex flex-col relative group gap-2">
-                  <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                    <img src={b.poster?.startsWith('http') ? `/api/image-proxy?url=${encodeURIComponent(b.poster)}` : b.poster} alt={b.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
-
-                    <button 
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeBookmark(url); }}
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-red-500 backdrop-blur-md rounded-full text-white z-20 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-
-                    {/* Top Left: Novel */}
-                    <div className="absolute top-2 left-2 z-10">
-                      <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">Novel</span>
-                    </div>
-
-                    {/* Top Right: Chapter Pill */}
-                    {(() => {
-                      const raw = b.chapter || b.latest_chapter;
-                      if (!raw) return null;
-                      let clean = raw;
-                      if (b.title && clean.toLowerCase().includes(b.title.toLowerCase())) {
-                        clean = clean.replace(new RegExp(b.title, 'ig'), '').trim();
-                      }
-                      clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
-                      const chapMatch = clean.match(/chapter\s*\d+/i);
-                      const displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
-                      return (
-                        <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm capitalize">
-                          {displayChap}
-                        </div>
-                      );
-                    })()}
-
-                    {/* Bottom Left: Score/Rating */}
-                    {b.score && (
-                      <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
-                        <Star size={10} className="text-amber-400 fill-amber-400" />
-                        {b.score}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="px-1 flex-1">
-                    <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{b.title}</h3>
-                  </div>
-                </Link>
+              return (
+                <div key={i} className="relative group">
+                  <AnimeCard3 
+                    item={{
+                      ...b, 
+                      type: 'Novel', 
+                      episode: displayChap, 
+                      poster: b.poster,
+                      rating: b.score || b.rating
+                    }} 
+                    href={url} 
+                  />
+                  <button 
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeBookmark(url); }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-red-500 backdrop-blur-md rounded-full text-white z-20 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              );
               );
             })}
           </div>

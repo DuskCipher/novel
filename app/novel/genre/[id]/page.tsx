@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
 import Sidebar from '@/app/components/Sidebar';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 
 export default function NovelGenrePage() {
   const params = useParams();
@@ -77,49 +78,33 @@ export default function NovelGenrePage() {
           </div>
         ) : novels.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5">
-            {novels.map((item: any, i: number) => (
-              <Link href={`/novel/detail/sakura-${item.slug}`} key={i} className="flex flex-col relative group gap-2">
-                <div className="relative w-full aspect-[3/4] bg-[#2A2A32] rounded-xl overflow-hidden shadow-md flex items-center justify-center">
-                  <img src={getImageUrl(item)} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  <span className="text-zinc-500 text-[10px] font-bold absolute z-[-1]">Not Found</span>
+            {novels.map((item: any, i: number) => {
+              let displayChap = 'Top';
+              const raw = item.latest_chapter || item.chapter;
+              if (raw) {
+                let clean = raw;
+                if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
+                  clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
+                }
+                clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
+                const chapMatch = clean.match(/chapter\s*\d+/i);
+                displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
+              }
 
-                  {/* Top Left: Novel */}
-                  <div className="absolute top-2 left-2 z-10">
-                    <span className="text-white text-[10px] font-bold px-1 py-0.5 drop-shadow-md">Novel</span>
-                  </div>
-
-                  {/* Top Right: Chapter Pill */}
-                  {(() => {
-                    const raw = item.latest_chapter || item.chapter;
-                    if (!raw) return null;
-                    let clean = raw;
-                    if (item.title && clean.toLowerCase().includes(item.title.toLowerCase())) {
-                      clean = clean.replace(new RegExp(item.title, 'ig'), '').trim();
-                    }
-                    clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '');
-                    const chapMatch = clean.match(/chapter\s*\d+/i);
-                    const displayChap = chapMatch ? chapMatch[0] : (clean || 'Top');
-                    return (
-                      <div className="absolute top-2 right-2 bg-[#f97316] text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm capitalize">
-                        {displayChap}
-                      </div>
-                    );
-                  })()}
-
-                  {/* Bottom Left: Score/Rating */}
-                  {(item.score || item.rating) && (
-                    <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
-                      <Star size={10} className="text-amber-400 fill-amber-400" />
-                      {item.score || item.rating}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="px-1 flex-1">
-                  <h3 className="font-bold text-xs sm:text-sm text-white group-hover:text-[#f97316] transition-colors line-clamp-2 leading-snug">{item.title}</h3>
-                </div>
-              </Link>
-            ))}
+              return (
+                <AnimeCard3 
+                  key={i} 
+                  item={{
+                    ...item, 
+                    type: 'Novel', 
+                    episode: displayChap, 
+                    poster: getImageUrl(item),
+                    rating: item.score || item.rating
+                  }} 
+                  href={`/novel/detail/sakura-${item.slug}`} 
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 text-zinc-500">

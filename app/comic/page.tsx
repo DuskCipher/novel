@@ -7,6 +7,7 @@ import Link from 'next/link';
 import AnimeList from '../components/AnimeList'; // Reusing AnimeList since they share similar structure
 import WidgetTitle from '../components/WidgetTitle';
 import Sidebar from '../components/Sidebar';
+import AnimeCard3 from '@/app/anime/components/AnimeCard3';
 
 export default function ComicHubPage() {
   const [data, setData] = useState<any>({ trending: [], popular: [], latest: [], berwarna: [], webtoons: [] });
@@ -230,14 +231,11 @@ export default function ComicHubPage() {
             {isSearching ? <div className="text-zinc-500">Mencari...</div> : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3">
                 {searchResults.map((c: any, i: number) => (
-                  <Link href={c.isWebtoon ? `/detail?url=${encodeURIComponent(c.url)}&source=webtoons` : `/comic/detail/${c.slug}`} key={i} className="group relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800/50 aspect-[3/4]">
-                    <img src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image)}`} alt={c.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'} } />
-                    <div className={`absolute top-2 left-2 ${c.isWebtoon ? 'bg-green-500' : 'bg-blue-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>{c.isWebtoon ? 'Webtoon' : 'Komik'}</div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 p-3">
-                      <h3 className="text-white font-bold text-xs line-clamp-2">{c.title}</h3>
-                    </div>
-                  </Link>
+                  <AnimeCard3 
+                    key={i} 
+                    item={{...c, type: c.isWebtoon ? 'Webtoon' : 'Komik'}} 
+                    href={c.isWebtoon ? `/detail?url=${encodeURIComponent(c.url)}&source=webtoons` : `/comic/detail/${c.slug}`} 
+                  />
                 ))}
               </div>
             )}
@@ -350,18 +348,11 @@ export default function ComicHubPage() {
               <WidgetTitle title="Komik Full Warna" icon={<Flame size={20} className="text-orange-500" />} />
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 mt-4 max-w-[1200px] mx-auto">
                 {data.berwarna.slice(0, 10).map((c: any, i: number) => (
-                  <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col group">
-                    <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-xl">
-                      <img src={`/api/image-proxy?url=${encodeURIComponent(c.image || c.poster || c.thumbnail)}`} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">
-                        Full Color
-                      </div>
-                    </div>
-                    <div className="p-3 bg-[#1C1D2A] rounded-b-xl z-10 flex-1 flex flex-col justify-between">
-                      <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug">{c.title}</h3>
-                      <p className="text-blue-400 text-[10px] sm:text-xs font-bold mt-1">{c.chapter}</p>
-                    </div>
-                  </Link>
+                  <AnimeCard3 
+                    key={i} 
+                    item={{...c, type: 'Full Warna'}} 
+                    href={`/comic/detail/${c.slug}`} 
+                  />
                 ))}
               </div>
             </section>
@@ -373,24 +364,11 @@ export default function ComicHubPage() {
               <WidgetTitle title="Webtoon Populer" href="/explore?source=webtoons" />
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 mt-4 max-w-[1200px] mx-auto">
                 {data.webtoons.slice(0, 10).map((item: any, i: number) => (
-                  <Link href={`/detail?url=${encodeURIComponent(item.url)}&source=webtoons`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-                    <div className="relative w-full aspect-[3/4]">
-                      <div className="w-full h-full rounded-t-xl overflow-hidden">
-                        <img src={`/api/image-proxy?url=${encodeURIComponent(item.thumbnail)}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+' }} />
-                      </div>
-                      <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Webtoon</div>
-                      <div className="absolute -bottom-3 left-2 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md z-10 flex items-center gap-1">
-                        <Flame size={10} /> {item.likes || 'Top'}
-                      </div>
-                    </div>
-                    <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                      <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug mb-2">{item.title}</h3>
-                      <div className="flex justify-between items-center text-[10px] text-zinc-400">
-                        <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {item.rating || '9.0'}</span>
-                        <span className="flex items-center gap-1"><Clock size={10} /> Update</span>
-                      </div>
-                    </div>
-                  </Link>
+                  <AnimeCard3 
+                    key={i} 
+                    item={{...item, type: 'Webtoon'}} 
+                    href={`/detail?url=${encodeURIComponent(item.url)}&source=webtoons`} 
+                  />
                 ))}
               </div>
             </section>
@@ -407,26 +385,11 @@ export default function ComicHubPage() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 max-w-[1200px] mx-auto">
                   {data.popular.slice(0, 10).map((c: any, i: number) => (
-                    <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-                      <div className="relative w-full aspect-[3/4]">
-                        <div className="w-full h-full rounded-t-xl overflow-hidden">
-                          <img src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image)}`} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'} } />
-                        </div>
-                        <div className={`absolute top-2 left-2 ${c.type?.toLowerCase() === 'manhua' ? 'bg-emerald-500' : c.type?.toLowerCase() === 'manga' ? 'bg-blue-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>
-                          {c.type || 'Manhwa'}
-                        </div>
-                        <div className="absolute -bottom-3 left-2 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md z-10">
-                          {c.chapter || 'Chapter ?'}
-                        </div>
-                      </div>
-                      <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                        <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
-                        <div className="flex justify-between items-center text-[10px] text-zinc-400">
-                          <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {c.rating || '9.0'}</span>
-                          <span className="flex items-center gap-1"><Clock size={10} /> {c.description?.replace('Update ', '') || '4h ago'}</span>
-                        </div>
-                      </div>
-                    </Link>
+                    <AnimeCard3 
+                      key={i} 
+                      item={{...c, type: c.type || 'Manhwa', episode: c.chapter || c.episode}} 
+                      href={`/comic/detail/${c.slug}`} 
+                    />
                   ))}
                 </div>
               </section>
@@ -444,26 +407,11 @@ export default function ComicHubPage() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 max-w-[1200px] mx-auto">
                   {data.latest.map((c: any, i: number) => (
-                    <Link href={`/comic/detail/${c.slug}`} key={i} className="bg-[#1C1D2A] rounded-xl flex flex-col relative group">
-                      <div className="relative w-full aspect-[3/4]">
-                        <div className="w-full h-full rounded-t-xl overflow-hidden">
-                          <img src={`/api/image-proxy?url=${encodeURIComponent(c.thumbnail || c.poster || c.image)}`} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDMwMCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMxNTE3MjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Ob3QgRm91bmQ8L3RleHQ+PC9zdmc+'} } />
-                        </div>
-                        <div className={`absolute top-2 left-2 ${c.type?.toLowerCase() === 'manhua' ? 'bg-emerald-500' : c.type?.toLowerCase() === 'manga' ? 'bg-blue-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase`}>
-                          {c.type || 'Manhwa'}
-                        </div>
-                        <div className="absolute -bottom-3 left-2 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-md transition-transform group-hover:-translate-y-1 z-10">
-                          {c.chapter || 'Chapter ?'}
-                        </div>
-                      </div>
-                      <div className="p-3 pt-5 flex-1 flex flex-col justify-between bg-[#1C1D2A] rounded-b-xl z-0">
-                        <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug mb-2">{c.title}</h3>
-                        <div className="flex justify-between items-center text-[10px] sm:text-xs text-zinc-400">
-                          <span className="flex items-center gap-1"><Star size={10} className="text-yellow-500 fill-yellow-500" /> {c.rating || '8.5'}</span>
-                          <span className="flex items-center gap-1"><Clock size={10} /> {c.description?.replace('Update ', '') || '2h ago'}</span>
-                        </div>
-                      </div>
-                    </Link>
+                    <AnimeCard3 
+                      key={i} 
+                      item={{...c, type: c.type || 'Manhwa', episode: c.chapter || c.episode}} 
+                      href={`/comic/detail/${c.slug}`} 
+                    />
                   ))}
                 </div>
               </section>
