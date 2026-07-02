@@ -37,9 +37,20 @@ export async function POST(req: Request) {
         .eq('mission_id', mission.id)
         .maybeSingle();
 
-      if (currentProgress?.is_completed) continue;
+      let isOldProgress = false;
+      if (currentProgress && currentProgress.created_at) {
+          const progressDate = new Date(currentProgress.created_at);
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          if (progressDate < today) {
+              isOldProgress = true;
+          }
+      }
 
-      let newProgress = (currentProgress?.progress || 0) + 1;
+      if (currentProgress?.is_completed && !isOldProgress) continue;
+
+      let baseProgress = isOldProgress ? 0 : (currentProgress?.progress || 0);
+      let newProgress = baseProgress + 1;
       let isCompleted = newProgress >= mission.target_count;
 
       const { error: upsertError } = await supabaseAdmin
@@ -50,8 +61,8 @@ export async function POST(req: Request) {
           mission_id: mission.id,
           progress: newProgress,
           is_completed: isCompleted,
-          last_claimed_at: isCompleted ? new Date().toISOString() : null,
-          created_at: currentProgress?.created_at || new Date().toISOString()
+          last_claimed_at: isCompleted ? new Date().toISOString() : (isOldProgress ? null : currentProgress?.last_claimed_at),
+          created_at: isOldProgress ? new Date().toISOString() : (currentProgress?.created_at || new Date().toISOString())
         }, { onConflict: 'user_id, mission_id' });
 
       if (upsertError) continue;
