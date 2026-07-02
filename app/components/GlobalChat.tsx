@@ -39,6 +39,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isCancelledRef = useRef(false);
 
   // Live user profiles cache for accurate level/exp display
   const [userProfiles, setUserProfiles] = useState<Record<string, any>>({});
@@ -266,6 +267,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
+      isCancelledRef.current = false;
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -275,8 +277,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        // Only send if it's not empty and wasn't cancelled explicitly (handled by audioChunksRef length check later)
-        if (audioChunksRef.current.length > 0) {
+        if (audioChunksRef.current.length > 0 && !isCancelledRef.current) {
           await handleSendAudio(audioBlob);
         }
         stream.getTracks().forEach(track => track.stop());
@@ -304,6 +305,7 @@ export default function GlobalChat({ isOpen, onClose }: GlobalChatProps) {
 
   const cancelRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
+      isCancelledRef.current = true;
       audioChunksRef.current = []; // Clear chunks so it doesn't upload
       mediaRecorderRef.current.stop();
       setIsRecording(false);

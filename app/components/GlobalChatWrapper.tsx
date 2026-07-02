@@ -59,10 +59,14 @@ export default function GlobalChatWrapper() {
     if (buttonRef.current) {
       buttonRef.current.releasePointerCapture(e.pointerId);
     }
+    // Do NOT open here, let onClick handle it to prevent ghost clicks on mobile
+    setTimeout(() => setIsDragging(false), 50);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
     if (!isDragging) {
       setIsOpen(true);
     }
-    setTimeout(() => setIsDragging(false), 50);
   };
 
   return (
@@ -73,6 +77,7 @@ export default function GlobalChatWrapper() {
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onClick={handleClick}
         className="fixed right-4 z-[90] w-12 h-12 bg-[#5C6BC0] rounded-full flex items-center justify-center cursor-pointer hover:bg-indigo-500 transition-colors shadow-xl shadow-indigo-500/20 touch-none"
         style={{ top: positionY ? `${positionY}px` : 'auto', bottom: positionY ? 'auto' : '16px' }}
         title="Buka Global Chat (Geser ke atas/bawah)"
