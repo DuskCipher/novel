@@ -92,7 +92,7 @@ export default function ChatPage() {
   const showRoom = !isMobile || (isMobile && selectedChat);
 
   return (
-    <div className="fixed inset-0 top-[56px] sm:top-[64px] flex bg-[#0a0a0a] text-white overflow-hidden z-30">
+    <div className="fixed inset-0 top-[56px] sm:top-[64px] bottom-0 flex bg-[#0a0a0a] text-white overflow-hidden z-[70]">
       
       {/* Left Panel: Chat List */}
       {showList && (

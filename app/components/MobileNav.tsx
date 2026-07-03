@@ -11,7 +11,7 @@ export default function MobileNav() {
 
   const avatarUrl = user?.user_metadata?.avatar_url || '/avatar.jpeg';
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/chat')) {
     return null;
   }
 

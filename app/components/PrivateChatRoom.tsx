@@ -170,7 +170,12 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
       </div>
 
       {/* Messages Area - this is the only scrollable part */}
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar" style={{ backgroundImage: 'radial-gradient(#222 1px, transparent 1px)', backgroundSize: '20px 20px', backgroundPosition: 'center' }}>
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar relative">
+        {/* Background Image - blurred and darkened */}
+        <div className="fixed inset-0 z-0 pointer-events-none" style={{ top: '56px' }}>
+          <img src="/chat-bg.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'blur(8px) brightness(0.2)', transform: 'scale(1.1)' }} />
+        </div>
+        <div className="relative z-[1] flex flex-col gap-3 flex-1">
         {loading ? (
           <div className="flex justify-center flex-1 items-center"><Loader2 className="animate-spin text-amber-500" size={32} /></div>
         ) : messages.length === 0 ? (
@@ -218,6 +223,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
           })
         )}
         <div ref={messagesEndRef} />
+        </div>{/* close z-[1] wrapper */}
       </div>
 
       {/* Anime Search Drawer */}
