@@ -119,9 +119,9 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
   const filteredChats = chats.filter(c => (c.other_user.display_name || c.other_user.username || '').toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#0a0a0a]">
+    <div className="flex-1 flex flex-col min-h-0 bg-[#0a0a0a] relative">
       {/* Search Bar */}
-      <div className="p-3 border-b border-zinc-800">
+      <div className="p-3 border-b border-zinc-800 shrink-0">
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
@@ -201,7 +201,7 @@ export default function PrivateChatList({ user, selectedChatId, onSelectChat }: 
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input 
                 type="text" 
-                placeholder="Cari username pengguna..."
+                placeholder="Cari nama pengguna..."
                 value={searchNewUser}
                 onChange={e => setSearchNewUser(e.target.value)}
                 autoFocus

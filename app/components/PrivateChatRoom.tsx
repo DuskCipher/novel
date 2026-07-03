@@ -21,6 +21,12 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
   const [animeResults, setAnimeResults] = useState<any[]>([]);
   const [selectedAnime, setSelectedAnime] = useState<any>(null);
 
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  };
+
   const fetchMessages = async () => {
     const { data, error } = await supabase
       .from('private_messages')
@@ -45,11 +51,14 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
     fetchMessages();
 
     // Subscribe to new messages
-    const channel = supabase.channel(`chat_${chat.id}`)
+    const channel = supabase.channel(`chat_${chat.id}_${Date.now()}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'private_messages', filter: `chat_id=eq.${chat.id}` }, (payload) => {
-        setMessages(prev => [...prev, payload.new]);
+        setMessages(prev => {
+          // Avoid duplicates (from optimistic update)
+          if (prev.some(m => m.id === payload.new.id)) return prev;
+          return [...prev, payload.new];
+        });
         scrollToBottom();
-        // If we are receiving, mark as read immediately
         if (payload.new.receiver_id === user.id) {
           supabase.from('private_messages').update({ is_read: true }).eq('id', payload.new.id).then();
         }
@@ -64,12 +73,6 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
     };
   }, [chat.id, user.id]);
 
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if ((!inputText.trim() && !selectedAnime) || sending) return;
@@ -77,7 +80,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
     setSending(true);
     const content = inputText.trim();
     
-    const newMessage = {
+    const newMessage: any = {
       chat_id: chat.id,
       sender_id: user.id,
       receiver_id: chat.other_user.id,
@@ -88,22 +91,41 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
       is_read: false
     };
 
-    const { error } = await supabase.from('private_messages').insert(newMessage);
+    // Clear input immediately
+    setInputText('');
+    const sentAnime = selectedAnime;
+    setSelectedAnime(null);
+    setShowAnimeSearch(false);
+
+    // Optimistic update: add the message to state immediately
+    const tempId = `temp_${Date.now()}`;
+    const optimisticMsg = {
+      ...newMessage,
+      id: tempId,
+      created_at: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, optimisticMsg]);
+    scrollToBottom();
+
+    // Actually insert to database
+    const { data, error } = await supabase.from('private_messages').insert(newMessage).select().single();
     
-    if (!error) {
+    if (!error && data) {
+      // Replace temp message with real one
+      setMessages(prev => prev.map(m => m.id === tempId ? data : m));
+      
       await supabase.from('private_chats').update({ 
-        last_message: content || `Merekomendasikan: ${selectedAnime?.title}`,
+        last_message: content || `Merekomendasikan: ${sentAnime?.title}`,
         last_message_time: new Date().toISOString()
       }).eq('id', chat.id);
-      
-      setInputText('');
-      setSelectedAnime(null);
-      setShowAnimeSearch(false);
+    } else {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== tempId));
     }
     setSending(false);
   };
 
-  // Anime search using existing novels table (assuming novels = anime in this platform based on slug)
+  // Anime search
   useEffect(() => {
     if (animeSearchQuery.length < 2) {
       setAnimeResults([]);
@@ -128,10 +150,10 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#0a0a0a] sm:bg-[#121212] relative">
-      {/* Header */}
-      <div className="flex items-center gap-3 p-3 bg-zinc-900 border-b border-zinc-800 shrink-0">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-zinc-800 transition-colors sm:hidden text-zinc-400">
+    <div className="flex-1 flex flex-col h-full bg-[#0a0a0a] sm:bg-[#121212] relative overflow-hidden">
+      {/* Header - fixed, never scrolls */}
+      <div className="flex items-center gap-3 p-3 bg-zinc-900 border-b border-zinc-800 shrink-0 z-10">
+        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-zinc-800 transition-colors text-zinc-400">
           <ArrowLeft size={20} />
         </button>
         <Link href={`/user/${chat.other_user.id}`} className="flex items-center gap-3 flex-1 hover:opacity-80 transition-opacity">
@@ -147,7 +169,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
         </Link>
       </div>
 
-      {/* Messages Area */}
+      {/* Messages Area - this is the only scrollable part */}
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar" style={{ backgroundImage: 'radial-gradient(#222 1px, transparent 1px)', backgroundSize: '20px 20px', backgroundPosition: 'center' }}>
         {loading ? (
           <div className="flex justify-center flex-1 items-center"><Loader2 className="animate-spin text-amber-500" size={32} /></div>
@@ -162,7 +184,7 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
               <div key={msg.id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] sm:max-w-[70%] rounded-2xl p-3 shadow-lg ${isMe ? 'bg-amber-600 text-white rounded-br-sm' : 'bg-zinc-800 text-white rounded-bl-sm'}`}>
                   
-                  {/* Anime Recommendation Card if exists */}
+                  {/* Anime Recommendation Card */}
                   {msg.anime_url && (
                     <Link href={msg.anime_url} className="block mb-2 bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-700 rounded-lg overflow-hidden transition-colors">
                       <div className="flex items-center gap-3 p-2">
@@ -198,14 +220,14 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Anime Recommendation Search Drawer */}
+      {/* Anime Search Drawer */}
       {showAnimeSearch && (
-        <div className="absolute bottom-[60px] sm:bottom-[70px] left-0 right-0 bg-zinc-900 border-t border-zinc-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-20 flex flex-col h-[300px] animate-in slide-in-from-bottom-2">
-          <div className="flex items-center justify-between p-3 border-b border-zinc-800">
+        <div className="absolute bottom-[60px] left-0 right-0 bg-zinc-900 border-t border-zinc-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-20 flex flex-col h-[300px]">
+          <div className="flex items-center justify-between p-3 border-b border-zinc-800 shrink-0">
             <h3 className="font-bold text-amber-500 text-sm flex items-center gap-2"><Film size={16} /> Cari Anime</h3>
             <button onClick={() => {setShowAnimeSearch(false); setSelectedAnime(null);}} className="text-zinc-400 hover:text-white"><X size={20} /></button>
           </div>
-          <div className="p-3 border-b border-zinc-800 relative">
+          <div className="p-3 border-b border-zinc-800 relative shrink-0">
             <Search size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input 
               type="text" 
@@ -236,16 +258,16 @@ export default function PrivateChatRoom({ user, chat, onBack }: { user: any, cha
                 ))}
               </div>
             ) : animeSearchQuery.length >= 2 ? (
-              <div className="text-center p-4 text-zinc-500 text-sm">Tidak ditemukan. Pastikan anime sudah ada di database Valoranime.</div>
+              <div className="text-center p-4 text-zinc-500 text-sm">Tidak ditemukan.</div>
             ) : null}
           </div>
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="bg-zinc-900 border-t border-zinc-800 p-2 sm:p-3 shrink-0">
+      {/* Input Area - fixed at bottom, never scrolls */}
+      <div className="bg-zinc-900 border-t border-zinc-800 p-2 sm:p-3 shrink-0 z-10">
         
-        {/* Selected Anime Preview before sending */}
+        {/* Selected Anime Preview */}
         {selectedAnime && (
           <div className="mb-2 bg-zinc-800 p-2 rounded-lg flex items-center justify-between border border-amber-500/30">
             <div className="flex items-center gap-3 min-w-0">

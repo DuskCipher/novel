@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Loader2, Search, MessageSquare, Plus } from 'lucide-react';
+import { ArrowLeft, Loader2, MessageSquare } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import PrivateChatList from '../components/PrivateChatList';
 import PrivateChatRoom from '../components/PrivateChatRoom';
@@ -32,7 +32,6 @@ export default function ChatPage() {
     const openChatWithUser = async () => {
       setInitLoading(true);
 
-      // Fetch the target user's profile
       const { data: targetProfile } = await supabase
         .from('profiles')
         .select('*')
@@ -44,11 +43,9 @@ export default function ChatPage() {
         return;
       }
 
-      // Ensure consistent user ordering for the unique constraint
       const u1 = user.id < targetUserId ? user.id : targetUserId;
       const u2 = user.id < targetUserId ? targetUserId : user.id;
 
-      // Check if chat already exists
       const { data: existingChat } = await supabase
         .from('private_chats')
         .select('*')
@@ -59,7 +56,6 @@ export default function ChatPage() {
       if (existingChat) {
         setSelectedChat({ ...existingChat, other_user: targetProfile });
       } else {
-        // Create new chat
         const { data: newChat } = await supabase
           .from('private_chats')
           .insert({ user1_id: u1, user2_id: u2, last_message_time: new Date().toISOString() })
@@ -78,7 +74,7 @@ export default function ChatPage() {
 
   if (loading || initLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#0a0a0a] z-50">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="animate-spin text-amber-500" size={32} />
           {initLoading && <p className="text-zinc-400 text-sm">Membuka obrolan...</p>}
@@ -96,13 +92,13 @@ export default function ChatPage() {
   const showRoom = !isMobile || (isMobile && selectedChat);
 
   return (
-    <div className="flex h-screen bg-[#0a0a0a] text-white overflow-hidden pt-16 sm:pt-20">
+    <div className="fixed inset-0 top-[56px] sm:top-[64px] flex bg-[#0a0a0a] text-white overflow-hidden z-30">
       
       {/* Left Panel: Chat List */}
       {showList && (
         <div className={`flex flex-col border-r border-zinc-800 ${isMobile ? 'w-full' : 'w-[350px] lg:w-[400px]'}`}>
-          <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
-            <h1 className="text-xl font-bold text-amber-500">Pesan Pribadi</h1>
+          <div className="p-3 border-b border-zinc-800 flex items-center justify-between shrink-0">
+            <h1 className="text-lg font-bold text-amber-500">Pesan Pribadi</h1>
             <button 
               onClick={() => router.push('/')}
               className="p-2 hover:bg-zinc-800 rounded-full transition-colors sm:hidden"
